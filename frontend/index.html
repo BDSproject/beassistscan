@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeassistScan - Découvrez ce qu'eBay vous coûte vraiment</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { transition: all 0.2s ease; }
+    .card-premium:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+  <!-- ==================== BANNIÈRE DE COOKIES ==================== -->
+<div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-violet-200 shadow-2xl p-4 hidden">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Texte -->
+    <p class="text-sm text-gray-700 leading-relaxed max-w-2xl">
+      Nous utilisons des cookies strictement nécessaires à l'authentification eBay (cookie de session OAuth) et pour mesurer l'audience de manière anonyme.
+      Aucune donnée personnelle n'est collectée sans votre consentement explicite.
+      <a href="/politique-confidentialite.html" class="underline text-violet-600 hover:text-violet-800 font-medium">En savoir plus</a>
+    </p>
+    <!-- Boutons -->
+    <div class="flex items-center gap-3 flex-shrink-0">
+      <button id="cookie-refuse" class="px-5 py-2.5 border border-violet-300 text-violet-700 rounded-lg text-sm font-semibold hover:bg-violet-50 transition">
+        Refuser
+      </button>
+      <button id="cookie-accept" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-semibold shadow-md transition">
+        Accepter
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const banner = document.getElementById('cookie-banner');
+    const btnAccept = document.getElementById('cookie-accept');
+    const btnRefuse = document.getElementById('cookie-refuse');
+
+    // Vérifier si le consentement a déjà été donné
+    if (!localStorage.getItem('cookieConsent')) {
+      banner.classList.remove('hidden');
+    }
+
+    // Accepter
+    btnAccept.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'accepted');
+      banner.classList.add('hidden');
+      // Ici vous pourriez déclencher vos scripts de mesure d'audience (ex: Google Analytics)
+    });
+
+    // Refuser
+    btnRefuse.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'refused');
+      banner.classList.add('hidden');
+      // Ici vous pouvez désactiver tout tracking éventuel
+    });
+  })();
+</script>
+
+  <div class="max-w-2xl mx-auto p-6 my-12">
+
+    <!-- ==================== EN-TÊTE ==================== -->
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-extrabold tracking-tight">
+        <span class="text-black">Be</span><span class="text-violet-500">assist</span><span class="text-black">Scan.</span>
+      </h1>
+      <p class="text-gray-600 mt-2 text-lg">Découvrez ce qu'eBay vous coûte vraiment en 2 minutes</p>
+    </div>
+
+    <!-- ==================== CARTE PRINCIPALE ==================== -->
+    <div class="bg-white shadow-xl rounded-2xl p-8 border border-gray-100">
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">📊 Rapport de Rentabilité</h2>
+      <p id="stepDescription" class="text-gray-500 text-sm mb-6">
+        Connectez votre compte eBay pour recevoir une analyse détaillée par email.
+      </p>
+
+      <!-- Étape 1 : Connexion eBay -->
+      <div id="stepConnect" class="space-y-6">
+        <div class="flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-lg">
+          <div class="space-y-3 text-center">
+            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+              <path d="M28 8H12a4 4 0 00-4 4v20m0 0a4 4 0 004 4h24a4 4 0 004-4V24m-4 0l-4 4m0 0l-4-4m4 4V8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="text-sm text-gray-600">
+              Pour analyser vos ventes, connectez votre compte eBay en un clic.
+            </p>
+            <a href="/api/ebay/auth"
+               class="inline-flex items-center px-6 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-md transition duration-200 transform hover:scale-[1.02]">
+              🔗 Connecter mon compte eBay
+            </a>
+            <p class="text-xs text-gray-500">
+              Vous serez redirigé vers eBay pour autorisation. Aucun mot de passe n'est stocké.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 2 : Formulaire + Options Payantes -->
+      <div id="stepReport" class="hidden">
+        <form id="reportForm">
+          <!-- Nom du store -->
+          <div class="mb-4">
+            <label for="storeName" class="block text-sm font-medium text-gray-700 mb-1">Nom de votre boutique eBay</label>
+            <input type="text" id="storeName" name="storeName" placeholder="Ex: TechStoreFrance"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+
+          <!-- Email -->
+          <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Votre email</label>
+            <input type="email" id="email" name="email" required placeholder="contact@votre-boutique.com"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+          </div>
+
+          <!-- Statut connexion eBay -->
+          <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="text-sm text-green-800 font-medium">Compte eBay connecté avec succès</span>
+          </div>
+
+          <!-- Bouton génération rapport gratuit -->
+          <button type="submit" id="submitBtn"
+                  class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition duration-200 transform hover:scale-[1.02] flex items-center justify-center">
+            <span id="btnText">🔍 Analyser mes frais (gratuit)</span>
+            <span id="btnSpinner" class="hidden ml-2 inline-block h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          </button>
+        </form>
+
+        <!-- Zone de résultat du rapport gratuit -->
+        <div id="resultArea" class="mt-8 hidden"></div>
+
+        <!-- ==================== OPTIONS PAYANTES ==================== -->
+        <div class="mt-10 border-t pt-8">
+          <h3 class="text-xl font-bold text-gray-800 mb-6 text-center">🔓 Aller plus loin</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Carte Rapport Détaillé -->
+            <div class="card-premium bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative">
+              <div class="absolute -top-3 right-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">POPULAIRE</div>
+              <div class="text-3xl mb-3">📈</div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">Rapport Détaillé</h4>
+              <p class="text-sm text-gray-600 mb-4">
+                Analyse complète de vos frais eBay avec des insights actionnables.
+              </p>
+              <ul class="space-y-2 text-sm text-gray-600 mb-4"> 
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Analyse par catégorie de produits
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Évolution mensuelle des commissions
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Conseils personnalisés pour réduire vos frais
+                </li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-4">5 €</div>
+              <a href="/api/checkout?plan=report" target="_blank"
+                 class="block w-full text-center bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2.5 px-4 rounded-lg transition">
+                🛒 Acheter le rapport
+              </a>
+            </div>
+
+            <!-- Carte Abonnement Pro -->
+            <div class="card-premium bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div class="text-3xl mb-3">🔄</div>
+              <h4 class="font-bold text-lg text-gray-800 mb-2">Abonnement Pro</h4>
+              <p class="text-sm text-gray-600 mb-4">
+                Restez informé en continu et ne ratez aucune opportunité d'économiser.
+              </p>
+              <ul class="space-y-2 text-sm text-gray-600 mb-4">
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Rapport détaillé envoyé chaque mois
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Alerte concurrentielle (baisse de prix)
+                </li>
+                <li class="flex items-start gap-2">
+                  <span class="text-green-500 mt-0.5">✔</span>
+                  Suivi en temps réel de vos frais eBay
+                </li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-4">19 €<span class="text-sm font-normal text-gray-500"> /mois</span></div>
+              <a href="/api/checkout?plan=pro" target="_blank"
+                 class="block w-full text-center bg-violet-600 hover:bg-violet-700 text-white font-semibold py-2.5 px-4 rounded-lg transition">
+                🚀 S'abonner
+              </a>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 text-center mt-4">Paiement sécurisé via Stripe. Annulation à tout moment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION : COMMENT ÇA MARCHE ==================== -->
+    <div class="mt-16">
+      <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">⚙️ Comment ça marche ?</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center">
+          <div class="w-12 h-12 mx-auto bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl font-bold mb-3">1</div>
+          <h4 class="font-semibold text-gray-800 mb-1">Connexion sécurisée</h4>
+          <p class="text-sm text-gray-600">Connectez votre compte eBay en un clic. Nous n'avons jamais accès à votre mot de passe.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 mx-auto bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl font-bold mb-3">2</div>
+          <h4 class="font-semibold text-gray-800 mb-1">Analyse automatique</h4>
+          <p class="text-sm text-gray-600">Notre algorithme récupère vos ventes et calcule exactement ce qu'eBay vous a prélevé.</p>
+        </div>
+        <div class="text-center">
+          <div class="w-12 h-12 mx-auto bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-2xl font-bold mb-3">3</div>
+          <h4 class="font-semibold text-gray-800 mb-1">Rapport détaillé</h4>
+          <p class="text-sm text-gray-600">Recevez un PDF complet avec vos économies potentielles et des conseils pour créer votre propre site.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION : EXEMPLE DE RAPPORT ==================== -->
+    <div class="mt-16 bg-white shadow rounded-2xl p-8 border border-gray-100">
+      <h3 class="text-xl font-bold text-gray-800 mb-2">📈 Exemple de rapport</h3>
+      <p class="text-gray-500 text-sm mb-6">Voici ce que verra un vendeur après analyse de ses 3 derniers mois :</p>
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div class="bg-gray-50 p-4 rounded-xl">
+          <p class="text-xs text-gray-500">CA total (3 mois)</p>
+          <p class="text-2xl font-bold text-gray-800">8 450 €</p>
+        </div>
+        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+          <p class="text-xs text-red-500">Commissions eBay</p>
+          <p class="text-2xl font-bold text-red-600">1 014 €</p>
+        </div>
+        <div class="bg-green-50 p-4 rounded-xl border border-green-200">
+          <p class="text-xs text-green-500">Économie / an</p>
+          <p class="text-2xl font-bold text-green-700">4 056 €</p>
+        </div>
+      </div>
+      <p class="text-center text-gray-400 text-xs mt-4">* Chiffres basés sur un taux de commission moyen de 12%.</p>
+    </div>
+
+    <!-- ==================== SECTION : LA SOLUTION BEASSIST AGENCY ==================== -->
+    <div class="mt-16 bg-gradient-to-r from-violet-500 to-blue-600 text-white rounded-2xl p-8 shadow-xl">
+      <div class="flex flex-col md:flex-row items-start gap-6">
+        <div class="flex-1">
+          <h3 class="text-2xl font-bold mb-3">🏪 Votre propre site e-commerce, sans les commissions eBay</h3>
+          <p class="text-lg opacity-90 mb-4">
+            Nous importons votre catalogue eBay dans une boutique indépendante. 
+            <strong>Vous gardez vos ventes</strong>, sans payer les frais récurrents de la marketplace.
+          </p>
+          <p class="text-sm opacity-80 mb-4">
+            🌐 Votre site sera conçu pour être bien référencé sur Google : nous optimisons chaque page pour le SEO.
+            Vous gagnez en visibilité à long terme et ne dépendez plus du trafic eBay pour vendre.
+          </p>
+          <div class="space-y-3">
+            <p class="font-semibold text-white/90">Confiez-nous la création de votre boutique en ligne  :</p>
+            <div class="bg-white/10 rounded-lg p-4">
+              <h4 class="font-bold text-lg mb-1">🤝 Être accompagné par notre agence</h4>
+              <p class="text-sm opacity-90">
+                Notre équipe s'occupe de tout : import de votre catalogue, design, synchronisation des stocks. 
+                Vous bénéficiez d'un site clé-en-main adapté à votre activité.
+              </p>
+              <a href="https://beassistnow.com/contact" target="_blank"
+                 class="inline-block mt-3 bg-white text-violet-700 font-semibold px-5 py-2 rounded-lg shadow hover:bg-gray-100 transition">
+                👉 Demander un devis gratuit
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="hidden md:flex items-center justify-center">
+          <span class="text-8xl opacity-80">🏗️</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SECTION : POURQUOI NOUS FAIRE CONFIANCE ==================== -->
+    <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="flex gap-3">
+        <span class="text-2xl">🔒</span>
+        <div>
+          <h4 class="font-semibold text-gray-800">100% sécurisé</h4>
+          <p class="text-sm text-gray-600">Nous utilisons la connexion officielle eBay. Aucune donnée bancaire ou mot de passe n’est collecté.</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <span class="text-2xl">💸</span>
+        <div>
+          <h4 class="font-semibold text-gray-800">Gratuit et sans engagement</h4>
+          <p class="text-sm text-gray-600">Le rapport de base est offert. Vous ne payez que si vous souhaitez l'analyse détaillée.</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <span class="text-2xl">⚡</span>
+        <div>
+          <h4 class="font-semibold text-gray-800">Résultats instantanés</h4>
+          <p class="text-sm text-gray-600">Moins de 2 minutes pour obtenir votre diagnostic complet.</p>
+        </div>
+      </div>
+      <div class="flex gap-3">
+        <span class="text-2xl">📤</span>
+        <div>
+          <h4 class="font-semibold text-gray-800">PDF envoyé par email</h4>
+          <p class="text-sm text-gray-600">Conservez votre rapport et partagez-le facilement.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== APPEL À L'ACTION FINAL ==================== -->
+    <div class="text-center mt-16 mb-10">
+      <p class="text-gray-600 text-sm mb-4">Prêt à découvrir combien vous pourriez économiser ?</p>
+      <a href="#stepConnect" class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition duration-200 transform hover:scale-[1.02]">
+        🔗 Connecter mon compte eBay
+      </a>
+    </div>
+
+   <!-- ==================== FOOTER ==================== -->
+<footer class="mt-16 border-t border-gray-200 pt-8 pb-8">
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <p class="text-gray-400 text-xs">© 2025 Beassist Agency - Votre partenaire e-commerce</p>
+    <div class="mt-3 flex justify-center space-x-4 text-xs text-gray-500">
+      <a href="/mentions-legales.html" class="hover:text-violet-600 transition">Mentions légales</a>
+      <a href="/politique-confidentialite.html" class="hover:text-violet-600 transition">Politique de confidentialité</a>
+      <a href="/cgv.html" class="hover:text-violet-600 transition">CGV</a>
+    </div>
+  </div>
+</footer>
+
+  <!-- ==================== SCRIPT JAVASCRIPT INTÉGRÉ ==================== -->
+  <script>
+    (function() {
+      // ---------- Détection de la connexion eBay ----------
+      const urlParams = new URLSearchParams(window.location.search);
+      const isConnected = urlParams.get('connected') === 'true';
+      const isError = urlParams.get('connected') === 'false';
+      const errorReason = urlParams.get('reason');
+      const errorDetail = urlParams.get('detail');
+
+      const stepConnect = document.getElementById('stepConnect');
+      const stepReport = document.getElementById('stepReport');
+      const stepDescription = document.getElementById('stepDescription');
+
+      // Si l'utilisateur vient de se connecter, on bascule vers l'étape 2
+      if (isConnected) {
+        if (stepConnect) stepConnect.classList.add('hidden');
+        if (stepReport) stepReport.classList.remove('hidden');
+        if (stepDescription) {
+          stepDescription.textContent = 'Remplissez vos informations pour générer votre rapport gratuit.';
+        }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Affichage d'une erreur si la connexion a échoué
+      if (isError && stepConnect) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700';
+        let msg = '❌ La connexion eBay a échoué.';
+        if (errorReason === 'token_error') msg += ' Erreur lors de l\'échange du token.';
+        if (errorReason === 'csrf') msg += ' Erreur de sécurité (CSRF).';
+        if (errorReason === 'no_code') msg += ' Aucun code reçu d\'eBay.';
+        if (errorDetail) {
+          try { msg += ' Détail : ' + JSON.parse(decodeURIComponent(errorDetail))?.error_description; } catch(e) {}
+        }
+        errorMsg.textContent = msg;
+        stepConnect.appendChild(errorMsg);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // ---------- Gestion du formulaire de rapport gratuit ----------
+      const reportForm = document.getElementById('reportForm');
+      if (reportForm) {
+        reportForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          const btn = document.getElementById('submitBtn');
+          const btnText = document.getElementById('btnText');
+          const spinner = document.getElementById('btnSpinner');
+          const resultArea = document.getElementById('resultArea');
+
+          // Désactiver le bouton et afficher le spinner
+          btn.disabled = true;
+          btnText.textContent = 'Analyse en cours...';
+          spinner.classList.remove('hidden');
+          resultArea.classList.add('hidden');
+
+          const storeName = document.getElementById('storeName').value.trim();
+          const email = document.getElementById('email').value.trim();
+
+          try {
+            const response = await fetch('/api/ebay/generate-report-ebay', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, storeName }),
+            });
+
+            const data = await response.json();
+
+            // Réactiver le bouton
+            btn.disabled = false;
+            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
+            spinner.classList.add('hidden');
+
+            if (response.ok && data.success) {
+              // Affichage du résultat
+              resultArea.classList.remove('hidden');
+              resultArea.innerHTML = `
+                <div class="bg-white border border-green-200 rounded-xl p-6 shadow-sm">
+                  <div class="flex items-center text-green-700 font-bold text-lg mb-2">
+                    <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Rapport gratuit envoyé !
+                  </div>
+                  <div class="grid grid-cols-3 gap-4 mt-4">
+                    <div class="bg-gray-50 p-3 rounded text-center">
+                      <p class="text-xs text-gray-500">CA total</p>
+                      <p class="text-lg font-bold text-gray-800">${data.preview.totalSales.toFixed(2)} €</p>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded text-center border border-red-200">
+                      <p class="text-xs text-red-500">Commissions versées</p>
+                      <p class="text-lg font-bold text-red-600">${data.preview.totalFees.toFixed(2)} €</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded text-center border border-green-200">
+                      <p class="text-xs text-green-500">Économie / an</p>
+                      <p class="text-lg font-bold text-green-700">${data.preview.annualSaving.toFixed(2)} €</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-600 mt-4 text-center">📧 Le rapport PDF de base vient de vous être envoyé par email.</p>
+                  <p class="text-sm text-gray-500 text-center mt-2">Passez à la version Premium pour une analyse détaillée.</p>
+                </div>
+              `;
+            } else {
+              throw new Error(data.error || 'Une erreur est survenue lors de la génération du rapport.');
+            }
+          } catch (error) {
+            // Réactiver le bouton et afficher l'erreur
+            btn.disabled = false;
+            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
+            spinner.classList.add('hidden');
+
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `
+              <div class="bg-red-50 border border-red-300 rounded-lg p-4 text-red-800">
+                <p class="font-bold">⚠️ Erreur</p>
+                <p>${error.message || 'Impossible de traiter votre demande. Veuillez réessayer.'}</p>
+              </div>
+            `;
+          }
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>
