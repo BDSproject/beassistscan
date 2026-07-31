@@ -4,17 +4,557 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeassistScan - Découvrez ce qu'eBay vous coûte vraiment</title>
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { transition: all 0.2s ease; }
-    .card-premium:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+    :root {
+      --violet-deep: #1e1b4b;
+      --violet-mid: #312e81;
+      --violet-light: #7c3aed;
+      --violet-glow: #a855f7;
+    }
+
+    body { background: #f5f3ff; }
+
+    /* Fond global avec motif subtil */
+    .bg-page {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f0fdf4 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
     .header-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); }
     .logo-dot { background: linear-gradient(135deg, #7c3aed, #a855f7); }
-    @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 40%, #6d28d9 70%, #7c3aed 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%);
+      top: -200px; right: -200px;
+      border-radius: 50%;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+      bottom: -150px; left: -100px;
+      border-radius: 50%;
+    }
+
+    /* Carte principale */
+    .card-main {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139,92,246,0.15);
+      box-shadow: 0 25px 50px -12px rgba(109,40,217,0.15), 0 0 0 1px rgba(139,92,246,0.05);
+    }
+
+    /* Bouton gradient violet */
+    .btn-violet {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-violet:hover {
+      background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Bouton eBay */
+    .btn-ebay {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      box-shadow: 0 4px 15px rgba(29,78,216,0.35);
+      transition: all 0.3s ease;
+    }
+    .btn-ebay:hover {
+      box-shadow: 0 6px 20px rgba(29,78,216,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Cards premium */
+    .card-premium {
+      border: 1px solid rgba(139,92,246,0.15);
+      transition: all 0.3s ease;
+    }
+    .card-premium:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(109,40,217,0.15);
+      border-color: rgba(139,92,246,0.3);
+    }
+
+    /* Steps */
+    .step-circle {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      box-shadow: 0 4px 12px rgba(124,58,237,0.35);
+    }
+
+    /* Inputs */
+    input:focus {
+      border-color: #7c3aed !important;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12) !important;
+      outline: none !important;
+    }
+
+    /* Animations */
+    @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes glow-pulse { 0%, 100% { box-shadow: 0 4px 15px rgba(124,58,237,0.4); } 50% { box-shadow: 0 4px 25px rgba(124,58,237,0.7); } }
+    @keyframes count-up { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
     .badge-live { animation: pulse-slow 2s infinite; }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+    .fade-in-up-delay-1 { animation: fadeInUp 0.6s ease 0.1s both; }
+    .fade-in-up-delay-2 { animation: fadeInUp 0.6s ease 0.2s both; }
+    .fade-in-up-delay-3 { animation: fadeInUp 0.6s ease 0.3s both; }
+    .glow-btn { animation: glow-pulse 2.5s ease-in-out infinite; }
+    .count-up { animation: count-up 0.5s ease forwards; }
+
+    .shimmer-text {
+      background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc, #a855f7, #7c3aed);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+
+    /* Stat card */
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(139,92,246,0.1);
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(109,40,217,0.1); }
+
+    /* Section gradient */
+    .section-violet {
+      background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 40%, #6d28d9 70%, #7c3aed 100%);
+    }
+
+    /* Trust icons */
+    .trust-icon {
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(168,85,247,0.1));
+      border: 1px solid rgba(139,92,246,0.2);
+    }
+
+    /* Footer */
+    .footer-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    }
+
+    /* Divider */
+    .divider-violet {
+      background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+      height: 1px;
+    }
   </style>
 </head>
+<body class="bg-page font-sans antialiased">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header-gradient shadow-xl sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="logo-dot w-8 h-8 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <span class="text-white font-bold text-lg tracking-tight">Beassist<span class="text-purple-300">Scan</span></span>
+        </a>
+        <div class="hidden sm:flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1">
+          <span class="badge-live w-2 h-2 rounded-full bg-green-400"></span>
+          <span class="text-white/80 text-xs font-medium">Analyse eBay en temps réel</span>
+        </div>
+        <nav class="flex items-center gap-2">
+          <a href="/dashboard.html" id="dashboardLink" class="hidden items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Dashboard
+          </a>
+          <a href="/login.html" id="loginLink" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Connexion
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== BANNIÈRE COOKIES ==================== -->
+  <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-violet-200 shadow-2xl p-4 hidden">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-700 leading-relaxed max-w-2xl">
+        Nous utilisons des cookies strictement nécessaires à l'authentification eBay et pour mesurer l'audience anonymement.
+        <a href="/politique-confidentialite.html" class="underline text-violet-600 hover:text-violet-800 font-medium">En savoir plus</a>
+      </p>
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <button id="cookie-refuse" class="px-5 py-2.5 border border-violet-300 text-violet-700 rounded-lg text-sm font-semibold hover:bg-violet-50 transition">Refuser</button>
+        <button id="cookie-accept" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-semibold shadow-md transition">Accepter</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      const banner = document.getElementById('cookie-banner');
+      if (!localStorage.getItem('cookieConsent')) banner.classList.remove('hidden');
+      document.getElementById('cookie-accept').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'accepted'); banner.classList.add('hidden'); });
+      document.getElementById('cookie-refuse').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'refused'); banner.classList.add('hidden'); });
+    })();
+  </script>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero-bg py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-6 fade-in-up">
+        <span class="badge-live w-2 h-2 rounded-full bg-green-400"></span>
+        <span class="text-white/80 text-xs font-medium">+240 vendeurs eBay ont déjà analysé leurs frais</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6 fade-in-up-delay-1">
+        Découvrez ce qu'eBay<br>
+        <span class="shimmer-text">vous coûte vraiment</span>
+      </h1>
+      <p class="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 fade-in-up-delay-2">
+        Connectez votre boutique en 1 clic et recevez votre rapport de rentabilité gratuit en moins de 2 minutes.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up-delay-3">
+        <a href="#stepConnect" class="btn-ebay glow-btn text-white font-bold py-4 px-8 rounded-xl text-base flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Analyser mes frais gratuitement
+        </a>
+        <div class="text-white/50 text-sm">✦ Sans CB · Résultat immédiat</div>
+      </div>
+      <!-- Stats hero -->
+      <div class="grid grid-cols-3 gap-4 mt-14 max-w-lg mx-auto fade-in-up-delay-3">
+        <div class="text-center">
+          <div class="text-3xl font-extrabold text-white">12%</div>
+          <div class="text-white/50 text-xs mt-1">Commission eBay moy.</div>
+        </div>
+        <div class="text-center border-x border-white/10">
+          <div class="text-3xl font-extrabold text-white">4 056€</div>
+          <div class="text-white/50 text-xs mt-1">Économie annuelle moy.</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-extrabold text-white">2 min</div>
+          <div class="text-white/50 text-xs mt-1">Pour votre rapport</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CARTE PRINCIPALE ==================== -->
+  <div class="max-w-2xl mx-auto px-4 -mt-8 relative z-20 pb-16">
+    <div class="card-main rounded-2xl p-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl step-circle flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div>
+          <h2 class="text-xl font-bold text-gray-800">Rapport de Rentabilité</h2>
+          <p id="stepDescription" class="text-gray-500 text-sm">Connectez votre eBay pour recevoir votre analyse par email.</p>
+        </div>
+      </div>
+
+      <div class="divider-violet my-6"></div>
+
+      <!-- Étape 1 : Connexion eBay -->
+      <div id="stepConnect" class="space-y-5">
+        <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-6 text-center">
+          <div class="float-anim inline-block mb-4">
+            <div class="w-16 h-16 mx-auto rounded-2xl step-circle flex items-center justify-center">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            </div>
+          </div>
+          <h3 class="font-bold text-gray-800 mb-1">Connexion sécurisée eBay</h3>
+          <p class="text-sm text-gray-500 mb-5">Vous serez redirigé vers eBay. Aucun mot de passe n'est stocké.</p>
+          <a href="/api/ebay/auth" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3 px-7 rounded-xl">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            Connecter mon compte eBay
+          </a>
+          <div class="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
+            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>100% sécurisé</span>
+            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Gratuit</span>
+            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Révocable à tout moment</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Étape 2 : Formulaire -->
+      <div id="stepReport" class="hidden">
+        <form id="reportForm" class="space-y-4">
+          <div>
+            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique eBay</label>
+            <input type="text" id="storeName" name="storeName" placeholder="Ex: TechStoreFrance"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Votre email</label>
+            <input type="email" id="email" name="email" required placeholder="contact@votre-boutique.com"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div class="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
+            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <span class="text-sm text-green-800 font-semibold">Compte eBay connecté avec succès ✓</span>
+          </div>
+          <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2">
+            <span id="btnText">🔍 Analyser mes frais (gratuit)</span>
+            <span id="btnSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          </button>
+        </form>
+        <div id="resultArea" class="mt-6 hidden"></div>
+
+        <!-- Options payantes -->
+        <div class="mt-8">
+          <div class="divider-violet mb-6"></div>
+          <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">🔓 Aller plus loin</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="card-premium bg-white rounded-2xl p-5 relative">
+              <div class="absolute -top-2.5 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">POPULAIRE</div>
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">📈</div>
+              <h4 class="font-bold text-gray-800 mb-1">Rapport Détaillé</h4>
+              <p class="text-xs text-gray-500 mb-3">Analyse complète avec insights actionnables.</p>
+              <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Analyse par catégorie</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Évolution mensuelle</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Conseils personnalisés</li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3">5 €</div>
+              <a href="/api/checkout?plan=report" target="_blank" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm">🛒 Acheter</a>
+            </div>
+            <div class="card-premium bg-white rounded-2xl p-5">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">🔄</div>
+              <h4 class="font-bold text-gray-800 mb-1">Abonnement Pro</h4>
+              <p class="text-xs text-gray-500 mb-3">Suivi mensuel automatique de vos frais.</p>
+              <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Rapport mensuel auto</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Alertes concurrentielles</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Suivi en temps réel</li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3">19 €<span class="text-xs font-normal text-gray-400">/mois</span></div>
+              <a href="/api/checkout?plan=pro" target="_blank" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm">🚀 S'abonner</a>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400 text-center mt-3">Paiement sécurisé via Stripe · Annulation à tout moment</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== COMMENT ÇA MARCHE ==================== -->
+    <div class="mt-16">
+      <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">⚙️ Comment ça marche ?</h3>
+      <p class="text-center text-gray-500 text-sm mb-10">Simple, rapide, sans engagement</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="text-center fade-in-up">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">1</div>
+          <h4 class="font-bold text-gray-800 mb-1">Connexion sécurisée</h4>
+          <p class="text-sm text-gray-500">Connectez votre eBay en un clic. Aucun mot de passe stocké.</p>
+        </div>
+        <div class="text-center fade-in-up-delay-1">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">2</div>
+          <h4 class="font-bold text-gray-800 mb-1">Analyse automatique</h4>
+          <p class="text-sm text-gray-500">Notre algorithme calcule exactement ce qu'eBay vous a prélevé.</p>
+        </div>
+        <div class="text-center fade-in-up-delay-2">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">3</div>
+          <h4 class="font-bold text-gray-800 mb-1">Rapport PDF</h4>
+          <p class="text-sm text-gray-500">Recevez un PDF avec vos économies potentielles par email.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EXEMPLE DE RAPPORT ==================== -->
+    <div class="mt-16 card-main rounded-2xl p-8">
+      <h3 class="text-xl font-bold text-gray-800 mb-1">📈 Exemple de rapport</h3>
+      <p class="text-gray-400 text-sm mb-6">Résultats réels d'un vendeur sur 3 mois :</p>
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="stat-card p-4 rounded-xl">
+          <p class="text-xs text-gray-400 mb-1">CA total</p>
+          <p class="text-2xl font-extrabold text-gray-800">8 450 €</p>
+        </div>
+        <div class="stat-card p-4 rounded-xl border-red-100">
+          <p class="text-xs text-red-400 mb-1">Commissions eBay</p>
+          <p class="text-2xl font-extrabold text-red-600">1 014 €</p>
+        </div>
+        <div class="stat-card p-4 rounded-xl" style="border-color:rgba(16,185,129,0.2)">
+          <p class="text-xs text-green-500 mb-1">Économie / an</p>
+          <p class="text-2xl font-extrabold text-green-600">4 056 €</p>
+        </div>
+      </div>
+      <p class="text-center text-gray-300 text-xs mt-4">* Taux de commission moyen de 12%</p>
+    </div>
+
+    <!-- ==================== SECTION AGENCE ==================== -->
+    <div class="mt-16 section-violet text-white rounded-2xl p-8 shadow-2xl overflow-hidden relative">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+      <div class="relative z-10">
+        <div class="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-3 py-1 text-xs font-medium mb-4">🏪 Notre agence</div>
+        <h3 class="text-2xl font-bold mb-3">Votre propre site e-commerce,<br>sans les commissions eBay</h3>
+        <p class="text-white/75 text-sm mb-6 max-w-xl">Nous importons votre catalogue eBay dans une boutique indépendante. Gardez 100% de vos ventes, optimisez votre SEO Google et devenez indépendant des marketplaces.</p>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-5 mb-5 border border-white/10">
+          <h4 class="font-bold mb-1">🤝 Accompagnement complet par notre agence</h4>
+          <p class="text-white/70 text-sm">Import catalogue · Design · Synchronisation stocks · SEO · Suivi</p>
+        </div>
+        <a href="https://beassistnow.com/contact" target="_blank" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">
+          👉 Demander un devis gratuit
+        </a>
+      </div>
+    </div>
+
+    <!-- ==================== CONFIANCE ==================== -->
+    <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">🔒</div>
+        <div><h4 class="font-bold text-gray-800 text-sm">100% sécurisé</h4><p class="text-xs text-gray-500 mt-0.5">Connexion officielle eBay. Aucun mot de passe collecté.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">💸</div>
+        <div><h4 class="font-bold text-gray-800 text-sm">Gratuit et sans engagement</h4><p class="text-xs text-gray-500 mt-0.5">Le rapport de base est offert. Payez uniquement pour le détail.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">⚡</div>
+        <div><h4 class="font-bold text-gray-800 text-sm">Résultats instantanés</h4><p class="text-xs text-gray-500 mt-0.5">Moins de 2 minutes pour votre diagnostic complet.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">📤</div>
+        <div><h4 class="font-bold text-gray-800 text-sm">PDF par email</h4><p class="text-xs text-gray-500 mt-0.5">Conservez et partagez votre rapport facilement.</p></div>
+      </div>
+    </div>
+
+    <!-- ==================== CTA FINAL ==================== -->
+    <div class="text-center mt-16 mb-10">
+      <p class="text-gray-500 text-sm mb-4">Prêt à découvrir combien vous pourriez économiser ?</p>
+      <a href="#stepConnect" class="btn-violet inline-flex items-center gap-2 text-white font-bold py-4 px-8 rounded-xl">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Connecter mon compte eBay
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer-gradient pt-10 pb-8 mt-8">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <div class="logo-dot w-7 h-7 rounded-lg flex items-center justify-center">
+          <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <span class="text-white font-bold text-sm">Beassist<span class="text-purple-300">Scan</span></span>
+      </div>
+      <p class="text-white/30 text-xs mb-4">© 2026 Beassist Agency · Votre partenaire e-commerce</p>
+      <div class="flex justify-center gap-6 text-xs text-white/40">
+        <a href="/mentions-legales.html" class="hover:text-white/70 transition">Mentions légales</a>
+        <a href="/politique-confidentialite.html" class="hover:text-white/70 transition">Confidentialité</a>
+        <a href="/cgv.html" class="hover:text-white/70 transition">CGV</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script>
+    fetch('/auth/me').then(r => r.json()).then(data => {
+      if (data.user) {
+        document.getElementById('loginLink').classList.add('hidden');
+        document.getElementById('dashboardLink').classList.remove('hidden');
+      }
+    }).catch(() => {});
+
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isConnected = urlParams.get('connected') === 'true';
+      const isError = urlParams.get('connected') === 'false';
+      const errorReason = urlParams.get('reason');
+      const errorDetail = urlParams.get('detail');
+      const stepConnect = document.getElementById('stepConnect');
+      const stepReport = document.getElementById('stepReport');
+      const stepDescription = document.getElementById('stepDescription');
+
+      if (isConnected) {
+        if (stepConnect) stepConnect.classList.add('hidden');
+        if (stepReport) stepReport.classList.remove('hidden');
+        if (stepDescription) stepDescription.textContent = 'Remplissez vos informations pour générer votre rapport gratuit.';
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      if (isError && stepConnect) {
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
+        let msg = '❌ La connexion eBay a échoué.';
+        if (errorReason === 'token_error') msg += ' Erreur lors de l\'échange du token.';
+        if (errorReason === 'csrf') msg += ' Erreur de sécurité (CSRF).';
+        if (errorReason === 'no_code') msg += ' Aucun code reçu d\'eBay.';
+        if (errorDetail) { try { msg += ' Détail : ' + JSON.parse(decodeURIComponent(errorDetail))?.error_description; } catch(e) {} }
+        errorMsg.textContent = msg;
+        stepConnect.appendChild(errorMsg);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      const reportForm = document.getElementById('reportForm');
+      if (reportForm) {
+        reportForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('submitBtn');
+          const btnText = document.getElementById('btnText');
+          const spinner = document.getElementById('btnSpinner');
+          const resultArea = document.getElementById('resultArea');
+          btn.disabled = true;
+          btnText.textContent = 'Analyse en cours...';
+          spinner.classList.remove('hidden');
+          resultArea.classList.add('hidden');
+          const storeName = document.getElementById('storeName').value.trim();
+          const email = document.getElementById('email').value.trim();
+          try {
+            const response = await fetch('/api/ebay/generate-report-ebay', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, storeName }),
+            });
+            const data = await response.json();
+            btn.disabled = false;
+            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
+            spinner.classList.add('hidden');
+            if (response.ok && data.success) {
+              resultArea.classList.remove('hidden');
+              resultArea.innerHTML = `
+                <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-6">
+                  <div class="flex items-center gap-2 text-violet-700 font-bold text-base mb-4">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    Rapport envoyé avec succès !
+                  </div>
+                  <div class="grid grid-cols-3 gap-3 text-center">
+                    <div class="bg-white p-3 rounded-xl shadow-sm"><p class="text-xs text-gray-400">CA total</p><p class="text-lg font-extrabold text-gray-800">${data.preview.totalSales.toFixed(2)} €</p></div>
+                    <div class="bg-red-50 p-3 rounded-xl border border-red-100"><p class="text-xs text-red-400">Commissions</p><p class="text-lg font-extrabold text-red-600">${data.preview.totalFees.toFixed(2)} €</p></div>
+                    <div class="bg-green-50 p-3 rounded-xl border border-green-100"><p class="text-xs text-green-500">Économie/an</p><p class="text-lg font-extrabold text-green-600">${data.preview.annualSaving.toFixed(2)} €</p></div>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-4 text-center">📧 Rapport PDF envoyé à ${email}</p>
+                </div>`;
+            } else {
+              throw new Error(data.error || 'Une erreur est survenue.');
+            }
+          } catch (error) {
+            btn.disabled = false;
+            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
+            spinner.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm"><p class="font-bold mb-1">⚠️ Erreur</p><p>${error.message}</p></div>`;
+          }
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
 <body class="bg-gray-50 font-sans antialiased">
 
   <!-- ==================== HEADER ==================== -->
