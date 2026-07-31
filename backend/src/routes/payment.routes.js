@@ -11,9 +11,8 @@ const DOMAIN = process.env.DOMAIN || 'http://localhost:3000';
 // Route pour créer une session de paiement
 router.post('/create-checkout-session', async (req, res) => {
   try {
-    const { plan } = req.body; // "report" ou "pro"
+    const { plan, email, storeName } = req.body;
 
-    // Sélection du prix en fonction du plan
     let priceId;
     let mode;
     if (plan === 'pro') {
@@ -28,22 +27,19 @@ router.post('/create-checkout-session', async (req, res) => {
       return res.status(400).json({ error: 'Plan invalide ou prix non configuré.' });
     }
 
-    // Création de la session Stripe Checkout
     const session = await stripe.checkout.sessions.create({
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: mode,
-      success_url: `${DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${DOMAIN}/cancel`,
-      // On peut passer des métadonnées pour lier l'email après paiement
-      // metadata: { email: req.body.email, storeName: req.body.storeName },
+      customer_email: email || undefined,
+      metadata: {
+        email: email || '',
+        storeName: storeName || '',
+        plan: plan || 'report',
+      },
+      success_url: `${DOMAIN}/api/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DOMAIN}/api/payment/cancel`,
     });
 
-    // Redirection vers l'URL de paiement Stripe
     res.json({ url: session.url });
   } catch (error) {
     console.error('Erreur création session Stripe:', error);
@@ -88,6 +84,90 @@ router.get('/success', async (req, res) => {
     console.error('Erreur succès:', error);
     res.status(500).send('Erreur lors de la vérification du paiement.');
   }
+});
+
+// ============================================================
+// Route Webhook Stripe (signature vérifiée, body RAW requis)
+// ============================================================
+router.post('/webhook', async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err) {
+    console.error('❌ Signature webhook Stripe invalide :', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  console.log('✅ Webhook Stripe reçu :', event.type);
+
+  try {
+    switch (event.type) {
+
+      // Paiement unique (Rapport Détaillé 5€) réussi
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const email = session.customer_details?.email || session.metadata?.email;
+        const storeName = session.metadata?.storeName || 'Non renseigné';
+        const plan = session.metadata?.plan || 'report';
+
+        console.log(`💳 Paiement complété – email: ${email}, plan: ${plan}`);
+
+        if (session.payment_status === 'paid') {
+          // Sauvegarde en base
+          await prisma.lead.upsert({
+            where: { email: email || 'unknown' },
+            update: { storeName, paidReport: plan === 'report', proSubscription: plan === 'pro' },
+            create: { email: email || 'unknown', storeName, paidReport: plan === 'report', proSubscription: plan === 'pro', totalSales: 0, totalFees: 0, annualSaving: 0 },
+          }).catch(e => console.error('Erreur DB webhook:', e.message));
+
+          // TODO : Générer et envoyer le rapport premium par email
+          // const pdfPath = await generateReport(reportData, email, storeName);
+          // await sendReport(email, pdfPath);
+        }
+        break;
+      }
+
+      // Abonnement Pro activé
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object;
+        console.log(`🔄 Abonnement ${event.type} – status: ${subscription.status}`);
+        break;
+      }
+
+      // Abonnement Pro annulé
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object;
+        console.log(`❌ Abonnement annulé – customer: ${subscription.customer}`);
+        break;
+      }
+
+      // Paiement mensuel abonnement réussi
+      case 'invoice.paid': {
+        const invoice = event.data.object;
+        console.log(`💰 Facture payée – customer: ${invoice.customer}`);
+        break;
+      }
+
+      // Paiement mensuel échoué
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object;
+        console.log(`⚠️ Paiement échoué – customer: ${invoice.customer}`);
+        break;
+      }
+
+      default:
+        console.log(`ℹ️ Événement non géré : ${event.type}`);
+    }
+  } catch (err) {
+    console.error('❌ Erreur traitement webhook :', err);
+    return res.status(500).send('Erreur interne');
+  }
+
+  res.json({ received: true });
 });
 
 // Route d'annulation

@@ -17,6 +17,11 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
+
+// ⚠️ IMPORTANT : Le webhook Stripe doit recevoir le body RAW (avant express.json)
+// Cette route doit être déclarée AVANT app.use(express.json())
+app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // nécessaire pour lire les cookies
