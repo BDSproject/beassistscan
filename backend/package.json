@@ -5,6 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "npx prisma migrate deploy && node src/server.js",
+    "dev": "nodemon --ignore '.env' --ignore 'uploads/*' src/server.js",
     "build": "npx prisma generate"
   },
   "dependencies": {
