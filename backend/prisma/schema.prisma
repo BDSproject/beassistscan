@@ -7,14 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  storeName    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  leads        Lead[]
+  ebayTokens   EbayToken[]
+}
+
 model Lead {
-  id          String   @id @default(cuid())
-  email       String
-  storeName   String
-  totalSales  Float
-  totalFees   Float
+  id           String   @id @default(cuid())
+  email        String
+  storeName    String?
+  totalSales   Float
+  totalFees    Float
   annualSaving Float
-  createdAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
 }
 
 model EbayToken {
@@ -23,4 +38,6 @@ model EbayToken {
   refreshToken String
   expiresAt    DateTime
   createdAt    DateTime @default(now())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
 }

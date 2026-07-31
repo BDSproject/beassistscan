@@ -6,6 +6,7 @@ const { handleReportUpload } = require('../controllers/report.controller');
 const router = express.Router();
 
 // Configuration de Multer pour l'upload des CSV
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../../uploads'));
@@ -23,6 +24,17 @@ const upload = multer({
       cb(new Error('Seuls les fichiers CSV sont acceptés.'), false);
     }
   },
+});
+
+// Route API pour récupérer les rapports de l’utilisateur
+
+router.get('/reports', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const leads = await prisma.lead.findMany({
+    where: { userId: req.session.userId },
+    orderBy: { createdAt: 'desc' },
+  });
+  res.json({ leads });
 });
 
 // Route POST pour uploader le CSV et générer le rapport

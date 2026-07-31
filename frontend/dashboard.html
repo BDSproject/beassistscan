@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BeassistScan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans antialiased p-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold">📊 Mon Dashboard</h1>
+      <button id="logoutBtn" class="text-red-600 hover:underline font-medium">Déconnexion</button>
+    </div>
+    <div id="userInfo" class="mb-6 p-4 bg-white rounded-lg shadow">Chargement...</div>
+    <div id="reportsList" class="space-y-4"></div>
+  </div>
+
+  <script>
+    async function fetchJSON(url) {
+      const res = await fetch(url);
+      if (res.status === 401) { window.location.href = '/login.html'; return null; }
+      return res.json();
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/auth/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    (async () => {
+      const me = await fetchJSON('/auth/me');
+      if (!me || !me.user) return;
+      document.getElementById('userInfo').innerHTML = `
+        <p class="text-lg font-semibold">Bienvenue, ${me.user.firstName || me.user.email}</p>
+        <p class="text-sm text-gray-500">${me.user.storeName || ''}</p>
+      `;
+
+      const reports = await fetchJSON('/api/reports');
+      if (!reports) return;
+      const container = document.getElementById('reportsList');
+      if (reports.leads.length === 0) {
+        container.innerHTML = '<p class="text-gray-500">Aucun rapport pour le moment.</p>';
+        return;
+      }
+      container.innerHTML = reports.leads.map(lead => `
+        <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
+          <div>
+            <p class="font-medium">${new Date(lead.createdAt).toLocaleDateString('fr-FR')} – ${lead.storeName || 'Sans boutique'}</p>
+            <p class="text-sm text-gray-500">CA: ${lead.totalSales.toFixed(2)}€ / Frais: ${lead.totalFees.toFixed(2)}€</p>
+          </div>
+          <div class="text-right">
+            <p class="text-green-600 font-bold">Économie/an: ${lead.annualSaving.toFixed(2)}€</p>
+          </div>
+        </div>
+      `).join('');
+    })();
+  </script>
+</body>
+</html>

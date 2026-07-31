@@ -54,11 +54,6 @@ npx pm2 logs beassistscan --lines 20
 
 ## 🚂 Railway CLI — Commandes essentielles
 
-### Installation
-```bash
-sudo npm install -g @railway/cli
-```
-
 ### Authentification
 ```bash
 railway login          # Connexion via navigateur
@@ -100,6 +95,12 @@ railway status           # Statut du projet
 ### Base de données
 ```bash
 railway connect        # Se connecter à la base PostgreSQL (shell psql)
+
+# Lancer les migrations Prisma depuis votre machine (utilise le proxy public)
+DATABASE_URL="postgresql://postgres:aKebYmfgnnhPsiLcmvdHBvyKbKNtEudl@sakura.proxy.rlwy.net:19422/railway" npx prisma migrate deploy
+
+# Ouvrir Prisma Studio sur la base Railway
+DATABASE_URL="postgresql://postgres:aKebYmfgnnhPsiLcmvdHBvyKbKNtEudl@sakura.proxy.rlwy.net:19422/railway" npx prisma studio
 ```
 
 ### Lancer l'app localement avec les variables Railway
