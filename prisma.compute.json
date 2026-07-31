@@ -1,0 +1,14 @@
+{
+  "region": "eu-central-1",
+  "app": {
+    "name": "ebay-profit-report",
+    "root": "backend",
+    "framework": "bun",
+    "entry": "src/server.js",
+    "httpPort": 3000,
+    "build": {
+      "command": "npm run build",
+      "outputDirectory": "."
+    }
+  }
+}
