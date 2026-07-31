@@ -26,13 +26,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // nécessaire pour lire les cookies
 
-app.use(express.static(path.join(__dirname, '../../frontend')));
+// Sert le frontend (fonctionne en local et sur Railway)
+const frontendPath = path.join(__dirname, '../../frontend');
+app.use(express.static(frontendPath));
 
 // Routes
 app.use('/api', reportRoutes);
 app.use('/api/ebay', ebayRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/payment', paymentRoutes);
+
+// Toutes les routes non-API renvoient index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/index.html'));
 });
