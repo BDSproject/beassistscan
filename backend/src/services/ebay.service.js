@@ -13,17 +13,18 @@ class EbayService {
   }
 
   static async getAccessToken(code) {
-    const tokenBaseUrl = process.env.EBAY_ENV === 'sandbox'
-  ? 'https://api.sandbox.ebay.com'
-  : 'https://api.ebay.com';
-
-const url = `${tokenBaseUrl}/identity/v1/oauth2/token`;
-    const basicAuth = Buffer.from(`${process.env.EBAY_CLIENT_ID}:${process.env.EBAY_CLIENT_SECRET}`).toString('base64');
+    const isProd = process.env.EBAY_ENV === 'production';
+    const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
+    const clientSecret = isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET;
+    const redirectUri = isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI;
+    const tokenBaseUrl = isProd ? 'https://api.ebay.com' : 'https://api.sandbox.ebay.com';
+    const url = `${tokenBaseUrl}/identity/v1/oauth2/token`;
+    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const params = new URLSearchParams();
     params.append('grant_type', 'authorization_code');
     params.append('code', code);
-    params.append('redirect_uri', process.env.EBAY_REDIRECT_URI);
+    params.append('redirect_uri', redirectUri);
 
     try {
       const response = await axios.post(url, params, {

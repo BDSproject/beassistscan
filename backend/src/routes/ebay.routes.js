@@ -12,18 +12,18 @@ let currentToken = null; // { accessToken, refreshToken, expiresAt }
 
 // Route d'autorisation : redirige vers eBay
 router.get('/auth', (req, res) => {
-  const clientId = process.env.EBAY_CLIENT_ID;
-  const redirectUri = process.env.EBAY_REDIRECT_URI;
+  const isProd = process.env.EBAY_ENV === 'production';
+  const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
+  const redirectUri = isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI;
   const scopes = [
     'https://api.ebay.com/oauth/api_scope',
     'https://api.ebay.com/oauth/api_scope/sell.finances',
   ].join(' ');
   const state = Math.random().toString(36).substring(7);
-  // Stocke le state dans un cookie — fonctionne uniquement si /auth et /callback sont sur le même domaine
-  res.cookie('ebayState', state, { httpOnly: true, maxAge: 600000, sameSite: 'lax' }); // 10 min
-  const authBaseUrl = process.env.EBAY_ENV === 'sandbox'
-    ? 'https://auth.sandbox.ebay.com'
-    : 'https://auth.ebay.com';
+  res.cookie('ebayState', state, { httpOnly: true, maxAge: 600000, sameSite: 'lax' });
+  const authBaseUrl = isProd
+    ? 'https://auth.ebay.com'
+    : 'https://auth.sandbox.ebay.com';
 
   const url = `${authBaseUrl}/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${state}&prompt=login`;
   console.log('🔗 URL de redirection eBay :', url);
@@ -34,7 +34,8 @@ router.get('/auth', (req, res) => {
 router.get('/callback', async (req, res) => {
   const { code, state, success } = req.query;
   const savedState = req.cookies?.ebayState;
-  const domain = process.env.DOMAIN || 'http://localhost:3000';
+  const rawDomain = process.env.DOMAIN || 'localhost:3000';
+  const domain = rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`;
 
   console.log('🔔 Callback reçu – query :', req.query);
   console.log('🔔 Cookie ebayState :', savedState);
