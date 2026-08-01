@@ -327,7 +327,7 @@
                 <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Conseils personnalisés</li>
               </ul>
               <div class="text-2xl font-extrabold text-violet-700 mb-3">5 €</div>
-              <a href="/api/checkout?plan=report" target="_blank" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm">🛒 Acheter</a>
+              <a href="#" onclick="redirectToCheckout('report')" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🛒 Acheter</a>
             </div>
             <div class="card-premium bg-white rounded-2xl p-5">
               <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">🔄</div>
@@ -339,7 +339,7 @@
                 <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Suivi en temps réel</li>
               </ul>
               <div class="text-2xl font-extrabold text-violet-700 mb-3">19 €<span class="text-xs font-normal text-gray-400">/mois</span></div>
-              <a href="/api/checkout?plan=pro" target="_blank" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm">🚀 S'abonner</a>
+              <a href="#" onclick="redirectToCheckout('pro')" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🚀 S'abonner</a>
             </div>
           </div>
           <p class="text-xs text-gray-400 text-center mt-3">Paiement sécurisé via Stripe · Annulation à tout moment</p>
@@ -465,6 +465,15 @@
       }
     }).catch(() => {});
 
+    function redirectToCheckout(plan) {
+      const email = document.getElementById('email')?.value?.trim() || '';
+      const storeName = document.getElementById('storeName')?.value?.trim() || '';
+      const params = new URLSearchParams({ plan });
+      if (email) params.set('email', email);
+      if (storeName) params.set('storeName', storeName);
+      window.location.href = `/api/payment/checkout?${params.toString()}`;
+    }
+
     (function() {
       const urlParams = new URLSearchParams(window.location.search);
       const isConnected = urlParams.get('connected') === 'true';
@@ -474,6 +483,27 @@
       const stepConnect = document.getElementById('stepConnect');
       const stepReport = document.getElementById('stepReport');
       const stepDescription = document.getElementById('stepDescription');
+
+      const isPaid = urlParams.get('paid') === 'true';
+      const isCancelled = urlParams.get('cancelled') === 'true';
+
+      if (isPaid) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const banner = document.createElement('div');
+        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm flex items-center gap-2';
+        banner.innerHTML = '✅ Paiement réussi ! Votre rapport vous sera envoyé par email sous quelques minutes.';
+        document.body.appendChild(banner);
+        setTimeout(() => banner.remove(), 8000);
+      }
+
+      if (isCancelled) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const banner = document.createElement('div');
+        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm flex items-center gap-2';
+        banner.innerHTML = '⚠️ Paiement annulé. Vous pouvez réessayer quand vous le souhaitez.';
+        document.body.appendChild(banner);
+        setTimeout(() => banner.remove(), 6000);
+      }
 
       if (isConnected) {
         if (stepConnect) stepConnect.classList.add('hidden');

@@ -6,7 +6,48 @@ const { sendReport } = require('../services/email.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const DOMAIN = process.env.DOMAIN || 'http://localhost:3000';
+const rawDomain = process.env.DOMAIN || 'localhost:3000';
+const DOMAIN = rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`;
+
+// Route GET /api/checkout?plan=report|pro&email=...&storeName=...
+// Appelée depuis les boutons du frontend
+router.get('/checkout', async (req, res) => {
+  try {
+    const { plan, email, storeName } = req.query;
+
+    let priceId;
+    let mode;
+    if (plan === 'pro') {
+      priceId = process.env.STRIPE_PRICE_PRO;
+      mode = 'subscription';
+    } else {
+      priceId = process.env.STRIPE_PRICE_REPORT;
+      mode = 'payment';
+    }
+
+    if (!priceId) {
+      return res.status(400).send('Plan invalide ou prix non configuré.');
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: mode,
+      customer_email: email || undefined,
+      metadata: {
+        email: email || '',
+        storeName: storeName || '',
+        plan: plan || 'report',
+      },
+      success_url: `${DOMAIN}/?paid=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DOMAIN}/?cancelled=true`,
+    });
+
+    res.redirect(303, session.url);
+  } catch (error) {
+    console.error('Erreur création session Stripe (GET):', error);
+    res.redirect(`${DOMAIN}/?error=payment`);
+  }
+});
 
 // Route pour créer une session de paiement
 router.post('/create-checkout-session', async (req, res) => {
@@ -36,8 +77,8 @@ router.post('/create-checkout-session', async (req, res) => {
         storeName: storeName || '',
         plan: plan || 'report',
       },
-      success_url: `${DOMAIN}/api/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${DOMAIN}/api/payment/cancel`,
+      success_url: `${DOMAIN}/?paid=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${DOMAIN}/?cancelled=true`,
     });
 
     res.json({ url: session.url });
@@ -170,23 +211,9 @@ router.post('/webhook', async (req, res) => {
   res.json({ received: true });
 });
 
-// Route d'annulation
+// Route d'annulation legacy
 router.get('/cancel', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head><meta charset="UTF-8"><title>Paiement annulé</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet"></head>
-    <body class="bg-gray-50 flex items-center justify-center min-h-screen">
-      <div class="bg-white shadow-xl rounded-2xl p-8 text-center max-w-md">
-        <div class="text-4xl mb-4">❌</div>
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">Paiement annulé</h1>
-        <p class="text-gray-600 mb-4">Votre paiement n'a pas été finalisé. Vous pouvez réessayer quand vous le souhaitez.</p>
-        <a href="/" class="inline-block bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-800">Retour à l'accueil</a>
-      </div>
-    </body>
-    </html>
-  `);
+  res.redirect(`${DOMAIN}/?cancelled=true`);
 });
 
 module.exports = router;
