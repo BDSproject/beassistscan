@@ -263,30 +263,112 @@
 
       <div class="divider-violet my-6"></div>
 
-      <!-- Étape 1 : Connexion eBay -->
+      <!-- Étape 1 : Connexion / Inscription -->
       <div id="stepConnect" class="space-y-5">
+
+        <!-- Onglets -->
+        <div class="flex rounded-xl bg-gray-100 p-1 gap-1">
+          <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700">Se connecter</button>
+          <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700">Créer un compte</button>
+        </div>
+
+        <!-- Formulaire Connexion -->
+        <form id="formLogin" class="space-y-4">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+            <input type="email" id="loginEmail" required placeholder="votre@email.com"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
+            <input type="password" id="loginPassword" required placeholder="••••••••"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+          <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-xl text-sm">
+            Se connecter
+          </button>
+          <p class="text-center text-xs text-gray-400">Pas encore de compte ? <button type="button" onclick="switchTab('register')" class="text-violet-600 font-semibold hover:underline">Créer un compte</button></p>
+        </form>
+
+        <!-- Formulaire Inscription -->
+        <form id="formRegister" class="hidden space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Prénom</label>
+              <input type="text" id="regFirstName" placeholder="Jean"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nom</label>
+              <input type="text" id="regLastName" placeholder="Dupont"
+                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique eBay</label>
+            <input type="text" id="regStoreName" placeholder="Ex: TechStoreFrance"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+            <input type="email" id="regEmail" required placeholder="votre@email.com"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
+            <input type="password" id="regPassword" required placeholder="8 caractères minimum"
+              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+          <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-xl text-sm">
+            Créer mon compte
+          </button>
+          <p class="text-center text-xs text-gray-400">Déjà un compte ? <button type="button" onclick="switchTab('login')" class="text-violet-600 font-semibold hover:underline">Se connecter</button></p>
+        </form>
+
+        <!-- Séparateur eBay -->
+        <div class="flex items-center gap-3 mt-2">
+          <div class="flex-1 h-px bg-gray-200"></div>
+          <span class="text-xs text-gray-400">puis connectez eBay</span>
+          <div class="flex-1 h-px bg-gray-200"></div>
+        </div>
+        <p class="text-center text-xs text-gray-400">Après connexion, liez votre compte eBay pour générer votre rapport.</p>
+      </div>
+
+      <!-- Étape 1b : Connecter eBay (après login) -->
+      <div id="stepEbay" class="hidden space-y-5">
         <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-6 text-center">
           <div class="float-anim inline-block mb-4">
             <div class="w-16 h-16 mx-auto rounded-2xl step-circle flex items-center justify-center">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
             </div>
           </div>
-          <h3 class="font-bold text-gray-800 mb-1">Connexion sécurisée eBay</h3>
+          <h3 class="font-bold text-gray-800 mb-1">Connectez votre compte eBay</h3>
           <p class="text-sm text-gray-500 mb-5">Vous serez redirigé vers eBay. Aucun mot de passe n'est stocké.</p>
           <button onclick="window.location.href='/api/ebay/auth'" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3 px-7 rounded-xl cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
             Connecter mon compte eBay
           </button>
           <div class="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
-            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>100% sécurisé</span>
-            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Gratuit</span>
-            <span class="flex items-center gap-1"><svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>Révocable à tout moment</span>
+            <span>✓ 100% sécurisé</span>
+            <span>✓ Gratuit</span>
+            <span>✓ Révocable à tout moment</span>
           </div>
         </div>
       </div>
 
-      <!-- Étape 2 : Formulaire -->
+      <!-- Étape 2 : Formulaire rapport -->
       <div id="stepReport" class="hidden">
+        <!-- Infos utilisateur connecté -->
+        <div class="flex items-center justify-between mb-4 p-3 bg-violet-50 border border-violet-100 rounded-xl">
+          <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-full step-circle flex items-center justify-center text-white text-xs font-bold">✓</div>
+            <span id="userGreeting" class="text-sm font-semibold text-gray-700"></span>
+          </div>
+          <button onclick="logout()" class="text-xs text-gray-400 hover:text-red-500 transition">Déconnexion</button>
+        </div>
+
         <form id="reportForm" class="space-y-4">
           <div>
             <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique eBay</label>
@@ -304,6 +386,15 @@
             </div>
             <span class="text-sm text-green-800 font-semibold">Compte eBay connecté avec succès ✓</span>
           </div>
+
+          <!-- Filtre par mois -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Période analysée</label>
+            <select id="reportMonth" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+              <option value="">-- 90 derniers jours (par défaut) --</option>
+            </select>
+          </div>
+
           <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2">
             <span id="btnText">🔍 Analyser mes frais (gratuit)</span>
             <span id="btnSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -458,13 +549,26 @@
 
   <!-- ==================== SCRIPTS ==================== -->
   <script>
-    fetch('/auth/me').then(r => r.json()).then(data => {
-      if (data.user) {
-        document.getElementById('loginLink').classList.add('hidden');
-        document.getElementById('dashboardLink').classList.remove('hidden');
-      }
-    }).catch(() => {});
+    // ── Onglets login/register ──
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('formLogin').classList.toggle('hidden', !isLogin);
+      document.getElementById('formRegister').classList.toggle('hidden', isLogin);
+      document.getElementById('tabLogin').className = isLogin
+        ? 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700'
+        : 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700';
+      document.getElementById('tabRegister').className = !isLogin
+        ? 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700'
+        : 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700';
+    }
 
+    // ── Déconnexion ──
+    async function logout() {
+      await fetch('/auth/logout', { method: 'POST' });
+      window.location.reload();
+    }
+
+    // ── Checkout Stripe ──
     function redirectToCheckout(plan) {
       const email = document.getElementById('email')?.value?.trim() || '';
       const storeName = document.getElementById('storeName')?.value?.trim() || '';
@@ -474,57 +578,150 @@
       window.location.href = `/api/payment/checkout?${params.toString()}`;
     }
 
+    // ── Peupler le select des mois ──
+    function populateMonths() {
+      const sel = document.getElementById('reportMonth');
+      if (!sel) return;
+      const now = new Date();
+      for (let i = 0; i < 12; i++) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const label = d.toLocaleString('fr-FR', { month: 'long', year: 'numeric' });
+        const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        sel.appendChild(opt);
+      }
+    }
+
+    // ── Afficher l'étape selon l'état ──
+    function showStep(step, user) {
+      document.getElementById('stepConnect').classList.add('hidden');
+      document.getElementById('stepEbay').classList.add('hidden');
+      document.getElementById('stepReport').classList.add('hidden');
+      document.getElementById(step).classList.remove('hidden');
+
+      const desc = document.getElementById('stepDescription');
+      if (step === 'stepConnect') desc.textContent = 'Connectez-vous ou créez un compte gratuitement.';
+      if (step === 'stepEbay') desc.textContent = 'Liez votre boutique eBay pour générer votre rapport.';
+      if (step === 'stepReport') {
+        desc.textContent = 'Analysez vos frais et découvrez vos économies.';
+        if (user) {
+          const greet = document.getElementById('userGreeting');
+          if (greet) greet.textContent = user.firstName ? `👋 ${user.firstName}` : `👋 ${user.email}`;
+          const emailInput = document.getElementById('email');
+          if (emailInput && !emailInput.value) emailInput.value = user.email;
+          const storeInput = document.getElementById('storeName');
+          if (storeInput && !storeInput.value && user.storeName) storeInput.value = user.storeName;
+        }
+        populateMonths();
+      }
+    }
+
     (function() {
       const urlParams = new URLSearchParams(window.location.search);
-      const isConnected = urlParams.get('connected') === 'true';
-      const isError = urlParams.get('connected') === 'false';
-      const errorReason = urlParams.get('reason');
-      const errorDetail = urlParams.get('detail');
-      const stepConnect = document.getElementById('stepConnect');
-      const stepReport = document.getElementById('stepReport');
-      const stepDescription = document.getElementById('stepDescription');
 
-      const isPaid = urlParams.get('paid') === 'true';
-      const isCancelled = urlParams.get('cancelled') === 'true';
-
-      if (isPaid) {
+      // Banners paiement
+      if (urlParams.get('paid') === 'true') {
         window.history.replaceState({}, document.title, window.location.pathname);
-        const banner = document.createElement('div');
-        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm flex items-center gap-2';
-        banner.innerHTML = '✅ Paiement réussi ! Votre rapport vous sera envoyé par email sous quelques minutes.';
-        document.body.appendChild(banner);
-        setTimeout(() => banner.remove(), 8000);
+        const b = document.createElement('div');
+        b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
+        b.textContent = '✅ Paiement réussi ! Votre rapport vous sera envoyé par email.';
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 8000);
+      }
+      if (urlParams.get('cancelled') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const b = document.createElement('div');
+        b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
+        b.textContent = '⚠️ Paiement annulé.';
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 6000);
       }
 
-      if (isCancelled) {
-        window.history.replaceState({}, document.title, window.location.pathname);
-        const banner = document.createElement('div');
-        banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm flex items-center gap-2';
-        banner.innerHTML = '⚠️ Paiement annulé. Vous pouvez réessayer quand vous le souhaitez.';
-        document.body.appendChild(banner);
-        setTimeout(() => banner.remove(), 6000);
-      }
-
-      if (isConnected) {
-        if (stepConnect) stepConnect.classList.add('hidden');
-        if (stepReport) stepReport.classList.remove('hidden');
-        if (stepDescription) stepDescription.textContent = 'Remplissez vos informations pour générer votre rapport gratuit.';
-        window.history.replaceState({}, document.title, window.location.pathname);
-      }
-
-      if (isError && stepConnect) {
-        const errorMsg = document.createElement('div');
-        errorMsg.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
+      // Erreur eBay
+      if (urlParams.get('connected') === 'false') {
+        const reason = urlParams.get('reason');
+        const detail = urlParams.get('detail');
         let msg = '❌ La connexion eBay a échoué.';
-        if (errorReason === 'token_error') msg += ' Erreur lors de l\'échange du token.';
-        if (errorReason === 'csrf') msg += ' Erreur de sécurité (CSRF).';
-        if (errorReason === 'no_code') msg += ' Aucun code reçu d\'eBay.';
-        if (errorDetail) { try { msg += ' Détail : ' + JSON.parse(decodeURIComponent(errorDetail))?.error_description; } catch(e) {} }
-        errorMsg.textContent = msg;
-        stepConnect.appendChild(errorMsg);
+        if (reason === 'token_error') msg += ' Erreur token.';
+        if (reason === 'csrf') msg += ' Erreur sécurité CSRF.';
+        if (reason === 'no_code') msg += ' Aucun code eBay reçu.';
+        if (detail) { try { msg += ' · ' + JSON.parse(decodeURIComponent(detail))?.error_description; } catch(e) {} }
+        const el = document.createElement('div');
+        el.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
+        el.textContent = msg;
+        document.getElementById('stepConnect')?.appendChild(el);
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
+      // ── Vérifier session + état eBay ──
+      fetch('/auth/me').then(r => r.json()).then(data => {
+        const user = data.user;
+        if (user) {
+          document.getElementById('loginLink')?.classList.add('hidden');
+          document.getElementById('dashboardLink')?.classList.remove('hidden');
+          // eBay connecté ?
+          if (urlParams.get('connected') === 'true') {
+            window.history.replaceState({}, document.title, window.location.pathname);
+            showStep('stepReport', user);
+          } else {
+            showStep('stepEbay', user);
+          }
+        } else {
+          showStep('stepConnect', null);
+        }
+      }).catch(() => showStep('stepConnect', null));
+
+      // ── Formulaire Login ──
+      document.getElementById('formLogin').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const err = document.getElementById('loginError');
+        err.classList.add('hidden');
+        const res = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: document.getElementById('loginEmail').value.trim(), password: document.getElementById('loginPassword').value }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showStep('stepEbay', data.user);
+          document.getElementById('loginLink')?.classList.add('hidden');
+          document.getElementById('dashboardLink')?.classList.remove('hidden');
+        } else {
+          err.textContent = data.error || 'Erreur de connexion.';
+          err.classList.remove('hidden');
+        }
+      });
+
+      // ── Formulaire Register ──
+      document.getElementById('formRegister').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const err = document.getElementById('registerError');
+        err.classList.add('hidden');
+        const res = await fetch('/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('regEmail').value.trim(),
+            password: document.getElementById('regPassword').value,
+            firstName: document.getElementById('regFirstName').value.trim(),
+            lastName: document.getElementById('regLastName').value.trim(),
+            storeName: document.getElementById('regStoreName').value.trim(),
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showStep('stepEbay', data.user);
+          document.getElementById('loginLink')?.classList.add('hidden');
+          document.getElementById('dashboardLink')?.classList.remove('hidden');
+        } else {
+          err.textContent = data.error || 'Erreur lors de l\'inscription.';
+          err.classList.remove('hidden');
+        }
+      });
+
+      // ── Formulaire Rapport ──
       const reportForm = document.getElementById('reportForm');
       if (reportForm) {
         reportForm.addEventListener('submit', async function(e) {
@@ -539,11 +736,12 @@
           resultArea.classList.add('hidden');
           const storeName = document.getElementById('storeName').value.trim();
           const email = document.getElementById('email').value.trim();
+          const month = document.getElementById('reportMonth')?.value || '';
           try {
             const response = await fetch('/api/ebay/generate-report-ebay', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, storeName }),
+              body: JSON.stringify({ email, storeName, month }),
             });
             const data = await response.json();
             btn.disabled = false;
