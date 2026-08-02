@@ -84,6 +84,7 @@ railway variables set $(cat .env | grep -v '^#' | grep -v '^$' | xargs)
 railway up             # Déployer le code local manuellement
 railway up --detach    # Déployer en arrière-plan
 ```
+cp /Users/mac/Desktop/SaaS/ebay-profit-report/frontend/index.html /Users/mac/Desktop/SaaS/ebay-profit-report/backend/public/index.html && cd /Users/mac/Desktop/SaaS/ebay-profit-report && git add frontend/index.html backend/public/index.html backend/src/app.js && git commit -m "feat: login/register + flux eBay + filtre par mois" && git push origin main && cd backend && railway up --service backend --detach 2>&1
 
 ### Logs & Statut
 ```bash
