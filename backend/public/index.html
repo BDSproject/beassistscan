@@ -172,6 +172,7 @@
 <body class="bg-page font-sans antialiased">
 
   <!-- ==================== HEADER ==================== -->
+
   <header class="header-gradient shadow-xl sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16">
@@ -267,153 +268,116 @@
         </div>
         <div>
           <h2 class="text-xl font-bold text-gray-800">Rapport de Rentabilité</h2>
-          <p id="stepDescription" class="text-gray-500 text-sm">Connectez votre eBay pour recevoir votre analyse par email.</p>
+          <p id="stepDescription" class="text-gray-500 text-sm">Connectez votre eBay pour recevoir votre analyse gratuite.</p>
         </div>
       </div>
 
       <div class="divider-violet my-6"></div>
 
-      <!-- Étape 1 : Connexion / Inscription -->
-      <div id="stepConnect" class="space-y-5">
-
-        <!-- Onglets -->
-        <div class="flex rounded-xl bg-gray-100 p-1 gap-1">
-          <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700">Se connecter</button>
-          <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700">Créer un compte</button>
-        </div>
-
-        <!-- Formulaire Connexion -->
-        <form id="formLogin" class="space-y-4">
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
-            <input type="email" id="loginEmail" required placeholder="votre@email.com"
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
-            <input type="password" id="loginPassword" required placeholder="••••••••"
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-          </div>
-          <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-          <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-xl text-sm">
-            Se connecter
-          </button>
-          <p class="text-center text-xs text-gray-400">Pas encore de compte ? <button type="button" onclick="switchTab('register')" class="text-violet-600 font-semibold hover:underline">Créer un compte</button></p>
-        </form>
-
-        <!-- Formulaire Inscription -->
-        <form id="formRegister" class="hidden space-y-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Prénom</label>
-              <input type="text" id="regFirstName" placeholder="Votre prénom"
-                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-            </div>
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nom</label>
-              <input type="text" id="regLastName" placeholder="Votre nom"
-                class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique eBay</label>
-            <input type="text" id="regStoreName" placeholder="Ex: TechStore"
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
-            <input type="email" id="regEmail" required placeholder="votre@email.com"
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Mot de passe</label>
-            <input type="password" id="regPassword" required placeholder="8 caractères minimum"
-              class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-          </div>
-          <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-          <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-xl text-sm">
-            Créer mon compte
-          </button>
-          <p class="text-center text-xs text-gray-400">Déjà un compte ? <button type="button" onclick="switchTab('login')" class="text-violet-600 font-semibold hover:underline">Se connecter</button></p>
-        </form>
-
-        <!-- Séparateur eBay -->
-        <div class="flex items-center gap-3 mt-2">
-          <div class="flex-1 h-px bg-gray-200"></div>
-          <span class="text-xs text-gray-400">puis connectez eBay</span>
-          <div class="flex-1 h-px bg-gray-200"></div>
-        </div>
-        <p class="text-center text-xs text-gray-400">Après connexion, liez votre compte eBay pour générer votre rapport.</p>
-      </div>
-
-      <!-- Étape 1b : Connecter eBay (après login) -->
-      <div id="stepEbay" class="hidden space-y-5">
-        <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-6 text-center">
+      <!-- ÉTAPE 1 : Connexion eBay (premier écran, sans friction) -->
+      <div id="stepEbay" class="space-y-5">
+        <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-7 text-center">
           <div class="float-anim inline-block mb-4">
             <div class="w-16 h-16 mx-auto rounded-2xl step-circle flex items-center justify-center">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
             </div>
           </div>
-          <h3 class="font-bold text-gray-800 mb-1">Connectez votre compte eBay</h3>
-          <p class="text-sm text-gray-500 mb-5">Vous serez redirigé vers eBay. Aucun mot de passe n'est stocké.</p>
-          <button onclick="window.location.href='/api/ebay/auth'" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3 px-7 rounded-xl cursor-pointer">
+          <h3 class="font-bold text-gray-800 text-lg mb-1">Connectez votre boutique eBay</h3>
+          <p class="text-sm text-gray-500 mb-6">En 1 clic, on analyse vos frais des 90 derniers jours. Aucun mot de passe stocké.</p>
+          <button onclick="window.location.href='/api/ebay/auth'" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3.5 px-8 rounded-xl cursor-pointer text-base">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
             Connecter mon compte eBay
           </button>
-          <div class="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
-            <span>✓ 100% sécurisé</span>
-            <span>✓ Gratuit</span>
-            <span>✓ Révocable à tout moment</span>
+          <div class="flex items-center justify-center gap-5 mt-5 text-xs text-gray-400">
+            <span class="flex items-center gap-1">✓ Gratuit</span>
+            <span class="flex items-center gap-1">✓ 100% sécurisé</span>
+            <span class="flex items-center gap-1">✓ Révocable à tout moment</span>
           </div>
+        </div>
+
+        <!-- Lien connexion compte existant -->
+        <p class="text-center text-xs text-gray-400">
+          Déjà un compte BeassistScan ?
+          <button onclick="showAccountPanel()" class="text-violet-600 font-semibold hover:underline">Se connecter</button>
+        </p>
+
+        <!-- Panel connexion compte (caché par défaut) -->
+        <div id="accountPanel" class="hidden border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
+          <div class="flex rounded-lg bg-gray-100 p-0.5 gap-0.5">
+            <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition bg-white shadow text-violet-700">Connexion</button>
+            <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition text-gray-500 hover:text-gray-700">Inscription</button>
+          </div>
+          <form id="formLogin" class="space-y-3">
+            <input type="email" id="loginEmail" required placeholder="Email"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="password" id="loginPassword" required placeholder="Mot de passe"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+            <button type="submit" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Se connecter</button>
+          </form>
+          <form id="formRegister" class="hidden space-y-3">
+            <input type="text" id="regFirstName" placeholder="Prénom (optionnel)"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="email" id="regEmail" required placeholder="Email"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="password" id="regPassword" required placeholder="Mot de passe (8 car. min.)"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+            <button type="submit" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Créer mon compte</button>
+          </form>
         </div>
       </div>
 
-      <!-- Étape 2 : Formulaire rapport -->
-      <div id="stepReport" class="hidden">
-        <!-- Infos utilisateur connecté -->
-        <div class="flex items-center justify-between mb-4 p-3 bg-violet-50 border border-violet-100 rounded-xl">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-full step-circle flex items-center justify-center text-white text-xs font-bold">✓</div>
-            <span id="userGreeting" class="text-sm font-semibold text-gray-700"></span>
+      <!-- ÉTAPE 2 : Résultats + capture email -->
+      <div id="stepReport" class="hidden space-y-5">
+
+        <!-- Badge eBay connecté -->
+        <div class="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+          <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
           </div>
-          <button onclick="logout()" class="text-xs text-gray-400 hover:text-red-500 transition">Déconnexion</button>
+          <span class="text-sm text-green-800 font-semibold">Compte eBay connecté</span>
+          <button id="logoutBtn" onclick="logout()" class="ml-auto text-xs text-gray-400 hover:text-red-500 transition">Déconnecter</button>
         </div>
 
+        <!-- Formulaire rapport -->
         <form id="reportForm" class="space-y-4">
           <div>
-            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique eBay</label>
+            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique <span class="font-normal text-gray-400">(optionnel)</span></label>
             <input type="text" id="storeName" name="storeName" placeholder="Ex: TechStoreFrance"
-                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none bg-gray-50/50 transition">
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
           </div>
           <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Votre email</label>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email pour recevoir votre rapport PDF</label>
             <input type="email" id="email" name="email" required placeholder="contact@votre-boutique.com"
-                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none bg-gray-50/50 transition">
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
           </div>
-          <div class="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-xl">
-            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <span class="text-sm text-green-800 font-semibold">Compte eBay connecté avec succès ✓</span>
-          </div>
-
-          <!-- Filtre par mois -->
           <div>
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">Période analysée</label>
             <select id="reportMonth" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-              <option value="">-- 90 derniers jours (par défaut) --</option>
+              <option value="">90 derniers jours (par défaut)</option>
             </select>
           </div>
-
-          <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2">
-            <span id="btnText">🔍 Analyser mes frais (gratuit)</span>
+          <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2">
+            <span id="btnText">🔍 Analyser mes frais gratuitement</span>
             <span id="btnSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           </button>
         </form>
-        <div id="resultArea" class="mt-6 hidden"></div>
+
+        <!-- Zone résultats -->
+        <div id="resultArea" class="hidden"></div>
+
+        <!-- Après résultats : création compte optionnelle -->
+        <div id="saveAccountPrompt" class="hidden mt-4 p-4 bg-violet-50 border border-violet-100 rounded-xl">
+          <p class="text-sm font-semibold text-gray-700 mb-1">💾 Sauvegardez vos rapports</p>
+          <p class="text-xs text-gray-500 mb-3">Créez un compte gratuit pour retrouver tous vos rapports filtrés par mois.</p>
+          <button onclick="showAccountPanel(); document.getElementById('saveAccountPrompt').classList.add('hidden');" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">
+            Créer mon compte gratuitement
+          </button>
+        </div>
 
         <!-- Options payantes -->
-        <div class="mt-8">
+        <div class="mt-4">
           <div class="divider-violet mb-6"></div>
           <h3 class="text-lg font-bold text-gray-800 mb-4 text-center">🔓 Aller plus loin</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -604,26 +568,26 @@
       }
     }
 
-    // ── Afficher l'étape selon l'état ──
-    function showStep(step, user) {
-      document.getElementById('stepConnect').classList.add('hidden');
-      document.getElementById('stepEbay').classList.add('hidden');
-      document.getElementById('stepReport').classList.add('hidden');
-      document.getElementById(step).classList.remove('hidden');
+    // ── Afficher/masquer panel compte ──
+    function showAccountPanel() {
+      const panel = document.getElementById('accountPanel');
+      if (panel) panel.classList.toggle('hidden');
+    }
+
+    // ── Afficher l'étape ──
+    function showStep(step) {
+      ['stepEbay', 'stepReport'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(step);
+      if (target) target.classList.remove('hidden');
 
       const desc = document.getElementById('stepDescription');
-      if (step === 'stepConnect') desc.textContent = 'Connectez-vous ou créez un compte gratuitement.';
-      if (step === 'stepEbay') desc.textContent = 'Liez votre boutique eBay pour générer votre rapport.';
+      if (!desc) return;
+      if (step === 'stepEbay') desc.textContent = 'Connectez votre boutique eBay en 1 clic.';
       if (step === 'stepReport') {
         desc.textContent = 'Analysez vos frais et découvrez vos économies.';
-        if (user) {
-          const greet = document.getElementById('userGreeting');
-          if (greet) greet.textContent = user.firstName ? `👋 ${user.firstName}` : `👋 ${user.email}`;
-          const emailInput = document.getElementById('email');
-          if (emailInput && !emailInput.value) emailInput.value = user.email;
-          const storeInput = document.getElementById('storeName');
-          if (storeInput && !storeInput.value && user.storeName) storeInput.value = user.storeName;
-        }
         populateMonths();
       }
     }
@@ -661,29 +625,37 @@
         const el = document.createElement('div');
         el.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
         el.textContent = msg;
-        document.getElementById('stepConnect')?.appendChild(el);
+        document.getElementById('stepEbay')?.appendChild(el);
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
-      // ── Vérifier session + état eBay ──
-      fetch('/auth/me').then(r => r.json()).then(data => {
-        const user = data.user;
-        if (user) {
-          document.getElementById('loginLink')?.classList.add('hidden');
-          document.getElementById('dashboardLink')?.classList.remove('hidden');
-          // eBay connecté ?
-          if (urlParams.get('connected') === 'true') {
-            window.history.replaceState({}, document.title, window.location.pathname);
-            showStep('stepReport', user);
-          } else {
-            showStep('stepEbay', user);
+      // ── eBay connecté → afficher formulaire rapport ──
+      if (urlParams.get('connected') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showStep('stepReport');
+        // Si utilisateur connecté, pré-remplir
+        fetch('/auth/me').then(r => r.json()).then(data => {
+          if (data.user) {
+            document.getElementById('loginLink')?.classList.add('hidden');
+            document.getElementById('dashboardLink')?.classList.remove('hidden');
+            const emailInput = document.getElementById('email');
+            if (emailInput && !emailInput.value) emailInput.value = data.user.email || '';
           }
-        } else {
-          showStep('stepConnect', null);
-        }
-      }).catch(() => showStep('stepConnect', null));
+        }).catch(() => {});
+      } else {
+        // Vérifier si session active → si oui, eBay déjà connecté ? → afficher rapport
+        fetch('/auth/me').then(r => r.json()).then(data => {
+          if (data.user) {
+            document.getElementById('loginLink')?.classList.add('hidden');
+            document.getElementById('dashboardLink')?.classList.remove('hidden');
+            const emailInput = document.getElementById('email');
+            if (emailInput && !emailInput.value) emailInput.value = data.user.email || '';
+          }
+        }).catch(() => {});
+        showStep('stepEbay');
+      }
 
-      // ── Formulaire Login ──
+      // ── Login compte ──
       document.getElementById('formLogin').addEventListener('submit', async function(e) {
         e.preventDefault();
         const err = document.getElementById('loginError');
@@ -695,16 +667,18 @@
         });
         const data = await res.json();
         if (data.success) {
-          showStep('stepEbay', data.user);
           document.getElementById('loginLink')?.classList.add('hidden');
           document.getElementById('dashboardLink')?.classList.remove('hidden');
+          document.getElementById('accountPanel')?.classList.add('hidden');
+          // Rediriger vers eBay si pas encore connecté
+          window.location.href = '/api/ebay/auth';
         } else {
-          err.textContent = data.error || 'Erreur de connexion.';
+          err.textContent = data.error || 'Identifiants incorrects.';
           err.classList.remove('hidden');
         }
       });
 
-      // ── Formulaire Register ──
+      // ── Register compte ──
       document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const err = document.getElementById('registerError');
@@ -716,15 +690,14 @@
             email: document.getElementById('regEmail').value.trim(),
             password: document.getElementById('regPassword').value,
             firstName: document.getElementById('regFirstName').value.trim(),
-            lastName: document.getElementById('regLastName').value.trim(),
-            storeName: document.getElementById('regStoreName').value.trim(),
           }),
         });
         const data = await res.json();
         if (data.success) {
-          showStep('stepEbay', data.user);
           document.getElementById('loginLink')?.classList.add('hidden');
           document.getElementById('dashboardLink')?.classList.remove('hidden');
+          document.getElementById('accountPanel')?.classList.add('hidden');
+          window.location.href = '/api/ebay/auth';
         } else {
           err.textContent = data.error || 'Erreur lors de l\'inscription.';
           err.classList.remove('hidden');
@@ -755,7 +728,7 @@
             });
             const data = await response.json();
             btn.disabled = false;
-            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
+            btnText.textContent = '🔍 Analyser mes frais gratuitement';
             spinner.classList.add('hidden');
             if (response.ok && data.success) {
               resultArea.classList.remove('hidden');
@@ -772,19 +745,11 @@
                   </div>
                   <p class="text-xs text-gray-500 mt-4 text-center">📧 Rapport PDF envoyé à ${email}</p>
                 </div>`;
+              // Proposer création compte après résultats
+              document.getElementById('saveAccountPrompt')?.classList.remove('hidden');
             } else {
               throw new Error(data.error || 'Une erreur est survenue.');
             }
           } catch (error) {
             btn.disabled = false;
-            btnText.textContent = '🔍 Analyser mes frais (gratuit)';
-            spinner.classList.add('hidden');
-            resultArea.classList.remove('hidden');
-            resultArea.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm"><p class="font-bold mb-1">⚠️ Erreur</p><p>${error.message}</p></div>`;
-          }
-        });
-      }
-    })();
-  </script>
-</body>
-</html>
+            btnText.textContent = '🔍 Analyser mes frais gratuitement';
