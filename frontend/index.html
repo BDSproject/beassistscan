@@ -641,7 +641,7 @@
       }
 
       // Erreur eBay
-      
+
       if (urlParams.get('connected') === 'false') {
         const reason = urlParams.get('reason');
         const detail = urlParams.get('detail');
@@ -814,4 +814,85 @@ if (urlParams.get('connected') === 'true') {
           } catch (error) {
             btn.disabled = false;
             btnText.textContent = '🔍 Analyser mes frais gratuitement';
-</script>
+            spinner.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">${error.message}</div>`;
+          }
+        });
+      }
+    })();
+  </script>
+
+  <!-- i18n ENGINE -->
+  <script>
+    (function () {
+      var LANGS = { fr: 'FR', en: 'EN', es: 'ES', de: 'DE', it: 'IT' };
+      var FLAGS = { fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹' };
+      var _t = {}, _lang = localStorage.getItem('lang') || 'fr';
+
+      window._i18nLang = function () { return _lang; };
+      window._i18nCurrency = function () { return _lang === 'en' ? 'usd' : 'eur'; };
+
+      function t(k) { return _t[k] || k; }
+      window.t = t;
+
+      function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var v = t(el.getAttribute('data-i18n'));
+          if (v !== el.getAttribute('data-i18n')) el.textContent = v;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var v = t(el.getAttribute('data-i18n-placeholder'));
+          if (v !== el.getAttribute('data-i18n-placeholder')) el.placeholder = v;
+        });
+        document.documentElement.lang = _lang;
+      }
+
+      async function loadAndApply(l) {
+        try {
+          var r = await fetch('/api/i18n/' + l);
+          _t = r.ok ? await r.json() : {};
+        } catch (e) { _t = {}; }
+        applyTranslations();
+      }
+
+      window.setLang = async function (l) {
+        if (!LANGS[l]) return;
+        _lang = l;
+        localStorage.setItem('lang', l);
+        var flagEl = document.getElementById('currentFlag');
+        var codeEl = document.getElementById('currentLangCode');
+        if (flagEl) flagEl.textContent = FLAGS[l] || l.toUpperCase();
+        if (codeEl) codeEl.textContent = l.toUpperCase();
+        document.querySelectorAll('.lang-option').forEach(function (o) {
+          o.classList.toggle('active', o.dataset.lang === l);
+        });
+        var sw = document.getElementById('langSwitcher');
+        if (sw) sw.classList.remove('open');
+        await loadAndApply(l);
+      };
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('langBtn');
+        if (btn) btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          document.getElementById('langSwitcher').classList.toggle('open');
+        });
+        document.addEventListener('click', function () {
+          var sw = document.getElementById('langSwitcher');
+          if (sw) sw.classList.remove('open');
+        });
+
+        var flagEl = document.getElementById('currentFlag');
+        var codeEl = document.getElementById('currentLangCode');
+        if (flagEl) flagEl.textContent = FLAGS[_lang] || '🇫🇷';
+        if (codeEl) codeEl.textContent = _lang.toUpperCase();
+        document.querySelectorAll('.lang-option').forEach(function (o) {
+          o.classList.toggle('active', o.dataset.lang === _lang);
+        });
+        loadAndApply(_lang);
+      });
+    })();
+  </script>
+</body>
+</html>
