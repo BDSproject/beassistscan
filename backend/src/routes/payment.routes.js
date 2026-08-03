@@ -24,6 +24,7 @@ router.get('/checkout', async (req, res) => {
       priceId = process.env.STRIPE_PRICE_REPORT;
       mode = 'payment';
     }
+    
 
     if (!priceId) {
       return res.status(400).send('Plan invalide ou prix non configuré.');
@@ -63,9 +64,20 @@ router.post('/create-checkout-session', async (req, res) => {
       priceId = process.env.STRIPE_PRICE_REPORT;
       mode = 'payment';
     }
-
     if (!priceId) {
       return res.status(400).json({ error: 'Plan invalide ou prix non configuré.' });
+    }
+
+                            // USD
+
+    let priceIdUSD;
+    let modeUSD;
+    if (plan === 'pro') {
+      priceIdUSD = process.env.STRIPE_MONTHLY_REPORT_USD;
+      modeUSD = 'subscription';
+    } else if (plan === 'report') {
+      priceIdUSD = process.env.STRIPE_REPORT_USD;
+      modeUSD = 'payment';
     }
 
     const session = await stripe.checkout.sessions.create({
