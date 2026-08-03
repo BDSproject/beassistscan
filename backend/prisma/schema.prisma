@@ -41,3 +41,15 @@ model EbayToken {
   userId       String?
   user         User?    @relation(fields: [userId], references: [id])
 }
+
+model Translation {
+  id        String   @id @default(cuid())
+  lang      String   // fr, en, es, de, it
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([lang, key])
+  @@index([lang])
+}

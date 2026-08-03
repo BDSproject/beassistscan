@@ -7,6 +7,7 @@ const ebayRoutes = require('./routes/ebay.routes');
 const notificationsRoutes = require('./routes/notifications.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const authRoutes = require('./routes/auth.route');
+const i18nRoutes = require('./routes/i18n.routes');
 
 // Trust proxy, obligatoire sur Railway
 const app = express();
@@ -60,6 +61,7 @@ app.use('/api/ebay', ebayRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/auth', authRoutes);
+app.use('/api/i18n', i18nRoutes);
 
 // Toutes les routes non-API renvoient index.html
 app.get('*', (req, res) => {
