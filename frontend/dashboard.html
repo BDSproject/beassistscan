@@ -1,61 +1,289 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - BeassistScan</title>
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <link rel="apple-touch-icon" href="/favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – BeassistScan</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ===== Design BeassistScan ===== */
+    :root {
+      --violet-deep: #1e1b4b;
+      --violet-mid: #312e81;
+      --violet-light: #7c3aed;
+      --violet-glow: #a855f7;
+    }
+    body { background: #f5f3ff; }
+    .bg-page {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f0fdf4 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    }
+    .logo-dot {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+    }
+    .card-main {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139,92,246,0.15);
+      box-shadow: 0 25px 50px -12px rgba(109,40,217,0.15), 0 0 0 1px rgba(139,92,246,0.05);
+    }
+    .btn-violet {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-violet:hover {
+      background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.5);
+      transform: translateY(-1px);
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(139,92,246,0.1);
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(109,40,217,0.1);
+    }
+    .footer-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    }
+    .divider-violet {
+      background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+      height: 1px;
+    }
+    .report-row {
+      transition: background 0.15s;
+    }
+    .report-row:hover {
+      background: #f5f3ff;
+    }
+    .badge-month {
+      background: #ede9fe;
+      color: #5b21b6;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .empty-state svg {
+      margin: 0 auto 1rem;
+      opacity: 0.3;
+    }
+    @media (max-width: 640px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .stat-grid .stat-card:last-child { grid-column: span 2; }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans antialiased p-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold">📊 Mon Dashboard</h1>
-      <button id="logoutBtn" class="text-red-600 hover:underline font-medium">Déconnexion</button>
-    </div>
-    <div id="userInfo" class="mb-6 p-4 bg-white rounded-lg shadow">Chargement...</div>
-    <div id="reportsList" class="space-y-4"></div>
-  </div>
+<body class="bg-page font-sans antialiased">
 
+  <!-- ===== HEADER ===== -->
+  <header class="header-gradient shadow-xl sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="logo-dot w-8 h-8 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <span class="text-white font-bold text-lg tracking-tight">Beassist<span class="text-purple-300">Scan</span></span>
+        </a>
+        <nav class="flex items-center gap-3">
+          <a href="/" class="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">Accueil</a>
+          <button id="logoutBtn" class="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">Déconnexion</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== CONTENU PRINCIPAL ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- En‑tête du dashboard -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">📊 Tableau de bord</h1>
+        <p class="text-gray-500 text-sm" id="userGreeting">Bonjour, <span class="font-medium">utilisateur</span></p>
+      </div>
+      <a href="/" class="btn-violet text-white font-semibold px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        Nouveau rapport
+      </a>
+    </div>
+
+    <!-- Cartes de synthèse (3 indicateurs) -->
+    <div class="stat-grid grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="stat-card p-5 rounded-xl text-center">
+        <p class="text-xs text-gray-400 mb-1">CA total</p>
+        <p class="text-2xl font-extrabold text-gray-800" id="totalSales">0 €</p>
+      </div>
+      <div class="stat-card p-5 rounded-xl text-center border-red-100">
+        <p class="text-xs text-red-400 mb-1">Commissions totales</p>
+        <p class="text-2xl font-extrabold text-red-600" id="totalFees">0 €</p>
+      </div>
+      <div class="stat-card p-5 rounded-xl text-center border-green-100">
+        <p class="text-xs text-green-500 mb-1">Économies / an estimées</p>
+        <p class="text-2xl font-extrabold text-green-600" id="totalSaving">0 €</p>
+      </div>
+    </div>
+
+    <!-- Liste des rapports (tableau épuré) -->
+    <div class="card-main rounded-2xl p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📄 Historique des rapports</h2>
+        <span class="text-xs text-gray-400" id="reportCount">0 rapport</span>
+      </div>
+      <div class="divider-violet mb-4"></div>
+
+      <div id="reportsList">
+        <!-- Le contenu sera injecté ici -->
+        <div class="empty-state">
+          <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p class="text-gray-400 text-sm">Aucun rapport généré pour le moment.</p>
+          <a href="/" class="btn-violet inline-block text-white font-semibold px-5 py-2.5 rounded-xl text-sm mt-4">
+            Générer mon premier rapport
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lien retour -->
+    <div class="mt-6 text-center">
+      <a href="/" class="text-violet-600 hover:text-violet-800 text-sm font-medium">← Retour à l'accueil</a>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer-gradient pt-8 pb-6 mt-8">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <p class="text-white/30 text-xs">© 2026 Beassist Agency · Votre partenaire e-commerce</p>
+      <div class="flex justify-center gap-6 text-xs text-white/40 mt-2">
+        <a href="/mentions-legales.html" class="hover:text-white/70 transition">Mentions légales</a>
+        <a href="/politique-confidentialite.html" class="hover:text-white/70 transition">Confidentialité</a>
+        <a href="/cgv.html" class="hover:text-white/70 transition">CGV</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPT ===== -->
   <script>
+    // ============================================================
+    // 1. HELPERS
+    // ============================================================
     async function fetchJSON(url) {
       const res = await fetch(url);
-      if (res.status === 401) { window.location.href = '/login.html'; return null; }
+      if (res.status === 401) {
+        window.location.href = '/login.html';
+        return null;
+      }
       return res.json();
     }
 
+    function formatEuro(v) {
+      return (v || 0).toFixed(2) + ' €';
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // ============================================================
+    // 2. DÉCONNEXION
+    // ============================================================
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await fetch('/auth/logout', { method: 'POST' });
       window.location.href = '/';
     });
 
+    // ============================================================
+    // 3. CHARGEMENT DES DONNÉES
+    // ============================================================
     (async () => {
+      // ---- 3a. Utilisateur ----
       const me = await fetchJSON('/auth/me');
       if (!me || !me.user) return;
-      document.getElementById('userInfo').innerHTML = `
-        <p class="text-lg font-semibold">Bienvenue, ${me.user.firstName || me.user.email}</p>
-        <p class="text-sm text-gray-500">${me.user.storeName || ''}</p>
-      `;
 
-      const reports = await fetchJSON('/api/reports');
-      if (!reports) return;
+      const user = me.user;
+      const greeting = document.querySelector('#userGreeting span');
+      if (greeting) {
+        greeting.textContent = user.firstName || user.email.split('@')[0] || 'utilisateur';
+      }
+
+      // ---- 3b. Rapports ----
+      const data = await fetchJSON('/api/reports');
+      if (!data) return;
+
+      const reports = data.leads || [];
       const container = document.getElementById('reportsList');
-      if (reports.leads.length === 0) {
-        container.innerHTML = '<p class="text-gray-500">Aucun rapport pour le moment.</p>';
+
+      // Mise à jour du compteur
+      document.getElementById('reportCount').textContent = `${reports.length} rapport${reports.length > 1 ? 's' : ''}`;
+
+      // Si aucun rapport → afficher l'état vide
+      if (reports.length === 0) {
+        // Les totaux restent à 0
         return;
       }
-      container.innerHTML = reports.leads.map(lead => `
-        <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
-          <div>
-            <p class="font-medium">${new Date(lead.createdAt).toLocaleDateString('fr-FR')} – ${lead.storeName || 'Sans boutique'}</p>
-            <p class="text-sm text-gray-500">CA: ${lead.totalSales.toFixed(2)}€ / Frais: ${lead.totalFees.toFixed(2)}€</p>
+
+      // ---- 3c. Calcul des totaux ----
+      let totalSales = 0, totalFees = 0, totalSaving = 0;
+      reports.forEach(r => {
+        totalSales += r.totalSales || 0;
+        totalFees  += r.totalFees  || 0;
+        totalSaving += r.annualSaving || 0;
+      });
+      document.getElementById('totalSales').textContent  = formatEuro(totalSales);
+      document.getElementById('totalFees').textContent   = formatEuro(totalFees);
+      document.getElementById('totalSaving').textContent = formatEuro(totalSaving);
+
+      // ---- 3d. Génération du listing ----
+      let html = '';
+      // On affiche du plus récent au plus ancien
+      reports.slice().reverse().forEach((report) => {
+        const store = report.storeName || 'Boutique sans nom';
+        const date  = formatDate(report.createdAt);
+        const badgeClass = report.annualSaving > 1000 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+
+        html += `
+          <div class="report-row border-b border-gray-100 last:border-0 px-1 py-3 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex-1 min-w-[140px]">
+              <p class="font-semibold text-gray-800 text-sm">${store}</p>
+              <p class="text-xs text-gray-400">${date}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-sm">
+              <span class="text-gray-600">CA <span class="font-bold">${formatEuro(report.totalSales)}</span></span>
+              <span class="text-red-500">Frais <span class="font-bold">${formatEuro(report.totalFees)}</span></span>
+              <span class="text-green-600 font-semibold flex items-center gap-1">
+                <span>${formatEuro(report.annualSaving)}</span>
+                <span class="badge-month ${badgeClass}">économies/an</span>
+              </span>
+            </div>
+            <!-- Bouton d'action : télécharger le PDF (si stocké) -->
+            <a href="/api/reports/${report.id}/download" class="text-violet-600 hover:text-violet-800 text-xs font-medium underline-offset-2 hover:underline" title="Télécharger le PDF">
+              📄 PDF
+            </a>
           </div>
-          <div class="text-right">
-            <p class="text-green-600 font-bold">Économie/an: ${lead.annualSaving.toFixed(2)}€</p>
-          </div>
-        </div>
-      `).join('');
+        `;
+      });
+
+      container.innerHTML = html;
     })();
   </script>
 </body>
