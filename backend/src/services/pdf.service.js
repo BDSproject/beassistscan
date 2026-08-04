@@ -2,6 +2,120 @@ const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
 
+// ── i18n ── (ASCII only - PDFKit Helvetica limitation) ───────────────────────
+const TRANSLATIONS = {
+  fr: {
+    subtitle:     'Rapport de Rentabilite eBay',
+    storeLabel:   'Boutique :',
+    storeDefault: 'Non specifiee',
+    emailLabel:   'Email :',
+    card1Label:   "Chiffre d'affaires",
+    card1Sub:     '90 derniers jours',
+    card2Label:   'Commissions eBay',
+    card2Sub:     'Frais preleves',
+    card3Label:   'Economies / an est.',
+    card3Sub:     'En boutique indep.',
+    divider:      "Detail de l'analyse",
+    row1:         'Nombre de transactions',
+    row2:         "Chiffre d'affaires total",
+    row3:         'Commissions eBay totales',
+    row4:         'Taux de commission moyen',
+    row5:         'Economies annuelles est.',
+    insightTitle: 'Ce que vous pourriez economiser',
+    insightText:  (s, m) => `En ouvrant votre propre boutique e-commerce, vous economiseriez environ ${s} EUR par an en commissions eBay - soit ${m} EUR par mois.`,
+    cta:          'Pret a recuperer vos marges ? -> www.beassistscan.com',
+  },
+  en: {
+    subtitle:     'eBay Profitability Report',
+    storeLabel:   'Store:',
+    storeDefault: 'Not specified',
+    emailLabel:   'Email:',
+    card1Label:   'Revenue',
+    card1Sub:     'Last 90 days',
+    card2Label:   'eBay Fees',
+    card2Sub:     'Fees charged',
+    card3Label:   'Est. Yearly Savings',
+    card3Sub:     'Own e-commerce store',
+    divider:      'Analysis Details',
+    row1:         'Number of transactions',
+    row2:         'Total revenue',
+    row3:         'Total eBay fees',
+    row4:         'Avg commission rate',
+    row5:         'Est. yearly savings',
+    insightTitle: 'What you could save',
+    insightText:  (s, m) => `By opening your own e-commerce store, you could save about ${s} EUR per year in eBay fees - that is ${m} EUR per month.`,
+    cta:          'Ready to get your margins back? -> www.beassistscan.com',
+  },
+  es: {
+    subtitle:     'Informe de Rentabilidad eBay',
+    storeLabel:   'Tienda:',
+    storeDefault: 'No especificada',
+    emailLabel:   'Email:',
+    card1Label:   'Facturacion',
+    card1Sub:     'Ultimos 90 dias',
+    card2Label:   'Comisiones eBay',
+    card2Sub:     'Comisiones cobradas',
+    card3Label:   'Ahorro / ano est.',
+    card3Sub:     'Tienda propia',
+    divider:      'Detalle del analisis',
+    row1:         'Numero de transacciones',
+    row2:         'Facturacion total',
+    row3:         'Comisiones eBay totales',
+    row4:         'Tasa de comision media',
+    row5:         'Ahorro anual est.',
+    insightTitle: 'Lo que podrias ahorrar',
+    insightText:  (s, m) => `Abriendo tu propia tienda e-commerce, ahorrarias unos ${s} EUR al ano en comisiones eBay - es decir ${m} EUR al mes.`,
+    cta:          'Listo para recuperar tus margenes? -> www.beassistscan.com',
+  },
+  de: {
+    subtitle:     'eBay Rentabilitaetsbericht',
+    storeLabel:   'Shop:',
+    storeDefault: 'Nicht angegeben',
+    emailLabel:   'E-Mail:',
+    card1Label:   'Umsatz',
+    card1Sub:     'Letzte 90 Tage',
+    card2Label:   'eBay-Gebuehren',
+    card2Sub:     'Erhobene Gebuehren',
+    card3Label:   'Gesch. Jahreseinsparung',
+    card3Sub:     'Eigener Online-Shop',
+    divider:      'Analysedetails',
+    row1:         'Anzahl der Transaktionen',
+    row2:         'Gesamtumsatz',
+    row3:         'Gesamte eBay-Gebuehren',
+    row4:         'Durchschn. Provisionssatz',
+    row5:         'Gesch. Jahreseinsparung',
+    insightTitle: 'Was Sie sparen koennten',
+    insightText:  (s, m) => `Durch Eroeffnung Ihres eigenen Online-Shops koennten Sie ca. ${s} EUR pro Jahr an eBay-Gebuehren sparen - das sind ${m} EUR pro Monat.`,
+    cta:          'Bereit, Ihre Margen zurueckzugewinnen? -> www.beassistscan.com',
+  },
+  it: {
+    subtitle:     'Report di Redditivita eBay',
+    storeLabel:   'Negozio:',
+    storeDefault: 'Non specificato',
+    emailLabel:   'Email:',
+    card1Label:   'Fatturato',
+    card1Sub:     'Ultimi 90 giorni',
+    card2Label:   'Commissioni eBay',
+    card2Sub:     'Commissioni applicate',
+    card3Label:   'Risparmio / anno est.',
+    card3Sub:     'Negozio indipendente',
+    divider:      "Dettaglio dell'analisi",
+    row1:         'Numero di transazioni',
+    row2:         'Fatturato totale',
+    row3:         'Commissioni eBay totali',
+    row4:         'Tasso medio di commissione',
+    row5:         'Risparmio annuo est.',
+    insightTitle: 'Quanto potresti risparmiare',
+    insightText:  (s, m) => `Aprendo il tuo e-commerce, potresti risparmiare circa ${s} EUR all'anno in commissioni eBay - ovvero ${m} EUR al mese.`,
+    cta:          'Pronto a recuperare i tuoi margini? -> www.beassistscan.com',
+  },
+};
+
+function getLang(lang) {
+  const code = (lang || 'fr').toLowerCase().split('-')[0];
+  return TRANSLATIONS[code] || TRANSLATIONS['fr'];
+}
+
 const BRAND = {
   violet:     '#7C3AED',
   violetDark: '#5B21B6',
@@ -62,7 +176,7 @@ function pill(doc, x, y, text, bg, fg, fontSize = 8) {
 
 // ── SECTIONS ───────────────────────────────────────────────
 
-function drawHeader(doc) {
+function drawHeader(doc, T) {
   const H = 110;
   // fond sombre
   doc.rect(0, 0, PAGE_W, H).fill(BRAND.dark);
@@ -78,12 +192,13 @@ function drawHeader(doc) {
      .text('Scan', { continued: false });
 
   // Sous-titre
-  doc.fontSize(11).font('Helvetica')
-     .fillColor('#A78BFA')
-     .text('Rapport de Rentabilite eBay', MARGIN, 62);
+    doc.fontSize(11).font('Helvetica')
+      .fillColor('#A78BFA')
+      .text(T.subtitle, MARGIN, 62);
 
   // Date badge
-  const dateStr = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
+  const locale = T === TRANSLATIONS.en ? 'en-GB' : T === TRANSLATIONS.de ? 'de-DE' : T === TRANSLATIONS.es ? 'es-ES' : T === TRANSLATIONS.it ? 'it-IT' : 'fr-FR';
+  const dateStr = new Date().toLocaleDateString(locale, { day:'numeric', month:'long', year:'numeric' });
   doc.fontSize(8).font('Helvetica')
      .fillColor('#C4B5FD')
      .text(dateStr, MARGIN, 83);
@@ -91,35 +206,35 @@ function drawHeader(doc) {
   return H;
 }
 
-function drawInfoBand(doc, y, email, storeName) {
-  const H = 44;
+function drawInfoBand(doc, y, email, storeName, T) {
+  const H = 52;
   doc.rect(0, y, PAGE_W, H).fill(BRAND.bg);
   doc.rect(0, y, 4, H).fill(BRAND.violet); // bord gauche colore
 
   doc.fontSize(9).font('Helvetica').fillColor(BRAND.grayLight)
-     .text('Boutique :', MARGIN + 10, y + 8, { continued: true })
+    .text(T.storeLabel, MARGIN + 10, y + 10, { continued: true })
      .font('Helvetica-Bold').fillColor(BRAND.gray)
-     .text(` ${storeName || 'Non specifiee'}`, { continued: false });
+    .text(` ${storeName || T.storeDefault}`, { continued: false });
 
   doc.fontSize(9).font('Helvetica').fillColor(BRAND.grayLight)
-     .text('Email :', MARGIN + 10, y + 23, { continued: true })
+    .text(T.emailLabel, MARGIN + 10, y + 29, { continued: true })
      .font('Helvetica-Bold').fillColor(BRAND.gray)
      .text(` ${email}`, { continued: false });
 
   return y + H;
 }
 
-function drawStatCards(doc, y, data) {
+function drawStatCards(doc, y, data, T) {
   const GAP   = 12;
   const CW    = (INNER_W - GAP * 2) / 3;
-  const CH    = 85;
+  const CH    = 92;
   const cards = [
-    { label: 'Chiffre d\'affaires',  value: data.totalSales,   bg: BRAND.bg,      valColor: BRAND.dark,   sub: '90 derniers jours' },
-    { label: 'Commissions eBay',     value: data.totalFees,    bg: BRAND.redBg,   valColor: BRAND.red,    sub: 'Frais preleves' },
-    { label: 'Economies / an est.',  value: data.annualSaving, bg: BRAND.greenBg, valColor: BRAND.green,  sub: 'En boutique indep.' },
+    { label: T.card1Label, value: data.totalSales,   bg: BRAND.bg,      valColor: BRAND.dark,  sub: T.card1Sub },
+    { label: T.card2Label, value: data.totalFees,    bg: BRAND.redBg,   valColor: BRAND.red,   sub: T.card2Sub },
+    { label: T.card3Label, value: data.annualSaving, bg: BRAND.greenBg, valColor: BRAND.green, sub: T.card3Sub },
   ];
 
-  y += 18;
+  y += 20;
   cards.forEach((c, i) => {
     const x = MARGIN + i * (CW + GAP);
     // Carte
@@ -128,15 +243,15 @@ function drawStatCards(doc, y, data) {
 
     // Label
     doc.fontSize(8.5).font('Helvetica').fillColor(BRAND.grayLight)
-       .text(c.label, x + 12, y + 13, { width: CW - 24 });
+       .text(c.label, x + 12, y + 12, { width: CW - 24, lineBreak: false });
 
     // Valeur
-    doc.fontSize(22).font('Helvetica-Bold').fillColor(c.valColor)
-       .text(`${c.value.toFixed(2)} EUR`, x + 12, y + 29, { width: CW - 24 });
+    doc.fontSize(21).font('Helvetica-Bold').fillColor(c.valColor)
+       .text(`${c.value.toFixed(2)} EUR`, x + 12, y + 30, { width: CW - 24, lineBreak: false });
 
     // Sous-label
     doc.fontSize(7.5).font('Helvetica').fillColor(BRAND.grayLight)
-       .text(c.sub, x + 12, y + 62, { width: CW - 24 });
+       .text(c.sub, x + 12, y + 68, { width: CW - 24, lineBreak: false });
   });
 
   return y + CH;
@@ -150,15 +265,15 @@ function drawDivider(doc, y, label) {
   return y + 24;
 }
 
-function drawDetailTable(doc, y, data) {
-  y = drawDivider(doc, y, 'Detail de l\'analyse');
+function drawDetailTable(doc, y, data, T) {
+  y = drawDivider(doc, y, T.divider);
 
   const rows = [
-    ['Nombre de transactions',    `${data.rowCount || 'N/A'}`],
-    ['Chiffre d\'affaires total', `${data.totalSales.toFixed(2)} EUR`],
-    ['Commissions eBay totales',  `${data.totalFees.toFixed(2)} EUR`],
-    ['Taux de commission moyen',  `${data.totalSales > 0 ? ((data.totalFees/data.totalSales)*100).toFixed(1) : 0} %`],
-    ['Economies annuelles est.',  `${data.annualSaving.toFixed(2)} EUR`],
+    [T.row1, `${data.rowCount || 'N/A'}`],
+    [T.row2, `${data.totalSales.toFixed(2)} EUR`],
+    [T.row3, `${data.totalFees.toFixed(2)} EUR`],
+    [T.row4, `${data.totalSales > 0 ? ((data.totalFees/data.totalSales)*100).toFixed(1) : 0} %`],
+    [T.row5, `${data.annualSaving.toFixed(2)} EUR`],
   ];
 
   const COL1 = INNER_W * 0.62;
@@ -180,35 +295,34 @@ function drawDetailTable(doc, y, data) {
   return y + rows.length * ROW_H;
 }
 
-function drawInsightBox(doc, y, data) {
-  y += 22;
-  const BH = 80;
+function drawInsightBox(doc, y, data, T) {
+  y += 24;
+  const BH = 100;
   // fond violet degrade simule
   doc.roundedRect(MARGIN, y, INNER_W, BH, 10).fill(BRAND.dark);
   doc.roundedRect(MARGIN, y, 5, BH, 3).fill(BRAND.violet);
 
   doc.fontSize(11).font('Helvetica-Bold').fillColor(BRAND.white)
-     .text('Ce que vous pourriez economiser', MARGIN + 18, y + 12);
+    .text(T.insightTitle, MARGIN + 18, y + 14, { width: INNER_W - 30, lineBreak: false });
 
   doc.fontSize(9.5).font('Helvetica').fillColor('#C4B5FD')
      .text(
-       `En ouvrant votre propre boutique e-commerce, vous economiseriez environ ` +
-       `${data.annualSaving.toFixed(2)} EUR par an en commissions eBay - soit ${(data.annualSaving/12).toFixed(2)} EUR par mois.`,
-       MARGIN + 18, y + 32,
-       { width: INNER_W - 30 }
+      T.insightText(data.annualSaving.toFixed(2), (data.annualSaving/12).toFixed(2)),
+       MARGIN + 18, y + 36,
+       { width: INNER_W - 36 }
      );
 
   return y + BH;
 }
 
-function drawCTA(doc, y) {
-  y += 18;
-  const BH = 48;
+function drawCTA(doc, y, T) {
+  y += 20;
+  const BH = 50;
   doc.roundedRect(MARGIN, y, INNER_W, BH, 8).fill(BRAND.violet);
 
   doc.fontSize(10).font('Helvetica-Bold').fillColor(BRAND.white)
-     .text('Pret a recuperer vos marges ? -> www.beassistscan.com', MARGIN, y + 17, {
-       width: INNER_W, align: 'center'
+    .text(T.cta, MARGIN, y + 19, {
+       width: INNER_W, align: 'center', lineBreak: false
      });
 
   return y + BH;
@@ -228,7 +342,7 @@ function drawFooter(doc) {
 }
 
 // ── EXPORT ─────────────────────────────────────────────────
-function generateReport(data, email, storeName) {
+function generateReport(data, email, storeName, lang) {
   return new Promise((resolve, reject) => {
     try {
       ensureUploadsDir();
@@ -246,12 +360,13 @@ function generateReport(data, email, storeName) {
       doc.pipe(ws);
 
       let y = 0;
-      y = drawHeader(doc);
-      y = drawInfoBand(doc, y, email, storeName);
-      y = drawStatCards(doc, y, data);
-      y = drawDetailTable(doc, y, data);
-      y = drawInsightBox(doc, y, data);
-      y = drawCTA(doc, y);
+      const T = getLang(lang);
+      y = drawHeader(doc, T);
+      y = drawInfoBand(doc, y, email, storeName, T);
+      y = drawStatCards(doc, y, data, T);
+      y = drawDetailTable(doc, y, data, T);
+      y = drawInsightBox(doc, y, data, T);
+      y = drawCTA(doc, y, T);
       drawFooter(doc);
 
       doc.end();

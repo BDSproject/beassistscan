@@ -92,7 +92,7 @@ router.get('/callback', async (req, res) => {
 });
 router.post('/generate-report-ebay', async (req, res) => {
   try {
-    const { email, storeName } = req.body;
+    const { email, storeName, lang } = req.body;
     if (!email) return res.status(400).json({ error: 'Email requis' });
 
     // --- MODE TEST : données fictives (à supprimer quand eBay sera validé) ---
@@ -108,7 +108,7 @@ router.post('/generate-report-ebay', async (req, res) => {
 
     // Génération du PDF
     const { generateReport } = require('../services/pdf.service');
-    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique test');
+    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique test', lang);
     console.log('✅ PDF généré:', pdfPath);
 
     // Envoi du mail (si SMTP configuré)

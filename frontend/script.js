@@ -28,7 +28,7 @@ document.getElementById('reportForm').addEventListener('submit', async function 
     const response = await fetch('/api/ebay/generate-report-ebay?test=true', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, storeName }),
+      body: JSON.stringify({ email, storeName, lang: navigator.language || 'fr' }),
     });
 
     const data = await response.json();
