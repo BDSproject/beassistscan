@@ -113,8 +113,7 @@ router.post('/generate-report-ebay', async (req, res) => {
     // Envoi du mail (si SMTP configuré)
     const { sendReport } = require('../services/email.service');
     const mailTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Mail timeout')), 20000));
-    await Promise.race([sendReport(email, pdfPath), mailTimeout])
-      .catch(err => console.error('Erreur envoi mail:', err.message));
+    await Promise.race([sendReport(email, pdfPath), mailTimeout]);
 
     // Sauvegarde en base (optionnelle)
     const { PrismaClient } = require('@prisma/client');
