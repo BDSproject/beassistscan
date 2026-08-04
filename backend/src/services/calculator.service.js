@@ -1,16 +1,42 @@
+function toNumber(value) {
+  const num = Number.parseFloat(value);
+  return Number.isFinite(num) ? num : 0;
+}
+
+function readMoneyValue(obj) {
+  if (!obj) return 0;
+  return toNumber(obj.value);
+}
+
 function calculateFromTransactions(transactions,) {
   let totalSales = 0;
   let totalFees = 0;
 
   transactions.forEach(trx => {
-    // Montant total de la vente (peut être dans trx.amount.value)
-    if (trx.amount && trx.amount.value) {
-      totalSales += parseFloat(trx.amount.value);
+    // Montant de vente (champs possibles selon endpoint eBay)
+    const amount =
+      readMoneyValue(trx.amount) ||
+      readMoneyValue(trx.totalAmount);
+
+    totalSales += amount;
+
+    // Frais eBay : plusieurs formats possibles dans Finances API
+    let fee = 0;
+
+    if (trx.totalFeeBasisAmount) {
+      fee = Math.abs(readMoneyValue(trx.totalFeeBasisAmount));
+    } else if (trx.totalFeeAmount) {
+      fee = Math.abs(readMoneyValue(trx.totalFeeAmount));
+    } else if (trx.feeAmount) {
+      fee = Math.abs(readMoneyValue(trx.feeAmount));
+    } else if (Array.isArray(trx.marketplaceFees) && trx.marketplaceFees.length > 0) {
+      fee = trx.marketplaceFees.reduce((sum, f) => {
+        const v = Math.abs(readMoneyValue(f.amount) || readMoneyValue(f.feeAmount));
+        return sum + v;
+      }, 0);
     }
-    // Frais eBay (peut être dans trx.feeAmount.value)
-    if (trx.feeAmount && trx.feeAmount.value) {
-      totalFees += parseFloat(trx.feeAmount.value);
-    }
+
+    totalFees += fee;
   });
 
   // Estimation annuelle basée sur les 90 derniers jours

@@ -4,6 +4,8 @@ const EBAY_API_BASE = process.env.EBAY_ENV === 'production'
   ? 'https://api.ebay.com'
   : 'https://api.sandbox.ebay.com';
 
+const FINANCES_BASE = `${EBAY_API_BASE}/sell/finances/v1`;
+
 class EbayService {
   static getAuthHeaders(accessToken) {
     return {
@@ -68,10 +70,11 @@ class EbayService {
 
   // Récupère les transactions financières des 90 derniers jours (maximum)
   static async getTransactions(accessToken) {
-    const url = `${EBAY_API_BASE}/sell/finances/v1/transaction?limit=100&filter=transactionStatus:{PAYOUT}`;
-    // Note : l'API Finances nécessite parfois un filtre de date, mais pour simplifier on utilise transactionStatus=PAYOUT pour avoir les ventes payées.
-    // Pour couvrir les 90 jours, on pourrait ajouter &filter=transactionDate:[2024-10-01T00:00:00.000Z..2025-01-01T00:00:00.000Z]
-    // On va faire une boucle pour récupérer toutes les transactions.
+    const now = new Date();
+    const from = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const range = `[${from.toISOString()}..${now.toISOString()}]`;
+    const filter = encodeURIComponent(`transactionDate:${range},transactionStatus:{PAYOUT}`);
+    const url = `${FINANCES_BASE}/transaction?limit=100&sort=transactionDate&filter=${filter}`;
 
     let transactions = [];
     let nextPageUrl = url;
@@ -85,7 +88,10 @@ class EbayService {
         if (data.transactions) {
           transactions = transactions.concat(data.transactions);
         }
-        nextPageUrl = data.next || null;
+        nextPageUrl =
+          (typeof data.next === 'string' && data.next) ||
+          (data.next && typeof data.next.href === 'string' && data.next.href) ||
+          null;
       } catch (error) {
         console.error('Erreur API Finances eBay:', error.response?.data || error.message);
         throw new Error('Erreur lors de la récupération des transactions eBay');
