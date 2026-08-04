@@ -36,7 +36,7 @@ function hexToRgb(hex) {
 }
 
 function gradientRect(doc, x, y, w, h, color1, color2) {
-  // PDFKit ne gère pas les dégradés natifs → on simule avec bandes fines
+  // PDFKit ne gere pas les degrades natifs -> on simule avec bandes fines
   const steps = 40;
   const [r1,g1,b1] = hexToRgb(color1);
   const [r2,g2,b2] = hexToRgb(color2);
@@ -66,7 +66,7 @@ function drawHeader(doc) {
   const H = 110;
   // fond sombre
   doc.rect(0, 0, PAGE_W, H).fill(BRAND.dark);
-  // bande violette décorative à droite
+  // bande violette decorative a droite
   doc.rect(PAGE_W - 160, 0, 160, H).fill(BRAND.midDark);
   doc.rect(PAGE_W - 80,  0, 80,  H).fill(BRAND.violet);
 
@@ -80,7 +80,7 @@ function drawHeader(doc) {
   // Sous-titre
   doc.fontSize(11).font('Helvetica')
      .fillColor('#A78BFA')
-     .text('Rapport de Rentabilité eBay', MARGIN, 62);
+     .text('Rapport de Rentabilite eBay', MARGIN, 62);
 
   // Date badge
   const dateStr = new Date().toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' });
@@ -94,12 +94,12 @@ function drawHeader(doc) {
 function drawInfoBand(doc, y, email, storeName) {
   const H = 44;
   doc.rect(0, y, PAGE_W, H).fill(BRAND.bg);
-  doc.rect(0, y, 4, H).fill(BRAND.violet); // bord gauche coloré
+  doc.rect(0, y, 4, H).fill(BRAND.violet); // bord gauche colore
 
   doc.fontSize(9).font('Helvetica').fillColor(BRAND.grayLight)
      .text('Boutique :', MARGIN + 10, y + 8, { continued: true })
      .font('Helvetica-Bold').fillColor(BRAND.gray)
-     .text(` ${storeName || 'Non spécifiée'}`, { continued: false });
+     .text(` ${storeName || 'Non specifiee'}`, { continued: false });
 
   doc.fontSize(9).font('Helvetica').fillColor(BRAND.grayLight)
      .text('Email :', MARGIN + 10, y + 23, { continued: true })
@@ -115,8 +115,8 @@ function drawStatCards(doc, y, data) {
   const CH    = 85;
   const cards = [
     { label: 'Chiffre d\'affaires',  value: data.totalSales,   bg: BRAND.bg,      valColor: BRAND.dark,   sub: '90 derniers jours' },
-    { label: 'Commissions eBay',     value: data.totalFees,    bg: BRAND.redBg,   valColor: BRAND.red,    sub: 'Frais prélevés' },
-    { label: 'Économies / an est.',  value: data.annualSaving, bg: BRAND.greenBg, valColor: BRAND.green,  sub: 'En boutique indép.' },
+    { label: 'Commissions eBay',     value: data.totalFees,    bg: BRAND.redBg,   valColor: BRAND.red,    sub: 'Frais preleves' },
+    { label: 'Economies / an est.',  value: data.annualSaving, bg: BRAND.greenBg, valColor: BRAND.green,  sub: 'En boutique indep.' },
   ];
 
   y += 18;
@@ -132,7 +132,7 @@ function drawStatCards(doc, y, data) {
 
     // Valeur
     doc.fontSize(22).font('Helvetica-Bold').fillColor(c.valColor)
-       .text(`${c.value.toFixed(2)} €`, x + 12, y + 29, { width: CW - 24 });
+       .text(`${c.value.toFixed(2)} EUR`, x + 12, y + 29, { width: CW - 24 });
 
     // Sous-label
     doc.fontSize(7.5).font('Helvetica').fillColor(BRAND.grayLight)
@@ -151,14 +151,14 @@ function drawDivider(doc, y, label) {
 }
 
 function drawDetailTable(doc, y, data) {
-  y = drawDivider(doc, y, '📊 Détail de l\'analyse');
+  y = drawDivider(doc, y, 'Detail de l\'analyse');
 
   const rows = [
     ['Nombre de transactions',    `${data.rowCount || 'N/A'}`],
-    ['Chiffre d\'affaires total', `${data.totalSales.toFixed(2)} €`],
-    ['Commissions eBay totales',  `${data.totalFees.toFixed(2)} €`],
+    ['Chiffre d\'affaires total', `${data.totalSales.toFixed(2)} EUR`],
+    ['Commissions eBay totales',  `${data.totalFees.toFixed(2)} EUR`],
     ['Taux de commission moyen',  `${data.totalSales > 0 ? ((data.totalFees/data.totalSales)*100).toFixed(1) : 0} %`],
-    ['Économies annuelles est.',  `${data.annualSaving.toFixed(2)} €`],
+    ['Economies annuelles est.',  `${data.annualSaving.toFixed(2)} EUR`],
   ];
 
   const COL1 = INNER_W * 0.62;
@@ -167,7 +167,7 @@ function drawDetailTable(doc, y, data) {
 
   rows.forEach((row, i) => {
     const rowY = y + i * ROW_H;
-    // fond alterné
+    // fond alterne
     if (i % 2 === 0) doc.rect(MARGIN, rowY, INNER_W, ROW_H).fill('#FAFAFA');
     doc.rect(MARGIN, rowY, INNER_W, ROW_H).strokeColor(BRAND.border).lineWidth(0.5).stroke();
 
@@ -183,17 +183,17 @@ function drawDetailTable(doc, y, data) {
 function drawInsightBox(doc, y, data) {
   y += 22;
   const BH = 80;
-  // fond violet dégradé simulé
+  // fond violet degrade simule
   doc.roundedRect(MARGIN, y, INNER_W, BH, 10).fill(BRAND.dark);
   doc.roundedRect(MARGIN, y, 5, BH, 3).fill(BRAND.violet);
 
   doc.fontSize(11).font('Helvetica-Bold').fillColor(BRAND.white)
-     .text('💡 Ce que vous pourriez économiser', MARGIN + 18, y + 12);
+     .text('Ce que vous pourriez economiser', MARGIN + 18, y + 12);
 
   doc.fontSize(9.5).font('Helvetica').fillColor('#C4B5FD')
      .text(
-       `En ouvrant votre propre boutique e-commerce, vous économiseriez environ ` +
-       `${data.annualSaving.toFixed(2)} € par an en commissions eBay — soit ${(data.annualSaving/12).toFixed(2)} € par mois.`,
+       `En ouvrant votre propre boutique e-commerce, vous economiseriez environ ` +
+       `${data.annualSaving.toFixed(2)} EUR par an en commissions eBay - soit ${(data.annualSaving/12).toFixed(2)} EUR par mois.`,
        MARGIN + 18, y + 32,
        { width: INNER_W - 30 }
      );
@@ -207,7 +207,7 @@ function drawCTA(doc, y) {
   doc.roundedRect(MARGIN, y, INNER_W, BH, 8).fill(BRAND.violet);
 
   doc.fontSize(10).font('Helvetica-Bold').fillColor(BRAND.white)
-     .text('Prêt à récupérer vos marges ? → www.beassistscan.com', MARGIN, y + 17, {
+     .text('Pret a recuperer vos marges ? -> www.beassistscan.com', MARGIN, y + 17, {
        width: INNER_W, align: 'center'
      });
 
@@ -221,7 +221,7 @@ function drawFooter(doc) {
 
   doc.fontSize(7.5).font('Helvetica').fillColor('#A78BFA')
      .text(
-       '© 2026 BeassistScan – Beassist Agency · beassistscan.com · contact@beassistnow.com',
+       '(c) 2026 BeassistScan - Beassist Agency . beassistscan.com . contact@beassistnow.com',
        MARGIN, fy + 13,
        { width: INNER_W, align: 'center' }
      );
