@@ -94,21 +94,61 @@ router.post('/generate-report-ebay', async (req, res) => {
   try {
     const { email, storeName, lang } = req.body;
     if (!email) return res.status(400).json({ error: 'Email requis' });
+    const isTestMode = String(req.query.test || '').toLowerCase() === 'true';
 
-    // --- MODE TEST : données fictives (à supprimer quand eBay sera validé) ---
-    const fakeTransactions = [
-      { amount: { value: '149.99' }, feeAmount: { value: '19.50' } },
-      { amount: { value: '79.99' }, feeAmount: { value: '10.40' } },
-      { amount: { value: '200.00' }, feeAmount: { value: '26.00' } },
-      { amount: { value: '350.00' }, feeAmount: { value: '45.50' } },
-      { amount: { value: '89.99' }, feeAmount: { value: '11.70' } },
-    ];
     const { calculateFromTransactions } = require('../services/calculator.service');
-    const reportData = calculateFromTransactions(fakeTransactions);
+    let reportData;
+
+    if (isTestMode) {
+      const fakeTransactions = [
+        { amount: { value: '149.99' }, feeAmount: { value: '19.50' } },
+        { amount: { value: '79.99' }, feeAmount: { value: '10.40' } },
+        { amount: { value: '200.00' }, feeAmount: { value: '26.00' } },
+        { amount: { value: '350.00' }, feeAmount: { value: '45.50' } },
+        { amount: { value: '89.99' }, feeAmount: { value: '11.70' } },
+      ];
+      reportData = calculateFromTransactions(fakeTransactions);
+      console.log('🧪 Rapport en mode test (donnees fictives)');
+    } else {
+      // Récupération du dernier token eBay stocké
+      const latestToken = await prisma.ebayToken.findFirst({
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (!latestToken) {
+        return res.status(400).json({
+          error: 'Aucun compte eBay connecte. Connectez eBay avant de generer un rapport.',
+        });
+      }
+
+      let accessToken = latestToken.accessToken;
+
+      // Refresh token si expiré
+      if (new Date(latestToken.expiresAt).getTime() <= Date.now()) {
+        console.log('🔄 Token eBay expire, refresh en cours...');
+        const refreshed = await EbayService.refreshAccessToken(latestToken.refreshToken);
+        const expiresAt = new Date(Date.now() + (refreshed.expires_in || 7200) * 1000);
+
+        await prisma.ebayToken.create({
+          data: {
+            accessToken: refreshed.access_token,
+            refreshToken: refreshed.refresh_token || latestToken.refreshToken,
+            expiresAt,
+            userId: latestToken.userId || undefined,
+          },
+        });
+
+        accessToken = refreshed.access_token;
+      }
+
+      const transactions = await EbayService.getTransactions(accessToken);
+      reportData = calculateFromTransactions(transactions || []);
+      console.log(`📊 Transactions eBay recuperees: ${reportData.rowCount}`);
+    }
 
     // Génération du PDF
     const { generateReport } = require('../services/pdf.service');
-    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique test', lang);
+    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique', lang);
     console.log('✅ PDF généré:', pdfPath);
 
     // Envoi du mail (si SMTP configuré)
@@ -117,12 +157,10 @@ router.post('/generate-report-ebay', async (req, res) => {
     await Promise.race([sendReport(email, pdfPath), mailTimeout]);
 
     // Sauvegarde en base (optionnelle)
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
     await prisma.lead.create({
       data: {
         email,
-        storeName: storeName || 'Non renseigné',
+        storeName: storeName || 'Non renseigne',
         totalSales: reportData.totalSales,
         totalFees: reportData.totalFees,
         annualSaving: reportData.annualSaving,
@@ -131,13 +169,11 @@ router.post('/generate-report-ebay', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Rapport envoyé ! (mode test)',
-      preview: reportData,
+      message: isTestMode ? 'Rapport envoye ! (mode test)' : 'Rapport envoye !',
     });
-    // --- FIN MODE TEST ---
 
   } catch (error) {
-    console.error('Erreur mode test :', error);
+    console.error('Erreur generation rapport :', error);
     res.status(500).json({ error: 'Erreur lors de la génération du rapport' });
   }
 });

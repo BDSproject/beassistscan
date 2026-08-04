@@ -41,20 +41,29 @@ class EbayService {
   }
 
   static async refreshAccessToken(refreshToken) {
-    const url = 'https://api.ebay.com/identity/v1/oauth2/token';
-    const basicAuth = Buffer.from(`${process.env.EBAY_CLIENT_ID}:${process.env.EBAY_CLIENT_SECRET}`).toString('base64');
+    const isProd = process.env.EBAY_ENV === 'production';
+    const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
+    const clientSecret = isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET;
+    const tokenBaseUrl = isProd ? 'https://api.ebay.com' : 'https://api.sandbox.ebay.com';
+    const url = `${tokenBaseUrl}/identity/v1/oauth2/token`;
+    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const params = new URLSearchParams();
     params.append('grant_type', 'refresh_token');
     params.append('refresh_token', refreshToken);
 
-    const response = await axios.post(url, params, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: `Basic ${basicAuth}`,
-      },
-    });
-    return response.data;
+    try {
+      const response = await axios.post(url, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${basicAuth}`,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Erreur refresh token eBay:', error.response?.data || error.message);
+      throw new Error('Impossible de rafraichir le token eBay');
+    }
   }
 
   // Récupère les transactions financières des 90 derniers jours (maximum)
