@@ -25,6 +25,7 @@
     "pdfkit": "^0.14.0",
     "pm2": "^7.0.3",
     "prisma": "^5.0.0",
+    "resend": "^6.18.1",
     "stripe": "^22.3.2"
   },
   "devDependencies": {
