@@ -1,5 +1,4 @@
 function calculateFromTransactions(transactions,) {
-  let day = 90;
   let totalSales = 0;
   let totalFees = 0;
 

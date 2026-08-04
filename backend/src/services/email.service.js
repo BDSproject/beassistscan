@@ -9,7 +9,7 @@ function createTransporter() {
     return nodemailer.createTransport({
       host: 'smtp.resend.com',
       port: 465,
-      secure: true,
+      secure: true, // SSL direct sur 465
       auth: {
         user: 'resend',
         pass: process.env.RESEND_API_KEY,
@@ -35,8 +35,11 @@ function createTransporter() {
 async function sendReport(email, pdfPath) {
   const transporter = createTransporter();
 
+  // Si RESEND_DOMAIN_VERIFIED=true → domaine perso, sinon domaine Resend par défaut
   const from = process.env.RESEND_API_KEY
-    ? 'BeassistScan <rapport@beassistnow.com>'
+    ? (process.env.RESEND_DOMAIN_VERIFIED === 'true'
+        ? 'BeassistScan <rapport@beassistnow.com>'
+        : 'BeassistScan <onboarding@resend.dev>')
     : (process.env.FROM_EMAIL || 'contact@beassistnow.com');
 
   const attachments = [];
