@@ -491,11 +491,12 @@
           <h4 data-i18n="agency.feature" class="font-bold mb-1">🤝 Accompagnement complet par notre agence</h4>
           <p data-i18n="agency.feature.text" class="text-white/70 text-sm">Import catalogue · Design · Synchronisation stocks · SEO · Suivi</p>
         </div>
-        <a href="https://beassistnow.com/contact" target="_blank" data-i18n="agency.cta" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">
+        <a href="mailto:contact@beassistnow.com" target="_blank" data-i18n="agency.cta" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">
           👉 Demander un devis gratuit
         </a>
       </div>
     </div>
+   
 
     <!-- ==================== CONFIANCE ==================== -->
     <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -546,6 +547,21 @@
   </footer>
 
   <!-- ==================== SCRIPTS ==================== -->
+   <!-- =========================================================== -->
+  <!-- 1.  BANNIÈRE COOKIES (script immédiat)                       -->
+  <!-- =========================================================== -->
+  <script>
+    (function() {
+      const banner = document.getElementById('cookie-banner');
+      if (!localStorage.getItem('cookieConsent')) banner.classList.remove('hidden');
+      document.getElementById('cookie-accept').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'accepted'); banner.classList.add('hidden'); });
+      document.getElementById('cookie-refuse').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'refused'); banner.classList.add('hidden'); });
+    })();
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 2.  FONCTIONS PRINCIPALES (UI, navigation, etc.)            -->
+  <!-- =========================================================== -->
   <script>
     // ── Onglets login/register ──
     function switchTab(tab) {
@@ -619,6 +635,35 @@
       }
     }
 
+    // ── Toast (notification popup) ──
+    function showToast(message, type = 'success') {
+      const colors = {
+        success: 'bg-green-600',
+        error: 'bg-red-600',
+        warning: 'bg-amber-500'
+      };
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 z-50 ${colors[type]} text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all duration-300 transform translate-x-full`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      // Animation d’entrée
+      requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+      });
+
+      // Disparition automatique après 5 secondes
+      setTimeout(() => {
+        toast.style.transform = 'translateX(calc(100% + 20px))';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 3.  LOGIQUE D’AUTHENTIFICATION, PARAMÈTRES URL, ÉTAPES     -->
+  <!-- =========================================================== -->
+  <script>
     (function() {
       const urlParams = new URLSearchParams(window.location.search);
 
@@ -641,7 +686,6 @@
       }
 
       // Erreur eBay
-
       if (urlParams.get('connected') === 'false') {
         const reason = urlParams.get('reason');
         const detail = urlParams.get('detail');
@@ -656,67 +700,56 @@
         document.getElementById('stepEbay')?.appendChild(el);
         window.history.replaceState({}, document.title, window.location.pathname);
       }
-// connected=true → afficher l'étape Rapport, pré-remplir email, scroll vers formulaire
 
-if (urlParams.get('connected') === 'true') {
-  // Nettoyer l'URL
-  window.history.replaceState({}, document.title, window.location.pathname);
+      // Connexion eBay réussie → afficher le formulaire de rapport et scroll
+      if (urlParams.get('connected') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showStep('stepReport');
 
-  // Afficher l'étape Rapport
-  showStep('stepReport');
+        // Bandeau de succès (toast)
+        showToast(t('msg.ebay.connected') || '✅ Compte eBay connecté avec succès !', 'success');
 
-  // --- 1. Bandeau de succès ---
-  const banner = document.createElement('div');
-  banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all duration-300';
-  banner.textContent = t('msg.ebay.connected');
-  document.body.appendChild(banner);
-  setTimeout(() => {
-    banner.style.opacity = '0';
-    setTimeout(() => banner.remove(), 300);
-  }, 5000);
+        // Scroll vers le formulaire
+        setTimeout(() => {
+          const reportSection = document.getElementById('report-section');
+          if (reportSection) {
+            reportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
 
-  // --- 2. Scroll automatique vers le formulaire ---
-  setTimeout(() => {
-    const reportSection = document.getElementById('report-section');
-    if (reportSection) {
-      reportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, 300);
-
-  // --- 3. Pré-remplir l'email si l'utilisateur est connecté ---
-  fetch('/auth/me')
-    .then(r => r.json())
-    .then(data => {
-      if (data.user) {
-        document.getElementById('loginLink')?.classList.add('hidden');
-        document.getElementById('dashboardLink')?.classList.remove('hidden');
-        const emailInput = document.getElementById('email');
-        if (emailInput && !emailInput.value) {
-          emailInput.value = data.user.email || '';
-        }
+        // Pré‑remplir l'email si l'utilisateur a déjà un compte
+        fetch('/auth/me')
+          .then(r => r.json())
+          .then(data => {
+            if (data.user) {
+              document.getElementById('loginLink')?.classList.add('hidden');
+              document.getElementById('dashboardLink')?.classList.remove('hidden');
+              const emailInput = document.getElementById('email');
+              if (emailInput && !emailInput.value) {
+                emailInput.value = data.user.email || '';
+              }
+            }
+          })
+          .catch(() => {});
+      } else {
+        // Pas de paramètre connected → on vérifie simplement la session
+        fetch('/auth/me')
+          .then(r => r.json())
+          .then(data => {
+            if (data.user) {
+              document.getElementById('loginLink')?.classList.add('hidden');
+              document.getElementById('dashboardLink')?.classList.remove('hidden');
+              const emailInput = document.getElementById('email');
+              if (emailInput && !emailInput.value) {
+                emailInput.value = data.user.email || '';
+              }
+            }
+          })
+          .catch(() => {});
+        showStep('stepEbay');
       }
-    })
-    .catch(() => {});
 
-} else {
-  // Vérifier si session active → si oui, afficher les liens et pré-remplir
-  fetch('/auth/me')
-    .then(r => r.json())
-    .then(data => {
-      if (data.user) {
-        document.getElementById('loginLink')?.classList.add('hidden');
-        document.getElementById('dashboardLink')?.classList.remove('hidden');
-        const emailInput = document.getElementById('email');
-        if (emailInput && !emailInput.value) {
-          emailInput.value = data.user.email || '';
-        }
-      }
-    })
-    .catch(() => {});
-  showStep('stepEbay');
-}
-
-      // ── Login compte ──
+      // ── Login ──
       document.getElementById('formLogin').addEventListener('submit', async function(e) {
         e.preventDefault();
         const err = document.getElementById('loginError');
@@ -724,14 +757,16 @@ if (urlParams.get('connected') === 'true') {
         const res = await fetch('/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: document.getElementById('loginEmail').value.trim(), password: document.getElementById('loginPassword').value }),
+          body: JSON.stringify({
+            email: document.getElementById('loginEmail').value.trim(),
+            password: document.getElementById('loginPassword').value
+          }),
         });
         const data = await res.json();
         if (data.success) {
           document.getElementById('loginLink')?.classList.add('hidden');
           document.getElementById('dashboardLink')?.classList.remove('hidden');
           document.getElementById('accountPanel')?.classList.add('hidden');
-          // Rediriger vers eBay si pas encore connecté
           window.location.href = '/api/ebay/auth';
         } else {
           err.textContent = data.error || t('auth.login.error');
@@ -739,7 +774,7 @@ if (urlParams.get('connected') === 'true') {
         }
       });
 
-      // ── Register compte ──
+      // ── Register ──
       document.getElementById('formRegister').addEventListener('submit', async function(e) {
         e.preventDefault();
         const err = document.getElementById('registerError');
@@ -764,66 +799,100 @@ if (urlParams.get('connected') === 'true') {
           err.classList.remove('hidden');
         }
       });
-
-      // ── Formulaire Rapport ──
-      const reportForm = document.getElementById('reportForm');
-      if (reportForm) {
-        reportForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const btn = document.getElementById('submitBtn');
-          const btnText = document.getElementById('btnText');
-          const spinner = document.getElementById('btnSpinner');
-          const resultArea = document.getElementById('resultArea');
-          btn.disabled = true;
-          btnText.textContent = t('form.submitting');
-          spinner.classList.remove('hidden');
-          resultArea.classList.add('hidden');
-          const storeName = document.getElementById('storeName').value.trim();
-          const email = document.getElementById('email').value.trim();
-          const month = document.getElementById('reportMonth')?.value || '';
-          try {
-            const response = await fetch('/api/ebay/generate-report-ebay', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, storeName, month }),
-            });
-            const data = await response.json();
-            btn.disabled = false;
-            btnText.textContent = '🔍 Analyser mes frais gratuitement';
-            spinner.classList.add('hidden');
-            if (response.ok && data.success) {
-              resultArea.classList.remove('hidden');
-              resultArea.innerHTML = `
-                <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-6">
-                  <div class="flex items-center gap-2 text-violet-700 font-bold text-base mb-4">
-                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                    Rapport envoyé avec succès !
-                  </div>
-                  <div class="grid grid-cols-3 gap-3 text-center">
-                    <div class="bg-white p-3 rounded-xl shadow-sm"><p class="text-xs text-gray-400">CA total</p><p class="text-lg font-extrabold text-gray-800">${data.preview.totalSales.toFixed(2)} €</p></div>
-                    <div class="bg-red-50 p-3 rounded-xl border border-red-100"><p class="text-xs text-red-400">Commissions</p><p class="text-lg font-extrabold text-red-600">${data.preview.totalFees.toFixed(2)} €</p></div>
-                    <div class="bg-green-50 p-3 rounded-xl border border-green-100"><p class="text-xs text-green-500">Économie/an</p><p class="text-lg font-extrabold text-green-600">${data.preview.annualSaving.toFixed(2)} €</p></div>
-                  </div>
-                  <p class="text-xs text-gray-500 mt-4 text-center">📧 Rapport PDF envoyé à ${email}</p>
-                </div>`;
-              // Proposer création compte après résultats
-              document.getElementById('saveAccountPrompt')?.classList.remove('hidden');
-            } else {
-              throw new Error(data.error || t('msg.error.generic'));
-            }
-          } catch (error) {
-            btn.disabled = false;
-            btnText.textContent = t('form.submit');
-            spinner.classList.add('hidden');
-            resultArea.classList.remove('hidden');
-            resultArea.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">${error.message}</div>`;
-          }
-        });
-      }
     })();
   </script>
 
-  <!-- i18n ENGINE -->
+  <!-- =========================================================== -->
+  <!-- 4.  GESTION DU FORMULAIRE DE RAPPORT (avec showToast)       -->
+  <!-- =========================================================== -->
+  <script>
+    (function() {
+      const reportForm = document.getElementById('reportForm');
+      if (!reportForm) return;
+
+      reportForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+        const resultArea = document.getElementById('resultArea');
+
+        // Désactiver le bouton et afficher le spinner
+        btn.disabled = true;
+        btnText.textContent = 'Analyse en cours...';
+        spinner.classList.remove('hidden');
+        resultArea.classList.add('hidden');
+
+        const storeName = document.getElementById('storeName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const month = document.getElementById('reportMonth')?.value || '';
+
+        try {
+          const response = await fetch('/api/ebay/generate-report-ebay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, storeName, month }),
+          });
+          const data = await response.json();
+
+          // Réactiver le bouton
+          btn.disabled = false;
+          btnText.textContent = '🔍 Analyser mes frais gratuitement';
+          spinner.classList.add('hidden');
+
+          if (response.ok && data.success) {
+            // ---- 1. Notification toast ----
+            showToast('✅ Rapport envoyé avec succès ! Vérifiez votre boîte mail (pensez au dossier spam).', 'success');
+
+            // ---- 2. Afficher les résultats ----
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `
+              <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-6">
+                <div class="flex items-center justify-between gap-2 text-violet-700 font-bold text-base mb-4">
+                  <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    Rapport envoyé avec succès !
+                  </span>
+                  <button onclick="this.closest('#resultArea').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+                </div>
+                <div class="grid grid-cols-3 gap-3 text-center">
+                  <div class="bg-white p-3 rounded-xl shadow-sm"><p class="text-xs text-gray-400">CA total</p><p class="text-lg font-extrabold text-gray-800">${data.preview.totalSales.toFixed(2)} €</p></div>
+                  <div class="bg-red-50 p-3 rounded-xl border border-red-100"><p class="text-xs text-red-400">Commissions</p><p class="text-lg font-extrabold text-red-600">${data.preview.totalFees.toFixed(2)} €</p></div>
+                  <div class="bg-green-50 p-3 rounded-xl border border-green-100"><p class="text-xs text-green-500">Économie/an</p><p class="text-lg font-extrabold text-green-600">${data.preview.annualSaving.toFixed(2)} €</p></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 text-center">📧 Rapport PDF envoyé à ${email}</p>
+              </div>
+            `;
+
+            // ---- 3. Scroll vers le résultat ----
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // ---- 4. Afficher la proposition de création de compte ----
+            document.getElementById('saveAccountPrompt')?.classList.remove('hidden');
+          } else {
+            throw new Error(data.error || 'Une erreur est survenue.');
+          }
+        } catch (error) {
+          // En cas d'erreur, réactiver le bouton et afficher l'erreur
+          btn.disabled = false;
+          btnText.textContent = '🔍 Analyser mes frais gratuitement';
+          spinner.classList.add('hidden');
+          resultArea.classList.remove('hidden');
+          resultArea.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+              ❌ Erreur : ${error.message}
+            </div>
+          `;
+          showToast('❌ Erreur : ' + error.message, 'error');
+        }
+      });
+    })();
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 5.  MOTEUR D'INTERNATIONALISATION (i18n)                     -->
+  <!-- =========================================================== -->
   <script>
     (function () {
       var LANGS = { fr: 'FR', en: 'EN', es: 'ES', de: 'DE', it: 'IT' };

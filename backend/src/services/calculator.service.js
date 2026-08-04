@@ -1,4 +1,5 @@
-function calculateFromTransactions(transactions) {
+function calculateFromTransactions(transactions,) {
+  let day = 90;
   let totalSales = 0;
   let totalFees = 0;
 
@@ -14,7 +15,7 @@ function calculateFromTransactions(transactions) {
   });
 
   // Estimation annuelle basée sur les 90 derniers jours
-  const days = 90; // en supposant que l'API couvre 90 jours
+  const days = 90;
   const dailyFees = totalFees / days;
   const annualSaving = (dailyFees * 365).toFixed(2);
 

@@ -14,10 +14,10 @@ async function sendReport(email, pdfPath) {
   const mailOptions = {
     from: process.env.FROM_EMAIL,
     to: email,
-    subject: '📊 Votre Rapport de Rentabilité eBay - Beassist Agency',
+    subject: '📊 Votre Rapport de Rentabilité eBay - Beassistscan',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #E5E7EB; border-radius: 8px;">
-        <h1 style="color: #1E3A8A; text-align: center;">Beassist Agency</h1>
+        <h1 style="color: #1E3A8A; text-align: center;">Beassistscan</h1>
         <h2 style="text-align: center; color: #374151;">Voici votre analyse eBay !</h2>
         <p>Bonjour,</p>
         <p>Nous avons analysé vos ventes eBay et le rapport complet est en pièce jointe.</p>
