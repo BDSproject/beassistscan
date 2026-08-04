@@ -612,9 +612,9 @@
 
       const desc = document.getElementById('stepDescription');
       if (!desc) return;
-      if (step === 'stepEbay') desc.textContent = 'Connectez votre boutique eBay en 1 clic.';
+      if (step === 'stepEbay') desc.textContent = t('card.subtitle') || 'Connectez votre boutique eBay en 1 clic.';
       if (step === 'stepReport') {
-        desc.textContent = 'Analysez vos frais et découvrez vos économies.';
+        desc.textContent = t('card.subtitle.report') || 'Analysez vos frais et découvrez vos économies.';
         populateMonths();
       }
     }
@@ -627,7 +627,7 @@
         window.history.replaceState({}, document.title, window.location.pathname);
         const b = document.createElement('div');
         b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
-        b.textContent = '✅ Paiement réussi ! Votre rapport vous sera envoyé par email.';
+        b.textContent = t('payment.success');
         document.body.appendChild(b);
         setTimeout(() => b.remove(), 8000);
       }
@@ -635,7 +635,7 @@
         window.history.replaceState({}, document.title, window.location.pathname);
         const b = document.createElement('div');
         b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
-        b.textContent = '⚠️ Paiement annulé.';
+        b.textContent = t('payment.cancelled');
         document.body.appendChild(b);
         setTimeout(() => b.remove(), 6000);
       }
@@ -645,10 +645,10 @@
       if (urlParams.get('connected') === 'false') {
         const reason = urlParams.get('reason');
         const detail = urlParams.get('detail');
-        let msg = '❌ La connexion eBay a échoué.';
-        if (reason === 'token_error') msg += ' Erreur token.';
-        if (reason === 'csrf') msg += ' Erreur sécurité CSRF.';
-        if (reason === 'no_code') msg += ' Aucun code eBay reçu.';
+        let msg = t('ebay.error.generic');
+        if (reason === 'token_error') msg += ' ' + t('ebay.error.token');
+        if (reason === 'csrf') msg += ' ' + t('ebay.error.csrf');
+        if (reason === 'no_code') msg += ' ' + t('ebay.error.nocode');
         if (detail) { try { msg += ' · ' + JSON.parse(decodeURIComponent(detail))?.error_description; } catch(e) {} }
         const el = document.createElement('div');
         el.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
@@ -668,7 +668,7 @@ if (urlParams.get('connected') === 'true') {
   // --- 1. Bandeau de succès ---
   const banner = document.createElement('div');
   banner.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all duration-300';
-  banner.textContent = '✅ Compte eBay connecté avec succès !';
+  banner.textContent = t('msg.ebay.connected');
   document.body.appendChild(banner);
   setTimeout(() => {
     banner.style.opacity = '0';
@@ -734,7 +734,7 @@ if (urlParams.get('connected') === 'true') {
           // Rediriger vers eBay si pas encore connecté
           window.location.href = '/api/ebay/auth';
         } else {
-          err.textContent = data.error || 'Identifiants incorrects.';
+          err.textContent = data.error || t('auth.login.error');
           err.classList.remove('hidden');
         }
       });
@@ -760,7 +760,7 @@ if (urlParams.get('connected') === 'true') {
           document.getElementById('accountPanel')?.classList.add('hidden');
           window.location.href = '/api/ebay/auth';
         } else {
-          err.textContent = data.error || 'Erreur lors de l\'inscription.';
+          err.textContent = data.error || t('auth.register.error');
           err.classList.remove('hidden');
         }
       });
@@ -775,7 +775,7 @@ if (urlParams.get('connected') === 'true') {
           const spinner = document.getElementById('btnSpinner');
           const resultArea = document.getElementById('resultArea');
           btn.disabled = true;
-          btnText.textContent = 'Analyse en cours...';
+          btnText.textContent = t('form.submitting');
           spinner.classList.remove('hidden');
           resultArea.classList.add('hidden');
           const storeName = document.getElementById('storeName').value.trim();
@@ -809,11 +809,11 @@ if (urlParams.get('connected') === 'true') {
               // Proposer création compte après résultats
               document.getElementById('saveAccountPrompt')?.classList.remove('hidden');
             } else {
-              throw new Error(data.error || 'Une erreur est survenue.');
+              throw new Error(data.error || t('msg.error.generic'));
             }
           } catch (error) {
             btn.disabled = false;
-            btnText.textContent = '🔍 Analyser mes frais gratuitement';
+            btnText.textContent = t('form.submit');
             spinner.classList.add('hidden');
             resultArea.classList.remove('hidden');
             resultArea.innerHTML = `<div class="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">${error.message}</div>`;

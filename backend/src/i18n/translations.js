@@ -153,6 +153,9 @@ const translations = {
     'footer.cgv': 'CGV',
 
     // Mois
+    'card.subtitle.report': 'Analysez vos frais et découvrez vos économies.',
+    'msg.ebay.connected': '✅ Compte eBay connecté avec succès !',
+    'msg.error.generic': 'Une erreur est survenue.',
     'period.months': '12 derniers mois',
   },
 
@@ -287,6 +290,9 @@ const translations = {
     'footer.legal': 'Legal notice',
     'footer.privacy': 'Privacy',
     'footer.cgv': 'Terms',
+    'card.subtitle.report': 'Analyze your fees and discover your savings.',
+    'msg.ebay.connected': '✅ eBay account connected successfully!',
+    'msg.error.generic': 'An error occurred.',
     'period.months': 'Last 12 months',
   },
 
@@ -421,6 +427,9 @@ const translations = {
     'footer.legal': 'Aviso legal',
     'footer.privacy': 'Privacidad',
     'footer.cgv': 'Condiciones',
+    'card.subtitle.report': 'Analiza tus tarifas y descubre tus ahorros.',
+    'msg.ebay.connected': '✅ ¡Cuenta eBay conectada con éxito!',
+    'msg.error.generic': 'Se produjo un error.',
     'period.months': 'Últimos 12 meses',
   },
 
@@ -555,6 +564,9 @@ const translations = {
     'footer.legal': 'Impressum',
     'footer.privacy': 'Datenschutz',
     'footer.cgv': 'AGB',
+    'card.subtitle.report': 'Analysieren Sie Ihre Gebühren und entdecken Sie Ihre Einsparungen.',
+    'msg.ebay.connected': '✅ eBay-Konto erfolgreich verbunden!',
+    'msg.error.generic': 'Ein Fehler ist aufgetreten.',
     'period.months': 'Letzte 12 Monate',
   },
 
@@ -689,6 +701,9 @@ const translations = {
     'footer.legal': 'Note legali',
     'footer.privacy': 'Privacy',
     'footer.cgv': 'Termini',
+    'card.subtitle.report': 'Analizza le tue commissioni e scopri i tuoi risparmi.',
+    'msg.ebay.connected': '✅ Account eBay collegato con successo!',
+    'msg.error.generic': 'Si è verificato un errore.',
     'period.months': 'Ultimi 12 mesi',
   },
 };
