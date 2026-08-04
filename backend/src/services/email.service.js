@@ -19,6 +19,7 @@ async function sendViaResendAPI(to, subject, html, attachments) {
 
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(payload);
+    console.log(`📧 Resend API → to: ${to}, attachments: ${payload.attachments.length}, from: ${payload.from}`);
     const req = https.request({
       hostname: 'api.resend.com',
       path: '/emails',
@@ -87,7 +88,11 @@ async function sendReport(email, pdfPath) {
 
   const attachments = [];
   if (pdfPath && fs.existsSync(pdfPath)) {
+    const stats = fs.statSync(pdfPath);
+    console.log(`📄 PDF trouvé: ${pdfPath} (${stats.size} octets)`);
     attachments.push({ filename: `Rapport_BeassistScan_${Date.now()}.pdf`, path: pdfPath });
+  } else {
+    console.warn(`⚠️ PDF absent ou chemin vide: "${pdfPath}"`);
   }
 
   // Priorité : API Resend (HTTP, aucun port bloqué)

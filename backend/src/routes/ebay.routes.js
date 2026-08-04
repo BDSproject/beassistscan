@@ -109,6 +109,7 @@ router.post('/generate-report-ebay', async (req, res) => {
     // Génération du PDF
     const { generateReport } = require('../services/pdf.service');
     const pdfPath = await generateReport(reportData, email, storeName || 'Boutique test');
+    console.log('✅ PDF généré:', pdfPath);
 
     // Envoi du mail (si SMTP configuré)
     const { sendReport } = require('../services/email.service');
