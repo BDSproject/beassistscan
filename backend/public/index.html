@@ -255,29 +255,29 @@
         <span data-i18n="hero.title1">Découvrez ce qu'eBay</span><br>
         <span data-i18n="hero.title2" class="shimmer-text">vous coûte vraiment</span>
       </h1>
-      <p class="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 fade-in-up-delay-2">
+      <p data-i18n="hero.subtitle" class="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 fade-in-up-delay-2">
         Connectez votre boutique en 1 clic et recevez votre rapport de rentabilité gratuit en moins de 2 minutes.
       </p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up-delay-3">
         <a href="#stepConnect" class="btn-ebay glow-btn text-white font-bold py-4 px-8 rounded-xl text-base flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          Analyser mes frais gratuitement
+          <span data-i18n="hero.cta">Analyser mes frais gratuitement</span>
         </a>
-        <div class="text-white/50 text-sm">✦ Sans CB · Résultat immédiat</div>
+        <div data-i18n="hero.nocb" class="text-white/50 text-sm">✦ Sans CB · Résultat immédiat</div>
       </div>
       <!-- Stats hero -->
       <div class="grid grid-cols-3 gap-4 mt-14 max-w-lg mx-auto fade-in-up-delay-3">
         <div class="text-center">
-          <div class="text-3xl font-extrabold text-white">2 min</div>
-          <div class="text-white/50 text-xs mt-1">pour la génération du rapport</div>
+          <div data-i18n="hero.stat1.value" class="text-3xl font-extrabold text-white">+2 800€</div>
+          <div data-i18n="hero.stat1.label" class="text-white/50 text-xs mt-1">Récupérés en moyenne / an</div>
         </div>
         <div class="text-center border-x border-white/10">
-          <div class="text-3xl font-extrabold text-white">3 000+</div>
-          <div class="text-white/50 text-xs mt-1">Vendeurs analysés</div>
+          <div data-i18n="hero.stat2.value" class="text-3xl font-extrabold text-white">3 000+</div>
+          <div data-i18n="hero.stat2.label" class="text-white/50 text-xs mt-1">Vendeurs analysés</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-extrabold text-white">100%</div>
-          <div class="text-white/50 text-xs mt-1">Gratuit & sans CB</div>
+          <div data-i18n="hero.stat3.value" class="text-3xl font-extrabold text-white">100%</div>
+          <div data-i18n="hero.stat3.label" class="text-white/50 text-xs mt-1">Gratuit & sans CB</div>
         </div>
       </div>
     </div>
@@ -292,7 +292,7 @@
         </div>
         <div>
           <h2 data-i18n="card.title" class="text-xl font-bold text-gray-800">Rapport de Rentabilité</h2>
-          <p id="stepDescription" class="text-gray-500 text-sm">Connectez votre eBay pour recevoir votre analyse gratuite.</p>
+          <p id="stepDescription" data-i18n="card.subtitle" class="text-gray-500 text-sm">Connectez votre eBay pour recevoir votre analyse gratuite.</p>
         </div>
       </div>
 
@@ -310,44 +310,44 @@
           <p data-i18n="ebay.connect.subtitle" class="text-sm text-gray-500 mb-6">En 1 clic, on analyse vos frais des 90 derniers jours. Aucun mot de passe stocké.</p>
           <button onclick="window.location.href='/api/ebay/auth'" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3.5 px-8 rounded-xl cursor-pointer text-base">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-            Connecter mon compte eBay
+            <span data-i18n="ebay.connect.btn">Connecter mon compte eBay</span>
           </button>
           <div class="flex items-center justify-center gap-5 mt-5 text-xs text-gray-400">
-            <span class="flex items-center gap-1">✓ Gratuit</span>
-            <span class="flex items-center gap-1">✓ 100% sécurisé</span>
-            <span class="flex items-center gap-1">✓ Révocable à tout moment</span>
+            <span data-i18n="ebay.trust.secure" class="flex items-center gap-1">✓ Gratuit</span>
+            <span data-i18n="ebay.trust.free" class="flex items-center gap-1">✓ 100% sécurisé</span>
+            <span data-i18n="ebay.trust.revoke" class="flex items-center gap-1">✓ Révocable à tout moment</span>
           </div>
         </div>
 
         <!-- Lien connexion compte existant -->
         <p class="text-center text-xs text-gray-400">
-          Déjà un compte BeassistScan ?
-          <button onclick="showAccountPanel()" class="text-violet-600 font-semibold hover:underline">Se connecter</button>
+          <span data-i18n="ebay.already">Déjà un compte BeassistScan ?</span>
+          <button onclick="showAccountPanel()" data-i18n="ebay.signin" class="text-violet-600 font-semibold hover:underline">Se connecter</button>
         </p>
 
         <!-- Panel connexion compte (caché par défaut) -->
         <div id="accountPanel" class="hidden border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
           <div class="flex rounded-lg bg-gray-100 p-0.5 gap-0.5">
-            <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition bg-white shadow text-violet-700">Connexion</button>
-            <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition text-gray-500 hover:text-gray-700">Inscription</button>
+            <button id="tabLogin" onclick="switchTab('login')" data-i18n="auth.login" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition bg-white shadow text-violet-700">Connexion</button>
+            <button id="tabRegister" onclick="switchTab('register')" data-i18n="auth.register" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition text-gray-500 hover:text-gray-700">Inscription</button>
           </div>
           <form id="formLogin" class="space-y-3">
-            <input type="email" id="loginEmail" required placeholder="Email"
+            <input type="email" id="loginEmail" required data-i18n-placeholder="auth.email" placeholder="Email"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
-            <input type="password" id="loginPassword" required placeholder="Mot de passe"
+            <input type="password" id="loginPassword" required data-i18n-placeholder="auth.password.placeholder" placeholder="Mot de passe"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
             <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-            <button type="submit" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Se connecter</button>
+            <button type="submit" data-i18n="auth.login.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Se connecter</button>
           </form>
           <form id="formRegister" class="hidden space-y-3">
-            <input type="text" id="regFirstName" placeholder="Prénom (optionnel)"
+            <input type="text" id="regFirstName" data-i18n-placeholder="auth.firstname.placeholder" placeholder="Prénom (optionnel)"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
-            <input type="email" id="regEmail" required placeholder="Email"
+            <input type="email" id="regEmail" required data-i18n-placeholder="auth.email" placeholder="Email"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
-            <input type="password" id="regPassword" required placeholder="Mot de passe (8 car. min.)"
+            <input type="password" id="regPassword" required data-i18n-placeholder="auth.password.hint" placeholder="Mot de passe (8 car. min.)"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
             <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
-            <button type="submit" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Créer mon compte</button>
+            <button type="submit" data-i18n="auth.register.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Créer mon compte</button>
           </form>
         </div>
       </div>
@@ -360,30 +360,30 @@
           <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
           </div>
-          <span class="text-sm text-green-800 font-semibold">Compte eBay connecté</span>
-          <button id="logoutBtn" onclick="logout()" class="ml-auto text-xs text-gray-400 hover:text-red-500 transition">Déconnecter</button>
+          <span data-i18n="ebay.connected" class="text-sm text-green-800 font-semibold">Compte eBay connecté</span>
+          <button id="logoutBtn" onclick="logout()" data-i18n="nav.logout" class="ml-auto text-xs text-gray-400 hover:text-red-500 transition">Déconnecter</button>
         </div>
 
         <!-- Formulaire rapport -->
         <form id="reportForm" class="space-y-4">
           <div>
-            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5">Nom de votre boutique <span class="font-normal text-gray-400">(optionnel)</span></label>
-            <input type="text" id="storeName" name="storeName" placeholder="Ex: TechStoreFrance"
+            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5"><span data-i18n="form.storeName">Nom de votre boutique</span> <span data-i18n="form.storeName.optional" class="font-normal text-gray-400">(optionnel)</span></label>
+            <input type="text" id="storeName" name="storeName" data-i18n-placeholder="form.storeName.placeholder" placeholder="Ex: TechStoreFrance"
                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
           </div>
           <div>
-            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email pour recevoir votre rapport PDF</label>
-            <input type="email" id="email" name="email" required placeholder="contact@votre-boutique.com"
+            <label for="email" data-i18n="form.email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email pour recevoir votre rapport PDF</label>
+            <input type="email" id="email" name="email" required data-i18n-placeholder="form.email.placeholder" placeholder="contact@votre-boutique.com"
                    class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1.5">Période analysée</label>
+            <label data-i18n="form.period" class="block text-sm font-semibold text-gray-700 mb-1.5">Période analysée</label>
             <select id="reportMonth" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
-              <option value="">90 derniers jours (par défaut)</option>
+              <option value="" data-i18n="form.period.default">90 derniers jours (par défaut)</option>
             </select>
           </div>
           <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2">
-            <span id="btnText">🔍 Analyser mes frais gratuitement</span>
+            <span id="btnText" data-i18n="form.submit">🔍 Analyser mes frais gratuitement</span>
             <span id="btnSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
           </button>
         </form>
@@ -393,9 +393,9 @@
 
         <!-- Après résultats : création compte optionnelle -->
         <div id="saveAccountPrompt" class="hidden mt-4 p-4 bg-violet-50 border border-violet-100 rounded-xl">
-          <p class="text-sm font-semibold text-gray-700 mb-1">💾 Sauvegardez vos rapports</p>
-          <p class="text-xs text-gray-500 mb-3">Créez un compte gratuit pour retrouver tous vos rapports filtrés par mois.</p>
-          <button onclick="showAccountPanel(); document.getElementById('saveAccountPrompt').classList.add('hidden');" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">
+          <p data-i18n="account.save.title" class="text-sm font-semibold text-gray-700 mb-1">💾 Sauvegardez vos rapports</p>
+          <p data-i18n="account.save.subtitle" class="text-xs text-gray-500 mb-3">Créez un compte gratuit pour retrouver tous vos rapports filtrés par mois.</p>
+          <button onclick="showAccountPanel(); document.getElementById('saveAccountPrompt').classList.add('hidden');" data-i18n="account.save.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">
             Créer mon compte gratuitement
           </button>
         </div>
@@ -406,29 +406,29 @@
           <h3 data-i18n="payment.title" class="text-lg font-bold text-gray-800 mb-4 text-center">🔓 Aller plus loin</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="card-premium bg-white rounded-2xl p-5 relative">
-              <div class="absolute -top-2.5 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">POPULAIRE</div>
+              <div data-i18n="payment.report.badge" class="absolute -top-2.5 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">POPULAIRE</div>
               <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">📈</div>
-              <h4 class="font-bold text-gray-800 mb-1">Rapport Détaillé</h4>
-              <p class="text-xs text-gray-500 mb-3">Analyse complète avec insights actionnables.</p>
+              <h4 data-i18n="payment.report.title" class="font-bold text-gray-800 mb-1">Rapport Détaillé</h4>
+              <p data-i18n="payment.report.subtitle" class="text-xs text-gray-500 mb-3">Analyse complète avec insights actionnables.</p>
               <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Analyse par catégorie</li>
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Évolution mensuelle</li>
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Conseils personnalisés</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat1">Analyse par catégorie</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat2">Évolution mensuelle</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat3">Conseils personnalisés</span></li>
               </ul>
-              <div class="text-2xl font-extrabold text-violet-700 mb-3">5 €</div>
-              <a href="#" onclick="redirectToCheckout('report')" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🛒 Acheter</a>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3"><span data-i18n="payment.report.price">5</span> <span data-i18n="payment.currency">€</span></div>
+              <a href="#" onclick="redirectToCheckout('report')" data-i18n="payment.report.btn" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🛒 Acheter</a>
             </div>
             <div class="card-premium bg-white rounded-2xl p-5">
               <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">🔄</div>
-              <h4 class="font-bold text-gray-800 mb-1">Abonnement Pro</h4>
-              <p class="text-xs text-gray-500 mb-3">Suivi mensuel automatique de vos frais.</p>
+              <h4 data-i18n="payment.pro.title" class="font-bold text-gray-800 mb-1">Abonnement Pro</h4>
+              <p data-i18n="payment.pro.subtitle" class="text-xs text-gray-500 mb-3">Suivi mensuel automatique de vos frais.</p>
               <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Rapport mensuel auto</li>
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Alertes concurrentielles</li>
-                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span>Suivi en temps réel</li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat1">Rapport mensuel auto</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat2">Alertes concurrentielles</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat3">Suivi en temps réel</span></li>
               </ul>
-              <div class="text-2xl font-extrabold text-violet-700 mb-3">19 €<span class="text-xs font-normal text-gray-400">/mois</span></div>
-              <a href="#" onclick="redirectToCheckout('pro')" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🚀 S'abonner</a>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3"><span data-i18n="payment.pro.price">19</span> <span data-i18n="payment.currency">€</span><span data-i18n="payment.pro.period" class="text-xs font-normal text-gray-400">/mois</span></div>
+              <a href="#" onclick="redirectToCheckout('pro')" data-i18n="payment.pro.btn" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🚀 S'abonner</a>
             </div>
           </div>
           <p data-i18n="payment.secure" class="text-xs text-gray-400 text-center mt-3">Paiement sécurisé via Stripe · Annulation à tout moment</p>
@@ -438,60 +438,60 @@
 
     <!-- ==================== COMMENT ÇA MARCHE ==================== -->
     <div class="mt-16">
-      <h3 class="text-2xl font-bold text-center text-gray-800 mb-2">⚙️ Comment ça marche ?</h3>
-      <p class="text-center text-gray-500 text-sm mb-10">Simple, rapide, sans engagement</p>
+      <h3 data-i18n="how.title" class="text-2xl font-bold text-center text-gray-800 mb-2">⚙️ Comment ça marche ?</h3>
+      <p data-i18n="how.subtitle" class="text-center text-gray-500 text-sm mb-10">Simple, rapide, sans engagement</p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div class="text-center fade-in-up">
           <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">1</div>
-          <h4 class="font-bold text-gray-800 mb-1">Connexion sécurisée</h4>
-          <p class="text-sm text-gray-500">Connectez votre eBay en un clic. Aucun mot de passe stocké.</p>
+          <h4 data-i18n="how.step1.title" class="font-bold text-gray-800 mb-1">Connexion sécurisée</h4>
+          <p data-i18n="how.step1.text" class="text-sm text-gray-500">Connectez votre eBay en un clic. Aucun mot de passe stocké.</p>
         </div>
         <div class="text-center fade-in-up-delay-1">
           <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">2</div>
-          <h4 class="font-bold text-gray-800 mb-1">Analyse automatique</h4>
-          <p class="text-sm text-gray-500">Notre algorithme calcule exactement ce qu'eBay vous a prélevé.</p>
+          <h4 data-i18n="how.step2.title" class="font-bold text-gray-800 mb-1">Analyse automatique</h4>
+          <p data-i18n="how.step2.text" class="text-sm text-gray-500">Notre algorithme calcule exactement ce qu'eBay vous a prélevé.</p>
         </div>
         <div class="text-center fade-in-up-delay-2">
           <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">3</div>
-          <h4 class="font-bold text-gray-800 mb-1">Rapport PDF</h4>
-          <p class="text-sm text-gray-500">Recevez un PDF avec vos économies potentielles par email.</p>
+          <h4 data-i18n="how.step3.title" class="font-bold text-gray-800 mb-1">Rapport PDF</h4>
+          <p data-i18n="how.step3.text" class="text-sm text-gray-500">Recevez un PDF avec vos économies potentielles par email.</p>
         </div>
       </div>
     </div>
 
     <!-- ==================== EXEMPLE DE RAPPORT ==================== -->
     <div class="mt-16 card-main rounded-2xl p-8">
-      <h3 class="text-xl font-bold text-gray-800 mb-1">📈 Exemple de rapport</h3>
-      <p class="text-gray-400 text-sm mb-6">Résultats réels d'un vendeur sur 3 mois :</p>
+      <h3 data-i18n="example.title" class="text-xl font-bold text-gray-800 mb-1">📈 Exemple de rapport</h3>
+      <p data-i18n="example.subtitle" class="text-gray-400 text-sm mb-6">Résultats réels d'un vendeur sur 3 mois :</p>
       <div class="grid grid-cols-3 gap-3 text-center">
         <div class="stat-card p-4 rounded-xl">
-          <p class="text-xs text-gray-400 mb-1">CA total</p>
+          <p data-i18n="example.sales" class="text-xs text-gray-400 mb-1">CA total</p>
           <p class="text-2xl font-extrabold text-gray-800">8 450 €</p>
         </div>
         <div class="stat-card p-4 rounded-xl border-red-100">
-          <p class="text-xs text-red-400 mb-1">Commissions eBay</p>
+          <p data-i18n="example.fees" class="text-xs text-red-400 mb-1">Commissions eBay</p>
           <p class="text-2xl font-extrabold text-red-600">1 014 €</p>
         </div>
         <div class="stat-card p-4 rounded-xl" style="border-color:rgba(16,185,129,0.2)">
-          <p class="text-xs text-green-500 mb-1">Économie / an</p>
+          <p data-i18n="example.saving" class="text-xs text-green-500 mb-1">Économie / an</p>
           <p class="text-2xl font-extrabold text-green-600">4 056 €</p>
         </div>
       </div>
-      <p class="text-center text-gray-300 text-xs mt-4">* Taux de commission moyen de 12%</p>
+      <p data-i18n="example.note" class="text-center text-gray-300 text-xs mt-4">* Taux de commission moyen de 12%</p>
     </div>
 
     <!-- ==================== SECTION AGENCE ==================== -->
     <div class="mt-16 section-violet text-white rounded-2xl p-8 shadow-2xl overflow-hidden relative">
       <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
       <div class="relative z-10">
-        <div class="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-3 py-1 text-xs font-medium mb-4">🏪 Notre agence</div>
-        <h3 class="text-2xl font-bold mb-3">Votre propre site e-commerce,<br>sans les commissions eBay</h3>
-        <p class="text-white/75 text-sm mb-6 max-w-xl">Nous importons votre catalogue eBay dans une boutique indépendante. Gardez 100% de vos ventes, optimisez votre SEO Google et devenez indépendant des marketplaces.</p>
+        <div data-i18n="agency.badge" class="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-3 py-1 text-xs font-medium mb-4">🏪 Notre agence</div>
+        <h3 data-i18n="agency.title" class="text-2xl font-bold mb-3">Votre propre site e-commerce, sans les commissions eBay</h3>
+        <p data-i18n="agency.subtitle" class="text-white/75 text-sm mb-6 max-w-xl">Nous importons votre catalogue eBay dans une boutique indépendante. Gardez 100% de vos ventes, optimisez votre SEO Google et devenez indépendant des marketplaces.</p>
         <div class="bg-white/10 backdrop-blur rounded-xl p-5 mb-5 border border-white/10">
-          <h4 class="font-bold mb-1">🤝 Accompagnement complet par notre agence</h4>
-          <p class="text-white/70 text-sm">Import catalogue · Design · Synchronisation stocks · SEO · Suivi</p>
+          <h4 data-i18n="agency.feature" class="font-bold mb-1">🤝 Accompagnement complet par notre agence</h4>
+          <p data-i18n="agency.feature.text" class="text-white/70 text-sm">Import catalogue · Design · Synchronisation stocks · SEO · Suivi</p>
         </div>
-        <a href="https://beassistnow.com/contact" target="_blank" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">
+        <a href="https://beassistnow.com/contact" target="_blank" data-i18n="agency.cta" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">
           👉 Demander un devis gratuit
         </a>
       </div>
@@ -501,28 +501,28 @@
     <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
         <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">🔒</div>
-        <div><h4 class="font-bold text-gray-800 text-sm">100% sécurisé</h4><p class="text-xs text-gray-500 mt-0.5">Connexion officielle eBay. Aucun mot de passe collecté.</p></div>
+        <div><h4 data-i18n="trust.secure.title" class="font-bold text-gray-800 text-sm">100% sécurisé</h4><p data-i18n="trust.secure.text" class="text-xs text-gray-500 mt-0.5">Connexion officielle eBay. Aucun mot de passe collecté.</p></div>
       </div>
       <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
         <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">💸</div>
-        <div><h4 class="font-bold text-gray-800 text-sm">Gratuit et sans engagement</h4><p class="text-xs text-gray-500 mt-0.5">Le rapport de base est offert. Payez uniquement pour le détail.</p></div>
+        <div><h4 data-i18n="trust.free.title" class="font-bold text-gray-800 text-sm">Gratuit et sans engagement</h4><p data-i18n="trust.free.text" class="text-xs text-gray-500 mt-0.5">Le rapport de base est offert. Payez uniquement pour le détail.</p></div>
       </div>
       <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
         <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">⚡</div>
-        <div><h4 class="font-bold text-gray-800 text-sm">Résultats instantanés</h4><p class="text-xs text-gray-500 mt-0.5">Moins de 2 minutes pour votre diagnostic complet.</p></div>
+        <div><h4 data-i18n="trust.fast.title" class="font-bold text-gray-800 text-sm">Résultats instantanés</h4><p data-i18n="trust.fast.text" class="text-xs text-gray-500 mt-0.5">Moins de 2 minutes pour votre diagnostic complet.</p></div>
       </div>
       <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
         <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">📤</div>
-        <div><h4 class="font-bold text-gray-800 text-sm">PDF par email</h4><p class="text-xs text-gray-500 mt-0.5">Conservez et partagez votre rapport facilement.</p></div>
+        <div><h4 data-i18n="trust.pdf.title" class="font-bold text-gray-800 text-sm">PDF par email</h4><p data-i18n="trust.pdf.text" class="text-xs text-gray-500 mt-0.5">Conservez et partagez votre rapport facilement.</p></div>
       </div>
     </div>
 
     <!-- ==================== CTA FINAL ==================== -->
     <div class="text-center mt-16 mb-10">
-      <p class="text-gray-500 text-sm mb-4">Prêt à découvrir combien vous pourriez économiser ?</p>
+      <p data-i18n="cta.final.text" class="text-gray-500 text-sm mb-4">Prêt à découvrir combien vous pourriez économiser ?</p>
       <a href="#stepConnect" class="btn-violet inline-flex items-center gap-2 text-white font-bold py-4 px-8 rounded-xl">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        Connecter mon compte eBay
+        <span data-i18n="cta.final.btn">Connecter mon compte eBay</span>
       </a>
     </div>
   </div>
@@ -538,9 +538,9 @@
       </div>
       <p data-i18n="footer.rights" class="text-white/30 text-xs mb-4">© 2026 Beassist Agency · Votre partenaire e-commerce</p>
       <div class="flex justify-center gap-6 text-xs text-white/40">
-        <a href="/mentions-legales.html" class="hover:text-white/70 transition">Mentions légales</a>
-        <a href="/politique-confidentialite.html" class="hover:text-white/70 transition">Confidentialité</a>
-        <a href="/cgv.html" class="hover:text-white/70 transition">CGV</a>
+        <a href="/mentions-legales.html" data-i18n="footer.legal" class="hover:text-white/70 transition">Mentions légales</a>
+        <a href="/politique-confidentialite.html" data-i18n="footer.privacy" class="hover:text-white/70 transition">Confidentialité</a>
+        <a href="/cgv.html" data-i18n="footer.cgv" class="hover:text-white/70 transition">CGV</a>
       </div>
     </div>
   </footer>
