@@ -6,7 +6,7 @@
   },
   "deploy": {
     "runtime": "V2",
-    "startCommand": "node wait-db.js && npx prisma migrate deploy && node src/server.js",
+    "startCommand": "npx prisma migrate deploy && node src/server.js",
     "numReplicas": 1,
     "sleepApplication": false,
     "ipv6EgressEnabled": false,
