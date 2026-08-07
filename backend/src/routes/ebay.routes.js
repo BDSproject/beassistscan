@@ -91,12 +91,12 @@ router.get('/callback', async (req, res) => {
     return res.redirect(`${domain}/?connected=false&reason=token_error&detail=` + encodeURIComponent(JSON.stringify(ebayError)));
   }
 });
+
 router.post('/generate-report-ebay', async (req, res) => {
   try {
     const { email, storeName, lang } = req.body;
     if (!email) return res.status(400).json({ error: 'Email requis' });
     const isTestMode = String(req.query.test || '').toLowerCase() === 'true';
-
 
     let reportData;
 
@@ -174,8 +174,24 @@ router.post('/generate-report-ebay', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur generation rapport :', error);
-    res.status(500).json({ error: 'Erreur lors de la génération du rapport' });
+    // --- NOUVEAU BLOC CATCH ---
+    console.error('\n=== 🚨 DÉTAIL DE L\'ERREUR ===');
+    
+    // 1. Si l'erreur vient d'une requête externe comme eBay (souvent via Axios)
+    if (error.response && error.response.data) {
+      console.error('Réponse d\'eBay :', JSON.stringify(error.response.data, null, 2));
+      return res.status(500).json({ 
+        error: 'Erreur de l\'API eBay', 
+        details: error.response.data 
+      });
+    }
+
+    // 2. Si c'est une erreur système (Prisma, Timeout Mail, PDF, variables indéfinies...)
+    console.error('Erreur Système :', error.message);
+    return res.status(500).json({ 
+      error: 'Erreur système interne', 
+      details: error.message 
+    });
   }
 });
 
