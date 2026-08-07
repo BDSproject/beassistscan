@@ -2,10 +2,10 @@
   "name": "ebay-profit-report",
   "version": "1.0.0",
   "description": "SaaS pour calculer les commissions eBay",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "npx prisma migrate deploy && node src/server.js",
-    "dev": "nodemon --ignore '.env' --ignore 'uploads/*' src/server.js",
+    "start": "npx prisma migrate deploy && node server.js",
+    "dev": "nodemon --ignore '.env' --ignore 'uploads/*'server.js",
     "build": "npx prisma generate"
   },
   "dependencies": {
@@ -16,7 +16,6 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
-    "digital-signature-nodejs-sdk": "^3.0.1",
     "docker": "^0.2.14",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",

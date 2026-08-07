@@ -1,5 +1,9 @@
 require('dotenv').config();
-const app = require('./app');
+const app = require('./src/app');
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('🚨 ERREUR DE CONNEXION BASE DE DONNÉES :', reason);
+});
 
 // Use PORT provided in environment or default to 3000
 const port = process.env.PORT || 3000;

@@ -5,6 +5,13 @@ const { calculateFromTransactions } = require('../services/calculator.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// Affiche la chaîne exacte que Node.js lit
+console.log("👉 URL LUE :", process.env.DATABASE_URL);
+// La longueur de votre URL de base (sans connection_limit) DOIT être de 103 caractères.
+console.log("📏 LONGUEUR :", process.env.DATABASE_URL?.length); 
+// Vérifie s'il y a un retour à la ligne invisible à la fin
+console.log("👻 ESPACE FANTÔME ? :", process.env.DATABASE_URL?.endsWith('\r') || process.env.DATABASE_URL?.endsWith(' '));
+
 // Stockage temporaire des tokens en mémoire (pour MVP sans base)
 // Mais on va quand même utiliser la table EbayToken pour persister.
 // On va simplifier avec une variable globale (pour éviter de bloquer).
