@@ -43,7 +43,7 @@ npm run dev
 
 ```bash
 cd ~/beassistscan/backend
-npx pm2 start src/server.js --name beassistscan
+npx pm2 start src/app.js --name beassistscan
 npx pm2 save
 npx pm2 restart beassistscan
 npx pm2 status
