@@ -140,10 +140,10 @@ describe('🧪 BeassistScan API Route Test Suite', () => {
       expect(res.body.error).toContain('requis');
     });
 
-    it('GET /auth/me - retourner 401 si non connecte', async () => {
+    it('GET /auth/me - retourner user null si non connecte', async () => {
       const res = await request(app).get('/auth/me');
-      expect(res.statusCode).toBe(401);
-      expect(res.body.error).toContain('Non connecté');
+      expect(res.statusCode).toBe(200);
+      expect(res.body.user).toBeNull();
     });
 
     it('POST /auth/logout - deconnexion reussie', async () => {

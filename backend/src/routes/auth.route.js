@@ -58,7 +58,7 @@ router.post('/logout', (req, res) => {
 
 // Récupérer le profil connecté
 router.get('/me', async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  if (!req.session.userId) return res.json({ user: null });
   const user = await prisma.user.findUnique({
     where: { id: req.session.userId },
     select: { id: true, email: true, firstName: true, lastName: true, storeName: true },

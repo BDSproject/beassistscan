@@ -7,11 +7,67 @@ const EBAY_API_BASE = process.env.EBAY_ENV === 'production'
 const FINANCES_BASE = `${EBAY_API_BASE}/sell/finances/v1`;
 
 class EbayService {
-  static getAuthHeaders(accessToken) {
-    return {
+  static getAuthHeaders(accessToken, method = 'GET', requestUrl = null) {
+    const defaultHeaders = {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     };
+
+    const signatureKey = process.env.EBAY_SIGNATURE_KEY;
+    let privateKeyPem = process.env.EBAY_PRIVATE_KEY;
+
+    if (!signatureKey || !privateKeyPem || !requestUrl) {
+      if (requestUrl && (!signatureKey || !privateKeyPem)) {
+        console.warn('⚠️ Signature numérique eBay ignorée : EBAY_SIGNATURE_KEY ou EBAY_PRIVATE_KEY manquant dans l\'environnement.');
+      }
+      return defaultHeaders;
+    }
+
+    try {
+      const crypto = require('crypto');
+      
+      // Nettoyer la clé privée si elle est au format une seule ligne (ou contient des slashs de saut de ligne)
+      if (privateKeyPem && !privateKeyPem.includes('\n')) {
+        privateKeyPem = privateKeyPem
+          .replace(/\\n/g, '\n')
+          .replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n')
+          .replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----');
+      }
+
+      const parsedUrl = new URL(requestUrl);
+      const pathWithQuery = parsedUrl.pathname + parsedUrl.search;
+      const host = parsedUrl.host;
+      const created = Math.floor(Date.now() / 1000);
+
+      const signatureInput = `sig1=("x-ebay-signature-key" "@method" "@path" "@authority");created=${created}`;
+
+      const base = [
+        `"x-ebay-signature-key": ${signatureKey}`,
+        `"@method": ${method.toUpperCase()}`,
+        `"@path": ${pathWithQuery}`,
+        `"@authority": ${host}`,
+        `"@signature-params": ("x-ebay-signature-key" "@method" "@path" "@authority");created=${created}`
+      ].join('\n');
+
+      const signer = crypto.createSign('RSA-SHA256');
+      signer.update(base);
+      signer.end();
+      const signatureBase64 = signer.sign(privateKeyPem, 'base64');
+
+      const signatureValue = `sig1=:${signatureBase64}:`;
+
+      console.log('🔒 Requête eBay signée numériquement avec succès.');
+
+      return {
+        ...defaultHeaders,
+        'x-ebay-signature-key': signatureKey,
+        'Signature-Input': signatureInput,
+        'Signature': signatureValue,
+      };
+    } catch (err) {
+      console.error('❌ Erreur lors de la signature numérique du header eBay:', err);
+      return defaultHeaders;
+    }
   }
 
   static async getAccessToken(code) {
@@ -82,7 +138,7 @@ class EbayService {
     while (nextPageUrl) {
       try {
         const response = await axios.get(nextPageUrl, {
-          headers: this.getAuthHeaders(accessToken),
+          headers: this.getAuthHeaders(accessToken, 'GET', nextPageUrl),
         });
         const data = response.data;
         if (data.transactions) {

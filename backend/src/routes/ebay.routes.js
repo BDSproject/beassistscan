@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const EbayService = require('../services/ebay.service');
+const { calculateFromTransactions } = require('../services/calculator.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -16,7 +17,7 @@ router.get('/auth', (req, res) => {
   const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
   const redirectUri = isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI;
   const scopes = [
-    'https://api.ebay.com/oauth/api_scope',
+    'https://api.ebay.com/oauth/api_scope', 
     'https://api.ebay.com/oauth/api_scope/sell.finances',
   ].join(' ');
   const state = Math.random().toString(36).substring(7);
@@ -96,7 +97,7 @@ router.post('/generate-report-ebay', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'Email requis' });
     const isTestMode = String(req.query.test || '').toLowerCase() === 'true';
 
-    const { calculateFromTransactions } = require('../services/calculator.service');
+
     let reportData;
 
     if (isTestMode) {
