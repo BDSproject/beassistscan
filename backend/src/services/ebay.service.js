@@ -26,12 +26,23 @@ class EbayService {
     try {
       const crypto = require('crypto');
       
-      // Nettoyer la clé privée si elle est au format une seule ligne (ou contient des slashs de saut de ligne)
-      if (privateKeyPem && !privateKeyPem.includes('\n')) {
-        privateKeyPem = privateKeyPem
-          .replace(/\\n/g, '\n')
-          .replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n')
-          .replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----');
+      // Nettoyer la clé privée et s'assurer de sa conformité PEM (64 chars par ligne)
+      if (privateKeyPem) {
+        // Supprimer toutes les sauts de lignes échappés ou espaces
+        privateKeyPem = privateKeyPem.replace(/\\n/g, '').replace(/\n/g, '');
+        
+        let rawBase64 = privateKeyPem;
+        
+        // Retirer les headers et footers s'ils sont collés de manière incorrecte
+        rawBase64 = rawBase64.replace(/-----BEGIN PRIVATE KEY-----/g, '');
+        rawBase64 = rawBase64.replace(/-----END PRIVATE KEY-----/g, '');
+        rawBase64 = rawBase64.trim();
+
+        // Reconstruire les blocs avec un strict 64-caractère chunking
+        const chunks = rawBase64.match(/.{1,64}/g);
+        if (chunks) {
+            privateKeyPem = `-----BEGIN PRIVATE KEY-----\n${chunks.join('\n')}\n-----END PRIVATE KEY-----\n`;
+        }
       }
 
       const parsedUrl = new URL(requestUrl);
