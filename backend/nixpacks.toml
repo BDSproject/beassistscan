@@ -5,4 +5,4 @@ cmds = ["npm install"]
 cmds = ["npx prisma generate"]
 
 [start]
-cmd = "npx prisma migrate deploy && node src/server.js"
+cmd = "npx prisma migrate deploy && node server.js"
