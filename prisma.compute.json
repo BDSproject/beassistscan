@@ -4,7 +4,7 @@
     "name": "ebay-profit-report",
     "root": "backend",
     "framework": "bun",
-    "entry": "src/server.js",
+    "entry": "server.js",
     "httpPort": 3000,
     "build": {
       "command": "npm run build",
