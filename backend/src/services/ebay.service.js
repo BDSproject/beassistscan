@@ -36,12 +36,15 @@ class EbayService {
         // Retirer les headers et footers s'ils sont collés de manière incorrecte
         rawBase64 = rawBase64.replace(/-----BEGIN PRIVATE KEY-----/g, '');
         rawBase64 = rawBase64.replace(/-----END PRIVATE KEY-----/g, '');
+        rawBase64 = rawBase64.replace(/-----BEGIN RSA PRIVATE KEY-----/g, '');
+        rawBase64 = rawBase64.replace(/-----END RSA PRIVATE KEY-----/g, '');
+        rawBase64 = rawBase64.replace(/\s+/g, '');
         rawBase64 = rawBase64.trim();
 
-        // Reconstruire les blocs avec un strict 64-caractère chunking
+        // eBay délivre des clés au format PKCS#1 (qui doivent utiliser l'en-tête "RSA PRIVATE KEY")
         const chunks = rawBase64.match(/.{1,64}/g);
         if (chunks) {
-            privateKeyPem = `-----BEGIN PRIVATE KEY-----\n${chunks.join('\n')}\n-----END PRIVATE KEY-----\n`;
+            privateKeyPem = `-----BEGIN RSA PRIVATE KEY-----\n${chunks.join('\n')}\n-----END RSA PRIVATE KEY-----\n`;
         }
       }
 
