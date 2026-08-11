@@ -44,7 +44,8 @@ class EbayService {
         // eBay délivre généralement des clés Ed25519 par défaut (PKCS#8 sans mot de passe).
         const chunks = rawBase64.match(/.{1,64}/g);
         if (chunks) {
-            privateKeyPem = `-----BEGIN PRIVATE KEY-----\n${chunks.join('\n')}\n-----END PRIVATE KEY-----\n`;
+            // Revenir à RSA pour gérer la clé eBay de l'utilisateur (d'après son en-tête)
+            privateKeyPem = `-----BEGIN RSA PRIVATE KEY-----\n${chunks.join('\n')}\n-----END RSA PRIVATE KEY-----\n`;
         }
       }
 
@@ -63,8 +64,10 @@ class EbayService {
         `"@signature-params": ("x-ebay-signature-key" "@method" "@path" "@authority");created=${created}`
       ].join('\n');
 
-      // Pour Ed25519, le premier argument de crypto.sign() doit être null
-      const signatureBase64 = crypto.sign(null, Buffer.from(base), privateKeyPem).toString('base64');
+      const signer = crypto.createSign('RSA-SHA256');
+      signer.update(base);
+      signer.end();
+      const signatureBase64 = signer.sign(privateKeyPem, 'base64');
 
       const signatureValue = `sig1=:${signatureBase64}:`;
 
