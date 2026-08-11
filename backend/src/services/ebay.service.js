@@ -75,7 +75,7 @@ class EbayService {
         `"@method": ${method.toUpperCase()}`,
         `"@path": ${pathWithQuery}`,
         `"@authority": ${host}`,
-        `"@signature-params": ("x-ebay-signature-key" "@method" "@path" "@authority");created=${created}`
+        `"@signature-params": ${signatureInput.replace('sig1=', '')}`
       ].join('\n');
 
       const signer = crypto.createSign('RSA-SHA256');
