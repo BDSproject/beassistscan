@@ -1,4 +1,5 @@
 const axios = require('axios');
+const EbayAuthToken = require('ebay-oauth-nodejs-client');
 
 const EBAY_API_BASE = process.env.EBAY_ENV === 'production'
   ? 'https://api.ebay.com'
@@ -7,6 +8,19 @@ const EBAY_API_BASE = process.env.EBAY_ENV === 'production'
 const FINANCES_BASE = `${EBAY_API_BASE}/sell/finances/v1`;
 
 class EbayService {
+  static getAuthClient() {
+    const isProd = process.env.EBAY_ENV === 'production';
+    return new EbayAuthToken({
+        clientId: isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID,
+        clientSecret: isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET,
+        redirectUri: isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI
+    });
+  }
+
+  static getEnvironment() {
+    return process.env.EBAY_ENV === 'production' ? 'PRODUCTION' : 'SANDBOX';
+  }
+
   static getAuthHeaders(accessToken, method = 'GET', requestUrl = null) {
     const defaultHeaders = {
       Authorization: `Bearer ${accessToken}`,
