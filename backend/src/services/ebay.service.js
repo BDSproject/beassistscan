@@ -153,8 +153,13 @@ class EbayService {
           (data.next && typeof data.next.href === 'string' && data.next.href) ||
           null;
       } catch (error) {
-        console.error('Erreur API Finances eBay:', error.response?.data || error.message);
-        throw new Error('Erreur lors de la récupération des transactions eBay');
+        const ebayDetails = error.response?.data || error.message;
+        console.error('Erreur API Finances eBay:', JSON.stringify(ebayDetails));
+        const err = new Error(
+          'Erreur API Finances eBay (' + (error.response?.status || 'réseau') + '): ' + JSON.stringify(ebayDetails)
+        );
+        err.response = error.response;
+        throw err;
       }
     }
 
