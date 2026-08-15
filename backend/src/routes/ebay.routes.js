@@ -171,6 +171,14 @@ router.post('/generate-report-ebay', async (req, res) => {
     return res.json({
       success: true,
       message: isTestMode ? 'Rapport envoye ! (mode test)' : 'Rapport envoye !',
+      preview: {
+        totalSales: reportData.totalSales || 0,
+        totalFees: reportData.totalFees || 0,
+        annualSaving: reportData.annualSaving || 0,
+        rowCount: reportData.rowCount || 0,
+        currency: reportData.currency || 'EUR',
+        byCurrency: reportData.byCurrency || [],
+      },
     });
 
   } catch (error) {

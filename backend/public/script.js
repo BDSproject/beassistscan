@@ -48,15 +48,15 @@ document.getElementById('reportForm').addEventListener('submit', async function 
           <div class="grid grid-cols-3 gap-4 mt-4">
             <div class="bg-gray-50 p-3 rounded text-center">
               <p class="text-xs text-gray-500">CA total</p>
-              <p class="text-lg font-bold text-gray-800">${data.preview.totalSales.toFixed(2)} €</p>
+              <p class="text-lg font-bold text-gray-800">${(data.preview?.totalSales ?? 0).toFixed(2)} €</p>
             </div>
             <div class="bg-red-50 p-3 rounded text-center border border-red-200">
               <p class="text-xs text-red-500">Commissions versées</p>
-              <p class="text-lg font-bold text-red-600">${data.preview.totalFees.toFixed(2)} €</p>
+              <p class="text-lg font-bold text-red-600">${(data.preview?.totalFees ?? 0).toFixed(2)} €</p>
             </div>
             <div class="bg-green-50 p-3 rounded text-center border border-green-200">
               <p class="text-xs text-green-500">Économie / an</p>
-              <p class="text-lg font-bold text-green-700">${data.preview.annualSaving.toFixed(2)} €</p>
+              <p class="text-lg font-bold text-green-700">${(data.preview?.annualSaving ?? 0).toFixed(2)} €</p>
             </div>
           </div>
           <p class="text-sm text-gray-600 mt-4 text-center">📧 Le rapport PDF détaillé vient de vous être envoyé par email.</p>
