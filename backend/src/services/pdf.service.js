@@ -16,13 +16,18 @@ const TRANSLATIONS = {
     card3Label:   'Economies / an est.',
     card3Sub:     'En boutique indep.',
     divider:      "Detail de l'analyse",
+    dividerCur:   'Detail par devise',
+    curCol1:      'Devise',
+    curCol2:      'Ventes',
+    curCol3:      'Commissions',
+    curCol4:      'Transactions',
     row1:         'Nombre de transactions',
     row2:         "Chiffre d'affaires total",
     row3:         'Commissions eBay totales',
     row4:         'Taux de commission moyen',
     row5:         'Economies annuelles est.',
     insightTitle: 'Ce que vous pourriez economiser',
-    insightText:  (s, m) => `En ouvrant votre propre boutique e-commerce, vous economiseriez environ ${s} EUR par an en commissions eBay - soit ${m} EUR par mois.`,
+    insightText:  (s, m, cur = 'EUR') => `En ouvrant votre propre boutique e-commerce, vous economiseriez environ ${s} ${cur} par an en commissions eBay - soit ${m} ${cur} par mois.`,
     cta:          'Pret a recuperer vos marges ? -> www.beassistscan.com',
   },
   en: {
@@ -37,13 +42,18 @@ const TRANSLATIONS = {
     card3Label:   'Est. Yearly Savings',
     card3Sub:     'Own e-commerce store',
     divider:      'Analysis Details',
+    dividerCur:   'Breakdown by currency',
+    curCol1:      'Currency',
+    curCol2:      'Sales',
+    curCol3:      'Fees',
+    curCol4:      'Transactions',
     row1:         'Number of transactions',
     row2:         'Total revenue',
     row3:         'Total eBay fees',
     row4:         'Avg commission rate',
     row5:         'Est. yearly savings',
     insightTitle: 'What you could save',
-    insightText:  (s, m) => `By opening your own e-commerce store, you could save about ${s} EUR per year in eBay fees - that is ${m} EUR per month.`,
+    insightText:  (s, m, cur = 'EUR') => `By opening your own e-commerce store, you could save about ${s} ${cur} per year in eBay fees - that is ${m} ${cur} per month.`,
     cta:          'Ready to get your margins back? -> www.beassistscan.com',
   },
   es: {
@@ -58,13 +68,18 @@ const TRANSLATIONS = {
     card3Label:   'Ahorro / ano est.',
     card3Sub:     'Tienda propia',
     divider:      'Detalle del analisis',
+    dividerCur:   'Detalle por divisa',
+    curCol1:      'Divisa',
+    curCol2:      'Ventas',
+    curCol3:      'Comisiones',
+    curCol4:      'Transacciones',
     row1:         'Numero de transacciones',
     row2:         'Facturacion total',
     row3:         'Comisiones eBay totales',
     row4:         'Tasa de comision media',
     row5:         'Ahorro anual est.',
     insightTitle: 'Lo que podrias ahorrar',
-    insightText:  (s, m) => `Abriendo tu propia tienda e-commerce, ahorrarias unos ${s} EUR al ano en comisiones eBay - es decir ${m} EUR al mes.`,
+    insightText:  (s, m, cur = 'EUR') => `Abriendo tu propia tienda e-commerce, ahorrarias unos ${s} ${cur} al ano en comisiones eBay - es decir ${m} ${cur} al mes.`,
     cta:          'Listo para recuperar tus margenes? -> www.beassistscan.com',
   },
   de: {
@@ -79,13 +94,18 @@ const TRANSLATIONS = {
     card3Label:   'Gesch. Jahreseinsparung',
     card3Sub:     'Eigener Online-Shop',
     divider:      'Analysedetails',
+    dividerCur:   'Aufschluesselung nach Waehrung',
+    curCol1:      'Waehrung',
+    curCol2:      'Umsatz',
+    curCol3:      'Gebuehren',
+    curCol4:      'Transaktionen',
     row1:         'Anzahl der Transaktionen',
     row2:         'Gesamtumsatz',
     row3:         'Gesamte eBay-Gebuehren',
     row4:         'Durchschn. Provisionssatz',
     row5:         'Gesch. Jahreseinsparung',
     insightTitle: 'Was Sie sparen koennten',
-    insightText:  (s, m) => `Durch Eroeffnung Ihres eigenen Online-Shops koennten Sie ca. ${s} EUR pro Jahr an eBay-Gebuehren sparen - das sind ${m} EUR pro Monat.`,
+    insightText:  (s, m, cur = 'EUR') => `Durch Eroeffnung Ihres eigenen Online-Shops koennten Sie ca. ${s} ${cur} pro Jahr an eBay-Gebuehren sparen - das sind ${m} ${cur} pro Monat.`,
     cta:          'Bereit, Ihre Margen zurueckzugewinnen? -> www.beassistscan.com',
   },
   it: {
@@ -100,13 +120,18 @@ const TRANSLATIONS = {
     card3Label:   'Risparmio / anno est.',
     card3Sub:     'Negozio indipendente',
     divider:      "Dettaglio dell'analisi",
+    dividerCur:   'Dettaglio per valuta',
+    curCol1:      'Valuta',
+    curCol2:      'Vendite',
+    curCol3:      'Commissioni',
+    curCol4:      'Transazioni',
     row1:         'Numero di transazioni',
     row2:         'Fatturato totale',
     row3:         'Commissioni eBay totali',
     row4:         'Tasso medio di commissione',
     row5:         'Risparmio annuo est.',
     insightTitle: 'Quanto potresti risparmiare',
-    insightText:  (s, m) => `Aprendo il tuo e-commerce, potresti risparmiare circa ${s} EUR all'anno in commissioni eBay - ovvero ${m} EUR al mese.`,
+    insightText:  (s, m, cur = 'EUR') => `Aprendo il tuo e-commerce, potresti risparmiare circa ${s} ${cur} all'anno in commissioni eBay - ovvero ${m} ${cur} al mese.`,
     cta:          'Pronto a recuperare i tuoi margini? -> www.beassistscan.com',
   },
 };
@@ -245,9 +270,10 @@ function drawStatCards(doc, y, data, T) {
     doc.fontSize(8.5).font('Helvetica').fillColor(BRAND.grayLight)
        .text(c.label, x + 12, y + 12, { width: CW - 24, lineBreak: false });
 
-    // Valeur
+    // Valeur (devise dominante)
+    const cur = data.currency || 'EUR';
     doc.fontSize(21).font('Helvetica-Bold').fillColor(c.valColor)
-       .text(`${c.value.toFixed(2)} EUR`, x + 12, y + 30, { width: CW - 24, lineBreak: false });
+       .text(`${c.value.toFixed(2)} ${cur}`, x + 12, y + 30, { width: CW - 24, lineBreak: false });
 
     // Sous-label
     doc.fontSize(7.5).font('Helvetica').fillColor(BRAND.grayLight)
@@ -268,12 +294,13 @@ function drawDivider(doc, y, label) {
 function drawDetailTable(doc, y, data, T) {
   y = drawDivider(doc, y, T.divider);
 
+  const cur = data.currency || 'EUR';
   const rows = [
     [T.row1, `${data.rowCount || 'N/A'}`],
-    [T.row2, `${data.totalSales.toFixed(2)} EUR`],
-    [T.row3, `${data.totalFees.toFixed(2)} EUR`],
+    [T.row2, `${data.totalSales.toFixed(2)} ${cur}`],
+    [T.row3, `${data.totalFees.toFixed(2)} ${cur}`],
     [T.row4, `${data.totalSales > 0 ? ((data.totalFees/data.totalSales)*100).toFixed(1) : 0} %`],
-    [T.row5, `${data.annualSaving.toFixed(2)} EUR`],
+    [T.row5, `${data.annualSaving.toFixed(2)} ${cur}`],
   ];
 
   const COL1 = INNER_W * 0.62;
@@ -295,6 +322,51 @@ function drawDetailTable(doc, y, data, T) {
   return y + rows.length * ROW_H;
 }
 
+function drawCurrencyTable(doc, y, data, T) {
+  const currencies = data.byCurrency || [];
+  // N'afficher la section que s'il y a plusieurs devises
+  if (currencies.length <= 1) return y;
+
+  y = drawDivider(doc, y, T.dividerCur);
+
+  const COLS = [INNER_W * 0.18, INNER_W * 0.30, INNER_W * 0.30, INNER_W * 0.22];
+  const ROW_H = 24;
+
+  // En-tete
+  doc.rect(MARGIN, y, INNER_W, ROW_H).fill(BRAND.bg);
+  const headers = [T.curCol1, T.curCol2, T.curCol3, T.curCol4];
+  let hx = MARGIN;
+  headers.forEach((h, i) => {
+    doc.fontSize(8.5).font('Helvetica-Bold').fillColor(BRAND.violet)
+       .text(h, hx + 8, y + 8, { width: COLS[i] - 16, align: i === 0 ? 'left' : 'right', lineBreak: false });
+    hx += COLS[i];
+  });
+  y += ROW_H;
+
+  // Lignes par devise
+  currencies.forEach((c, i) => {
+    const rowY = y + i * ROW_H;
+    if (i % 2 === 0) doc.rect(MARGIN, rowY, INNER_W, ROW_H).fill('#FAFAFA');
+    doc.rect(MARGIN, rowY, INNER_W, ROW_H).strokeColor(BRAND.border).lineWidth(0.5).stroke();
+
+    const cells = [
+      c.currency,
+      `${c.totalSales.toFixed(2)} ${c.currency}`,
+      `${c.totalFees.toFixed(2)} ${c.currency}`,
+      `${c.rowCount}`,
+    ];
+    let cx = MARGIN;
+    cells.forEach((cell, j) => {
+      doc.fontSize(9).font(j === 0 ? 'Helvetica-Bold' : 'Helvetica')
+         .fillColor(j === 0 ? BRAND.dark : BRAND.gray)
+         .text(cell, cx + 8, rowY + 7, { width: COLS[j] - 16, align: j === 0 ? 'left' : 'right', lineBreak: false });
+      cx += COLS[j];
+    });
+  });
+
+  return y + currencies.length * ROW_H;
+}
+
 function drawInsightBox(doc, y, data, T) {
   y += 24;
   const BH = 100;
@@ -307,7 +379,7 @@ function drawInsightBox(doc, y, data, T) {
 
   doc.fontSize(9.5).font('Helvetica').fillColor('#C4B5FD')
      .text(
-      T.insightText(data.annualSaving.toFixed(2), (data.annualSaving/12).toFixed(2)),
+      T.insightText(data.annualSaving.toFixed(2), (data.annualSaving/12).toFixed(2), data.currency || 'EUR'),
        MARGIN + 18, y + 36,
        { width: INNER_W - 36 }
      );
@@ -365,6 +437,7 @@ function generateReport(data, email, storeName, lang) {
       y = drawInfoBand(doc, y, email, storeName, T);
       y = drawStatCards(doc, y, data, T);
       y = drawDetailTable(doc, y, data, T);
+      y = drawCurrencyTable(doc, y, data, T);
       y = drawInsightBox(doc, y, data, T);
       y = drawCTA(doc, y, T);
       drawFooter(doc);
