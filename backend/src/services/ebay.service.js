@@ -13,7 +13,8 @@ class EbayService {
     return new EbayAuthToken({
         clientId: isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID,
         clientSecret: isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET,
-        redirectUri: isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI
+        redirectUri: isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI,
+        env: isProd ? 'PRODUCTION' : 'SANDBOX'
     });
   }
 
