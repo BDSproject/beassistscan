@@ -26,29 +26,30 @@ function calculateFromTransactions(transactions) {
   };
 
   transactions.forEach(trx => {
-    // Montant de vente (champs possibles selon endpoint eBay)
-    const amount =
-      readMoneyValue(trx.amount) ||
-      readMoneyValue(trx.totalAmount);
+    // Type de transaction : on ne compte comme vente que les SALE.
+    // REFUND est déduit, les autres types (NON_SALE_CHARGE, DISPUTE, SHIPPING_LABEL,
+    // TRANSFER, ADJUSTMENT...) ne sont pas du chiffre d'affaires.
+    const type = String(trx.transactionType || 'SALE').toUpperCase();
 
     const currency =
       readCurrency(trx.amount) ||
       readCurrency(trx.totalAmount) ||
-      readCurrency(trx.totalFeeBasisAmount) ||
       readCurrency(trx.totalFeeAmount) ||
       readCurrency(trx.feeAmount) ||
       'EUR';
 
     const bucket = getBucket(currency);
-    bucket.totalSales += amount;
-    bucket.rowCount += 1;
 
-    // Frais eBay : plusieurs formats possibles dans Finances API
+    const amount = Math.abs(
+      readMoneyValue(trx.amount) ||
+      readMoneyValue(trx.totalAmount)
+    );
+
+    // Frais eBay : totalFeeAmount est le champ officiel de l'API Finances.
+    // ⚠️ totalFeeBasisAmount est la BASE de calcul des frais (≈ montant de la vente),
+    // ce n'est PAS un montant de frais — ne jamais l'utiliser comme tel.
     let fee = 0;
-
-    if (trx.totalFeeBasisAmount) {
-      fee = Math.abs(readMoneyValue(trx.totalFeeBasisAmount));
-    } else if (trx.totalFeeAmount) {
+    if (trx.totalFeeAmount) {
       fee = Math.abs(readMoneyValue(trx.totalFeeAmount));
     } else if (trx.feeAmount) {
       fee = Math.abs(readMoneyValue(trx.feeAmount));
@@ -59,7 +60,37 @@ function calculateFromTransactions(transactions) {
       }, 0);
     }
 
-    bucket.totalFees += fee;
+    if (type === 'SALE') {
+      bucket.totalSales += amount;
+      bucket.totalFees += fee;
+      bucket.rowCount += 1;
+    } else if (type === 'REFUND') {
+      // Un remboursement réduit le CA ; les frais remboursés (avoirs) réduisent les frais
+      bucket.totalSales -= amount;
+      bucket.totalFees -= fee;
+    } else if (type === 'NON_SALE_CHARGE') {
+      // Frais hors vente (ex: frais d'annonces, options de mise en vente, boutique)
+      bucket.totalFees += amount;
+    }
+    // Autres types (TRANSFER, SHIPPING_LABEL, DISPUTE, ADJUSTMENT...) : ignorés du CA
+  });
+
+  // Garde-fou de cohérence : d'après la grille eBay.fr, les commissions représentent
+  // ~10% + 0,42% + 0,35 EUR/commande (+ éventuels frais internationaux ~2-4%).
+  // Si les frais calculés dépassent 50% du CA, c'est un signe de données anormales :
+  // on plafonne avec une estimation basée sur la grille officielle eBay.fr.
+  Object.values(byCurrency).forEach(b => {
+    if (b.totalSales > 0 && b.totalFees > b.totalSales * 0.5) {
+      const estimated = b.totalSales * 0.1042 + b.rowCount * 0.35;
+      console.warn(
+        `⚠️ Frais incohérents détectés (${b.totalFees.toFixed(2)} ${b.currency} pour ${b.totalSales.toFixed(2)} ${b.currency} de CA). ` +
+        `Remplacement par l'estimation grille eBay.fr : ${estimated.toFixed(2)} ${b.currency}`
+      );
+      b.totalFees = estimated;
+    }
+    // Ne jamais retourner de valeurs négatives
+    b.totalSales = Math.max(0, b.totalSales);
+    b.totalFees = Math.max(0, b.totalFees);
   });
 
   // Estimation annuelle par devise (basée sur les 90 derniers jours)
