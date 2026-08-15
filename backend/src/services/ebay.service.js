@@ -100,55 +100,29 @@ class EbayService {
   }
 
   static async getAccessToken(code) {
-    const isProd = process.env.EBAY_ENV === 'production';
-    const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
-    const clientSecret = isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET;
-    const redirectUri = isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI;
-    const tokenBaseUrl = isProd ? 'https://api.ebay.com' : 'https://api.sandbox.ebay.com';
-    const url = `${tokenBaseUrl}/identity/v1/oauth2/token`;
-    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-    const params = new URLSearchParams();
-    params.append('grant_type', 'authorization_code');
-    params.append('code', code);
-    params.append('redirect_uri', redirectUri);
-
     try {
-      const response = await axios.post(url, params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${basicAuth}`,
-        },
-      });
-      return response.data;
+      const auth = this.getAuthClient();
+      const env = this.getEnvironment();
+      const tokenResponse = await auth.exchangeCodeForAccessToken(env, code);
+      return JSON.parse(tokenResponse);
     } catch (error) {
-      console.error('Erreur token eBay:', error.response?.data || error.message);
+      console.error('Erreur token eBay (oauth-client):', error);
       throw new Error('Impossible d’obtenir le token eBay');
     }
   }
 
   static async refreshAccessToken(refreshToken) {
-    const isProd = process.env.EBAY_ENV === 'production';
-    const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
-    const clientSecret = isProd ? process.env.EBAY_CLIENT_SECRET_PROD : process.env.EBAY_CLIENT_SECRET;
-    const tokenBaseUrl = isProd ? 'https://api.ebay.com' : 'https://api.sandbox.ebay.com';
-    const url = `${tokenBaseUrl}/identity/v1/oauth2/token`;
-    const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
-
-    const params = new URLSearchParams();
-    params.append('grant_type', 'refresh_token');
-    params.append('refresh_token', refreshToken);
-
     try {
-      const response = await axios.post(url, params, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: `Basic ${basicAuth}`,
-        },
-      });
-      return response.data;
+      const auth = this.getAuthClient();
+      const env = this.getEnvironment();
+      const scopes = [
+        'https://api.ebay.com/oauth/api_scope', 
+        'https://api.ebay.com/oauth/api_scope/sell.finances',
+      ].join(' ');
+      const tokenResponse = await auth.getAccessToken(env, refreshToken, scopes);
+      return JSON.parse(tokenResponse);
     } catch (error) {
-      console.error('Erreur refresh token eBay:', error.response?.data || error.message);
+      console.error('Erreur refresh token eBay (oauth-client):', error);
       throw new Error('Impossible de rafraichir le token eBay');
     }
   }
