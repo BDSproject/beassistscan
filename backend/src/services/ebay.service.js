@@ -5,7 +5,12 @@ const EBAY_API_BASE = process.env.EBAY_ENV === 'production'
   ? 'https://api.ebay.com'
   : 'https://api.sandbox.ebay.com';
 
-const FINANCES_BASE = `${EBAY_API_BASE}/sell/finances/v1`;
+// L'API Finances utilise le domaine "apiz" (et non "api")
+const EBAY_APIZ_BASE = process.env.EBAY_ENV === 'production'
+  ? 'https://apiz.ebay.com'
+  : 'https://apiz.sandbox.ebay.com';
+
+const FINANCES_BASE = `${EBAY_APIZ_BASE}/sell/finances/v1`;
 
 class EbayService {
   static getAuthClient() {
