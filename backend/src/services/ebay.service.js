@@ -42,12 +42,16 @@ class EbayService {
       const crypto = require('crypto');
       
       // Nettoyer la clé privée et s'assurer de sa conformité PEM (64 chars par ligne)
+      let keyObject = null;
       if (privateKeyPem) {
         // Supprimer toutes les sauts de lignes échappés ou espaces
         privateKeyPem = privateKeyPem.replace(/\\n/g, '').replace(/\n/g, '');
         
         let rawBase64 = privateKeyPem;
         
+        // Détecter le format d'origine avant de retirer les en-têtes
+        const isPkcs1 = /BEGIN RSA PRIVATE KEY/.test(rawBase64);
+
         // Retirer les headers et footers s'ils sont collés de manière incorrecte
         rawBase64 = rawBase64.replace(/-----BEGIN PRIVATE KEY-----/g, '');
         rawBase64 = rawBase64.replace(/-----END PRIVATE KEY-----/g, '');
@@ -56,12 +60,16 @@ class EbayService {
         rawBase64 = rawBase64.replace(/\s+/g, '');
         rawBase64 = rawBase64.trim();
 
-        // eBay délivre généralement des clés Ed25519 par défaut (PKCS#8 sans mot de passe).
         const chunks = rawBase64.match(/.{1,64}/g);
-        if (chunks) {
-            // Revenir à RSA pour gérer la clé eBay de l'utilisateur (d'après son en-tête)
-            privateKeyPem = `-----BEGIN RSA PRIVATE KEY-----\n${chunks.join('\n')}\n-----END RSA PRIVATE KEY-----\n`;
+        if (!chunks) {
+          throw new Error('Clé privée eBay vide ou illisible');
         }
+
+        const header = isPkcs1 ? 'RSA PRIVATE KEY' : 'PRIVATE KEY';
+        const pem = `-----BEGIN ${header}-----\n${chunks.join('\n')}\n-----END ${header}-----\n`;
+
+        // Décoder la clé (PKCS#8 : Ed25519 ou RSA — détection automatique)
+        keyObject = crypto.createPrivateKey(pem);
       }
 
       const parsedUrl = new URL(requestUrl);
@@ -79,14 +87,16 @@ class EbayService {
         `"@signature-params": ${signatureInput.replace('sig1=', '')}`
       ].join('\n');
 
-      const signer = crypto.createSign('RSA-SHA256');
-      signer.update(base);
-      signer.end();
-      const signatureBase64 = signer.sign(privateKeyPem, 'base64');
+      // Ed25519 => algorithme null ; RSA => RSA-SHA256
+      const keyType = keyObject.asymmetricKeyType; // 'ed25519' | 'rsa' | ...
+      const algorithm = keyType === 'ed25519' ? null : 'RSA-SHA256';
+      const signatureBase64 = crypto
+        .sign(algorithm, Buffer.from(base, 'utf8'), keyObject)
+        .toString('base64');
 
       const signatureValue = `sig1=:${signatureBase64}:`;
 
-      console.log('🔒 Requête eBay signée numériquement avec succès.');
+      console.log(`🔒 Requête eBay signée numériquement avec succès (clé ${keyType}).`);
 
       return {
         ...defaultHeaders,
