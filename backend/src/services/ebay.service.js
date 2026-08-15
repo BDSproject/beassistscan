@@ -73,7 +73,8 @@ class EbayService {
       }
 
       const parsedUrl = new URL(requestUrl);
-      const pathWithQuery = parsedUrl.pathname + parsedUrl.search;
+      // RFC 9421 : "@path" = chemin uniquement, sans la query string
+      const requestPath = parsedUrl.pathname;
       const host = parsedUrl.host;
       const created = Math.floor(Date.now() / 1000);
 
@@ -82,7 +83,7 @@ class EbayService {
       const base = [
         `"x-ebay-signature-key": ${signatureKey}`,
         `"@method": ${method.toUpperCase()}`,
-        `"@path": ${pathWithQuery}`,
+        `"@path": ${requestPath}`,
         `"@authority": ${host}`,
         `"@signature-params": ${signatureInput.replace('sig1=', '')}`
       ].join('\n');
