@@ -149,7 +149,10 @@ class EbayService {
     const now = new Date();
     const from = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
     const range = `[${from.toISOString()}..${now.toISOString()}]`;
-    const filter = encodeURIComponent(`transactionDate:${range},transactionStatus:{PAYOUT}`);
+    // Pas de filtre transactionStatus : on inclut aussi les ventes en attente
+    // de versement (FUNDS_ON_HOLD, FUNDS_AVAILABLE_FOR_PAYOUT...), sinon le CA
+    // est sous-estimé par rapport à la boutique.
+    const filter = encodeURIComponent(`transactionDate:${range}`);
     const url = `${FINANCES_BASE}/transaction?limit=100&sort=transactionDate&filter=${filter}`;
 
     let transactions = [];
