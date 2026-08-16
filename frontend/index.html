@@ -867,11 +867,6 @@
                   </span>
                   <button onclick="this.closest('#resultArea').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
                 </div>
-                <div class="grid grid-cols-3 gap-3 text-center">
-                  <div class="bg-white p-3 rounded-xl shadow-sm"><p class="text-xs text-gray-400">CA total</p><p class="text-lg font-extrabold text-gray-800">${(data.preview?.totalSales ?? 0).toFixed(2)} €</p></div>
-                  <div class="bg-red-50 p-3 rounded-xl border border-red-100"><p class="text-xs text-red-400">Commissions</p><p class="text-lg font-extrabold text-red-600">${(data.preview?.totalFees ?? 0).toFixed(2)} €</p></div>
-                  <div class="bg-green-50 p-3 rounded-xl border border-green-100"><p class="text-xs text-green-500">Économie/an</p><p class="text-lg font-extrabold text-green-600">${(data.preview?.annualSaving ?? 0).toFixed(2)} €</p></div>
-                </div>
                 <p class="text-xs text-gray-500 mt-4 text-center">📧 Rapport PDF envoyé à ${email}</p>
               </div>
             `;

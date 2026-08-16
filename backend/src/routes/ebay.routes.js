@@ -98,6 +98,16 @@ router.post('/generate-report-ebay', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'Email requis' });
     const isTestMode = String(req.query.test || '').toLowerCase() === 'true';
 
+    // Détection du forfait : Rapport Détaillé / Pro payé => rapport complet.
+    // Forfait gratuit => rapport allégé + estimation 2% Annonces sponsorisées.
+    const existingLead = await prisma.lead.findFirst({
+      where: { email, OR: [{ paidReport: true }, { proSubscription: true }] },
+      orderBy: { createdAt: 'desc' },
+    });
+    const plan = existingLead?.proSubscription ? 'pro' : existingLead?.paidReport ? 'detailed' : 'free';
+    const calcOptions = plan === 'free' ? { sponsoredAdsRate: 0.02 } : {};
+    console.log(`📋 Forfait détecté pour ${email} : ${plan}`);
+
     let reportData;
 
     if (isTestMode) {
@@ -108,7 +118,7 @@ router.post('/generate-report-ebay', async (req, res) => {
         { amount: { value: '350.00' }, feeAmount: { value: '45.50' } },
         { amount: { value: '89.99' }, feeAmount: { value: '11.70' } },
       ];
-      reportData = calculateFromTransactions(fakeTransactions);
+      reportData = calculateFromTransactions(fakeTransactions, calcOptions);
       console.log('🧪 Rapport en mode test (donnees fictives)');
     } else {
       // Récupération du dernier token eBay stocké
@@ -143,14 +153,14 @@ router.post('/generate-report-ebay', async (req, res) => {
       }
 
       const transactions = await EbayService.getTransactions(accessToken);
-      reportData = calculateFromTransactions(transactions || []);
+      reportData = calculateFromTransactions(transactions || [], calcOptions);
       console.log(`📊 Transactions eBay recuperees: ${reportData.rowCount}`);
     }
 
-    // Génération du PDF
+    // Génération du PDF (allégé pour le forfait gratuit, complet pour le Rapport Détaillé/Pro)
     const { generateReport } = require('../services/pdf.service');
-    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique', lang);
-    console.log('✅ PDF généré:', pdfPath);
+    const pdfPath = await generateReport(reportData, email, storeName || 'Boutique', lang, plan);
+    console.log(`✅ PDF généré (${plan}):`, pdfPath);
 
     // Envoi du mail (si SMTP configuré)
     const { sendReport } = require('../services/email.service');
@@ -171,14 +181,6 @@ router.post('/generate-report-ebay', async (req, res) => {
     return res.json({
       success: true,
       message: isTestMode ? 'Rapport envoye ! (mode test)' : 'Rapport envoye !',
-      preview: {
-        totalSales: reportData.totalSales || 0,
-        totalFees: reportData.totalFees || 0,
-        annualSaving: reportData.annualSaving || 0,
-        rowCount: reportData.rowCount || 0,
-        currency: reportData.currency || 'EUR',
-        byCurrency: reportData.byCurrency || [],
-      },
     });
 
   } catch (error) {

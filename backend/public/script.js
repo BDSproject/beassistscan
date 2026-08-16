@@ -45,20 +45,9 @@ document.getElementById('reportForm').addEventListener('submit', async function 
             <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             Rapport envoyé !
           </div>
-          <div class="grid grid-cols-3 gap-4 mt-4">
-            <div class="bg-gray-50 p-3 rounded text-center">
-              <p class="text-xs text-gray-500">CA total</p>
-              <p class="text-lg font-bold text-gray-800">${(data.preview?.totalSales ?? 0).toFixed(2)} €</p>
-            </div>
-            <div class="bg-red-50 p-3 rounded text-center border border-red-200">
-              <p class="text-xs text-red-500">Commissions versées</p>
-              <p class="text-lg font-bold text-red-600">${(data.preview?.totalFees ?? 0).toFixed(2)} €</p>
-            </div>
-            <div class="bg-green-50 p-3 rounded text-center border border-green-200">
-              <p class="text-xs text-green-500">Économie / an</p>
-              <p class="text-lg font-bold text-green-700">${(data.preview?.annualSaving ?? 0).toFixed(2)} €</p>
-            </div>
-          </div>
+          <p class="text-sm text-gray-600 mt-4 text-center">📧 Le rapport PDF détaillé vient de vous être envoyé par email.</p>
+        </div>
+      `;
           <p class="text-sm text-gray-600 mt-4 text-center">📧 Le rapport PDF détaillé vient de vous être envoyé par email.</p>
         </div>
       `;
