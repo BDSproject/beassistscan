@@ -8,28 +8,33 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  firstName    String?
-  lastName     String?
-  storeName    String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  leads        Lead[]
-  ebayTokens   EbayToken[]
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String?
+  firstName     String?
+  lastName      String?
+  storeName     String?
+  emailVerified Boolean  @default(false)
+  verifyToken   String?  @unique
+  googleId      String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  leads         Lead[]
+  ebayTokens    EbayToken[]
 }
 
 model Lead {
-  id           String   @id @default(cuid())
-  email        String
-  storeName    String?
-  totalSales   Float
-  totalFees    Float
-  annualSaving Float
-  createdAt    DateTime @default(now())
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id])
+  id              String   @id @default(cuid())
+  email           String
+  storeName       String?
+  totalSales      Float
+  totalFees       Float
+  annualSaving    Float
+  paidReport      Boolean  @default(false)
+  proSubscription Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
 }
 
 model EbayToken {

@@ -112,4 +112,43 @@ async function sendReport(email, pdfPath) {
   });
 }
 
-module.exports = { sendReport };
+// ── Envoi générique (sans pièce jointe) ──
+async function sendMail(to, subject, html) {
+  if (process.env.RESEND_API_KEY) {
+    await sendViaResendAPI(to, subject, html, []);
+    return;
+  }
+  const transporter = createSmtpTransporter();
+  await transporter.sendMail({
+    from: process.env.FROM_EMAIL || 'contact@beassistnow.com',
+    to,
+    subject,
+    html,
+  });
+}
+
+// ── Email de vérification d'adresse ──
+async function sendVerificationEmail(email, token) {
+  const rawDomain = process.env.DOMAIN || 'localhost:3000';
+  const domain = rawDomain.startsWith('http') ? rawDomain : `https://${rawDomain}`;
+  const verifyUrl = `${domain}/auth/verify?token=${encodeURIComponent(token)}`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 24px; border: 1px solid #E5E7EB; border-radius: 12px;">
+      <div style="text-align: center; margin-bottom: 24px;">
+        <h1 style="color: #1e1b4b; margin: 0;">Beassist<span style="color: #7c3aed;">Scan</span></h1>
+        <p style="color: #6B7280; margin: 4px 0 0;">Confirmez votre adresse email</p>
+      </div>
+      <p style="color: #374151;">Bonjour,</p>
+      <p style="color: #374151;">Merci de vous être inscrit sur BeassistScan ! Pour activer votre compte et accéder à votre tableau de bord, veuillez confirmer votre adresse email en cliquant sur le bouton ci-dessous :</p>
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="${verifyUrl}" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;">Confirmer mon email</a>
+      </div>
+      <p style="color: #6B7280; font-size: 13px;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br/><a href="${verifyUrl}" style="color: #7c3aed; word-break: break-all;">${verifyUrl}</a></p>
+      <p style="color: #9CA3AF; font-size: 12px; margin-top: 24px;">Si vous n'êtes pas à l'origine de cette inscription, ignorez cet email.</p>
+    </div>
+  `;
+  await sendMail(email, '✉️ Confirmez votre email - BeassistScan', html);
+}
+
+module.exports = { sendReport, sendMail, sendVerificationEmail };

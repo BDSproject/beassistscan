@@ -32,3 +32,7 @@ Thumbs.db
 # Build
 dist/
 build/
+
+# Clés privées et outils sensibles
+backend/tools/keys/
+*.pem

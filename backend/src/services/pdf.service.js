@@ -21,6 +21,15 @@ const TRANSLATIONS = {
     curCol2:      'Ventes',
     curCol3:      'Commissions',
     curCol4:      'Transactions',
+    sponsoredNote: 'Inclut une estimation de 2% d\'Annonces sponsorisees (moyenne constatee).',
+    upsellTitle:  'Debloquez votre analyse complete',
+    upsellLines:  [
+      '+ Detail complet de vos commissions par type de frais',
+      '+ Repartition par devise et par marketplace',
+      '+ Taux de commission reel et comparaison grille eBay',
+      '+ Recommandations personnalisees pour reduire vos frais',
+    ],
+    upsellCta:    'Passez au Rapport Detaille sur www.beassistscan.com',
     row1:         'Nombre de transactions',
     row2:         "Chiffre d'affaires total",
     row3:         'Commissions eBay totales',
@@ -47,6 +56,15 @@ const TRANSLATIONS = {
     curCol2:      'Sales',
     curCol3:      'Fees',
     curCol4:      'Transactions',
+    sponsoredNote: 'Includes an estimated 2% for Promoted Listings (observed average).',
+    upsellTitle:  'Unlock your full analysis',
+    upsellLines:  [
+      '+ Full fee breakdown by fee type',
+      '+ Split by currency and marketplace',
+      '+ Real commission rate vs eBay fee schedule',
+      '+ Personalized recommendations to cut your fees',
+    ],
+    upsellCta:    'Upgrade to the Detailed Report at www.beassistscan.com',
     row1:         'Number of transactions',
     row2:         'Total revenue',
     row3:         'Total eBay fees',
@@ -73,6 +91,15 @@ const TRANSLATIONS = {
     curCol2:      'Ventas',
     curCol3:      'Comisiones',
     curCol4:      'Transacciones',
+    sponsoredNote: 'Incluye una estimacion del 2% de Anuncios patrocinados (media observada).',
+    upsellTitle:  'Desbloquea tu analisis completo',
+    upsellLines:  [
+      '+ Detalle completo de comisiones por tipo',
+      '+ Reparto por divisa y marketplace',
+      '+ Tasa de comision real vs tarifas eBay',
+      '+ Recomendaciones personalizadas para reducir tus comisiones',
+    ],
+    upsellCta:    'Pasa al Informe Detallado en www.beassistscan.com',
     row1:         'Numero de transacciones',
     row2:         'Facturacion total',
     row3:         'Comisiones eBay totales',
@@ -99,6 +126,15 @@ const TRANSLATIONS = {
     curCol2:      'Umsatz',
     curCol3:      'Gebuehren',
     curCol4:      'Transaktionen',
+    sponsoredNote: 'Enthaelt eine Schaetzung von 2% fuer Anzeigen (beobachteter Durchschnitt).',
+    upsellTitle:  'Schalten Sie Ihre vollstaendige Analyse frei',
+    upsellLines:  [
+      '+ Vollstaendige Aufschluesselung nach Gebuehrenart',
+      '+ Aufteilung nach Waehrung und Marketplace',
+      '+ Realer Provisionssatz vs. eBay-Gebuehrentabelle',
+      '+ Persoenliche Empfehlungen zur Gebuehrensenkung',
+    ],
+    upsellCta:    'Upgrade auf den Detailbericht: www.beassistscan.com',
     row1:         'Anzahl der Transaktionen',
     row2:         'Gesamtumsatz',
     row3:         'Gesamte eBay-Gebuehren',
@@ -125,6 +161,15 @@ const TRANSLATIONS = {
     curCol2:      'Vendite',
     curCol3:      'Commissioni',
     curCol4:      'Transazioni',
+    sponsoredNote: 'Include una stima del 2% di Inserzioni sponsorizzate (media osservata).',
+    upsellTitle:  'Sblocca la tua analisi completa',
+    upsellLines:  [
+      '+ Dettaglio completo delle commissioni per tipo',
+      '+ Ripartizione per valuta e marketplace',
+      '+ Tasso di commissione reale vs tariffe eBay',
+      '+ Raccomandazioni personalizzate per ridurre le commissioni',
+    ],
+    upsellCta:    'Passa al Report Dettagliato su www.beassistscan.com',
     row1:         'Numero di transazioni',
     row2:         'Fatturato totale',
     row3:         'Commissioni eBay totali',
@@ -387,6 +432,36 @@ function drawInsightBox(doc, y, data, T) {
   return y + BH;
 }
 
+function drawSponsoredNote(doc, y, data, T) {
+  if (!data.sponsoredAdsEstimate || data.sponsoredAdsEstimate <= 0) return y;
+  y += 10;
+  doc.fontSize(7.5).font('Helvetica-Oblique').fillColor(BRAND.grayLight)
+     .text(`* ${T.sponsoredNote}`, MARGIN, y, { width: INNER_W });
+  return y + 14;
+}
+
+function drawUpsellBox(doc, y, T) {
+  y += 20;
+  const lineH = 16;
+  const BH = 46 + T.upsellLines.length * lineH + 14;
+  doc.roundedRect(MARGIN, y, INNER_W, BH, 10).fill(BRAND.bg);
+  doc.roundedRect(MARGIN, y, INNER_W, BH, 10).strokeColor(BRAND.violet).lineWidth(1.5).stroke();
+  doc.roundedRect(MARGIN, y, 5, BH, 3).fill(BRAND.violet);
+
+  doc.fontSize(12).font('Helvetica-Bold').fillColor(BRAND.violetDark)
+     .text(T.upsellTitle, MARGIN + 18, y + 14, { width: INNER_W - 36, lineBreak: false });
+
+  T.upsellLines.forEach((line, i) => {
+    doc.fontSize(9).font('Helvetica').fillColor(BRAND.gray)
+       .text(line, MARGIN + 18, y + 40 + i * lineH, { width: INNER_W - 36, lineBreak: false });
+  });
+
+  doc.fontSize(9.5).font('Helvetica-Bold').fillColor(BRAND.violet)
+     .text(T.upsellCta, MARGIN + 18, y + 40 + T.upsellLines.length * lineH + 2, { width: INNER_W - 36, lineBreak: false });
+
+  return y + BH;
+}
+
 function drawCTA(doc, y, T) {
   y += 20;
   const BH = 50;
@@ -414,7 +489,8 @@ function drawFooter(doc) {
 }
 
 // ── EXPORT ─────────────────────────────────────────────────
-function generateReport(data, email, storeName, lang) {
+// plan : 'free' (par defaut) = rapport allege + upsell | 'detailed'/'pro' = rapport complet
+function generateReport(data, email, storeName, lang, plan = 'free') {
   return new Promise((resolve, reject) => {
     try {
       ensureUploadsDir();
@@ -431,14 +507,24 @@ function generateReport(data, email, storeName, lang) {
 
       doc.pipe(ws);
 
+      const isPaid = plan === 'detailed' || plan === 'pro';
       let y = 0;
       const T = getLang(lang);
       y = drawHeader(doc, T);
       y = drawInfoBand(doc, y, email, storeName, T);
       y = drawStatCards(doc, y, data, T);
-      y = drawDetailTable(doc, y, data, T);
-      y = drawCurrencyTable(doc, y, data, T);
-      y = drawInsightBox(doc, y, data, T);
+      y = drawSponsoredNote(doc, y, data, T);
+
+      if (isPaid) {
+        // Rapport Detaille : toutes les analyses
+        y = drawDetailTable(doc, y, data, T);
+        y = drawCurrencyTable(doc, y, data, T);
+        y = drawInsightBox(doc, y, data, T);
+      } else {
+        // Forfait gratuit : chiffres cles uniquement + incitation a l'upgrade
+        y = drawUpsellBox(doc, y, T);
+      }
+
       y = drawCTA(doc, y, T);
       drawFooter(doc);
 
