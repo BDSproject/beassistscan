@@ -21,7 +21,8 @@ const TRANSLATIONS = {
     curCol2:      'Ventes',
     curCol3:      'Commissions',
     curCol4:      'Transactions',
-    sponsoredNote: 'Inclut une estimation de 2% d\'Annonces sponsorisees (moyenne constatee).',
+    sponsoredNote: 'Inclut une estimation de 2% d\'Annonces sponsorisees (moyenne constatee). Le CA et les commissions incluent les frais de port (eBay commissionne aussi le port).',
+    sponsoredNoteReal: 'Inclut vos frais reels d\'Annonces sponsorisees detectes sur votre compte. Le CA et les commissions incluent les frais de port (eBay commissionne aussi le port).',
     upsellTitle:  'Debloquez votre analyse complete',
     upsellLines:  [
       '+ Detail complet de vos commissions par type de frais',
@@ -56,7 +57,8 @@ const TRANSLATIONS = {
     curCol2:      'Sales',
     curCol3:      'Fees',
     curCol4:      'Transactions',
-    sponsoredNote: 'Includes an estimated 2% for Promoted Listings (observed average).',
+    sponsoredNote: 'Includes an estimated 2% for Promoted Listings (observed average). Revenue and fees include shipping (eBay charges fees on shipping too).',
+    sponsoredNoteReal: 'Includes your actual Promoted Listings fees detected on your account. Revenue and fees include shipping (eBay charges fees on shipping too).',
     upsellTitle:  'Unlock your full analysis',
     upsellLines:  [
       '+ Full fee breakdown by fee type',
@@ -91,7 +93,8 @@ const TRANSLATIONS = {
     curCol2:      'Ventas',
     curCol3:      'Comisiones',
     curCol4:      'Transacciones',
-    sponsoredNote: 'Incluye una estimacion del 2% de Anuncios patrocinados (media observada).',
+    sponsoredNote: 'Incluye una estimacion del 2% de Anuncios patrocinados (media observada). Los ingresos y comisiones incluyen los gastos de envio.',
+    sponsoredNoteReal: 'Incluye sus gastos reales de Anuncios patrocinados detectados en su cuenta. Los ingresos y comisiones incluyen los gastos de envio.',
     upsellTitle:  'Desbloquea tu analisis completo',
     upsellLines:  [
       '+ Detalle completo de comisiones por tipo',
@@ -126,7 +129,8 @@ const TRANSLATIONS = {
     curCol2:      'Umsatz',
     curCol3:      'Gebuehren',
     curCol4:      'Transaktionen',
-    sponsoredNote: 'Enthaelt eine Schaetzung von 2% fuer Anzeigen (beobachteter Durchschnitt).',
+    sponsoredNote: 'Enthaelt eine Schaetzung von 2% fuer Anzeigen (beobachteter Durchschnitt). Umsatz und Gebuehren enthalten die Versandkosten.',
+    sponsoredNoteReal: 'Enthaelt Ihre tatsaechlichen Anzeigengebuehren aus Ihrem Konto. Umsatz und Gebuehren enthalten die Versandkosten.',
     upsellTitle:  'Schalten Sie Ihre vollstaendige Analyse frei',
     upsellLines:  [
       '+ Vollstaendige Aufschluesselung nach Gebuehrenart',
@@ -161,7 +165,8 @@ const TRANSLATIONS = {
     curCol2:      'Vendite',
     curCol3:      'Commissioni',
     curCol4:      'Transazioni',
-    sponsoredNote: 'Include una stima del 2% di Inserzioni sponsorizzate (media osservata).',
+    sponsoredNote: 'Include una stima del 2% di Inserzioni sponsorizzate (media osservata). Ricavi e commissioni includono le spese di spedizione.',
+    sponsoredNoteReal: 'Include i costi reali delle Inserzioni sponsorizzate rilevati sul suo account. Ricavi e commissioni includono le spese di spedizione.',
     upsellTitle:  'Sblocca la tua analisi completa',
     upsellLines:  [
       '+ Dettaglio completo delle commissioni per tipo',
@@ -435,8 +440,9 @@ function drawInsightBox(doc, y, data, T) {
 function drawSponsoredNote(doc, y, data, T) {
   if (!data.sponsoredAdsEstimate || data.sponsoredAdsEstimate <= 0) return y;
   y += 10;
+  const note = data.sponsoredAdsIsReal ? (T.sponsoredNoteReal || T.sponsoredNote) : T.sponsoredNote;
   doc.fontSize(7.5).font('Helvetica-Oblique').fillColor(BRAND.grayLight)
-     .text(`* ${T.sponsoredNote}`, MARGIN, y, { width: INNER_W });
+     .text(`* ${note}`, MARGIN, y, { width: INNER_W });
   return y + 14;
 }
 

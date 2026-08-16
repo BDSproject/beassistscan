@@ -13,10 +13,17 @@ function readCurrency(obj) {
   return String(obj.currency).toUpperCase();
 }
 
+// Types de frais publicitaires (Annonces sponsorisées / Promoted Listings)
+const AD_FEE_TYPES = new Set(['AD_FEE', 'PROMOTED_LISTINGS_FEE', 'PLA_FEE']);
+
+function isAdFeeType(feeType) {
+  return AD_FEE_TYPES.has(String(feeType || '').toUpperCase());
+}
+
 function calculateFromTransactions(transactions, options = {}) {
-  // Forfait gratuit : on ajoute par defaut une estimation de 2% d'Annonces
-  // sponsorisees (Promoted Listings Standard) car ces frais ne sont pas
-  // toujours detailles dans les transactions de l'API Finances.
+  // Estimation d'Annonces sponsorisées (ex: 2% pour le forfait gratuit).
+  // Utilisée UNIQUEMENT si aucun frais publicitaire réel n'est détecté
+  // dans les transactions (feeType AD_FEE).
   const sponsoredAdsRate = typeof options.sponsoredAdsRate === 'number' ? options.sponsoredAdsRate : 0;
 
   // Regroupement par devise : { EUR: {...}, USD: {...} }
@@ -25,14 +32,65 @@ function calculateFromTransactions(transactions, options = {}) {
   const getBucket = (currency) => {
     const cur = currency || 'EUR';
     if (!byCurrency[cur]) {
-      byCurrency[cur] = { currency: cur, totalSales: 0, totalFees: 0, rowCount: 0 };
+      byCurrency[cur] = {
+        currency: cur,
+        totalSales: 0,       // CA brut = produit + frais de port (base de commission eBay)
+        totalShipping: 0,    // Part frais de port du CA (si détaillée par l'API)
+        totalFees: 0,        // Commissions eBay (hors publicité)
+        adFees: 0,           // Frais Annonces sponsorisées RÉELS (AD_FEE)
+        rowCount: 0,
+      };
     }
     return byCurrency[cur];
   };
 
+  // Sépare les frais d'une transaction : commissions eBay vs frais publicitaires
+  const splitFees = (trx) => {
+    let ebayFee = 0;
+    let adFee = 0;
+
+    if (Array.isArray(trx.marketplaceFees) && trx.marketplaceFees.length > 0) {
+      // Détail disponible : on ventile par feeType
+      trx.marketplaceFees.forEach((f) => {
+        const v = Math.abs(readMoneyValue(f.amount) || readMoneyValue(f.feeAmount));
+        if (isAdFeeType(f.feeType)) adFee += v;
+        else ebayFee += v;
+      });
+      // Cohérence : si totalFeeAmount officiel dépasse la somme ventilée,
+      // on impute la différence aux commissions eBay
+      const officialTotal = Math.abs(readMoneyValue(trx.totalFeeAmount));
+      if (officialTotal > 0 && officialTotal > ebayFee + adFee) {
+        ebayFee += officialTotal - (ebayFee + adFee);
+      }
+    } else if (trx.totalFeeAmount) {
+      ebayFee = Math.abs(readMoneyValue(trx.totalFeeAmount));
+    } else if (trx.feeAmount) {
+      ebayFee = Math.abs(readMoneyValue(trx.feeAmount));
+    }
+
+    // feeType porté directement par la transaction (cas NON_SALE_CHARGE AD_FEE)
+    if (isAdFeeType(trx.feeType)) {
+      adFee += ebayFee;
+      ebayFee = 0;
+    }
+
+    return { ebayFee, adFee };
+  };
+
+  // Frais de port facturés à l'acheteur (si le détail ligne de commande existe)
+  const readShipping = (trx) => {
+    if (!Array.isArray(trx.orderLineItems)) return 0;
+    return trx.orderLineItems.reduce((sum, li) => {
+      const s =
+        Math.abs(readMoneyValue(li.shippingCost)) ||
+        Math.abs(readMoneyValue(li.deliveryCost && li.deliveryCost.shippingCost));
+      return sum + s;
+    }, 0);
+  };
+
   transactions.forEach(trx => {
     // Type de transaction : on ne compte comme vente que les SALE.
-    // REFUND est déduit, les autres types (NON_SALE_CHARGE, DISPUTE, SHIPPING_LABEL,
+    // REFUND est déduit, les autres types (DISPUTE, SHIPPING_LABEL,
     // TRANSFER, ADJUSTMENT...) ne sont pas du chiffre d'affaires.
     const type = String(trx.transactionType || 'SALE').toUpperCase();
 
@@ -47,49 +105,52 @@ function calculateFromTransactions(transactions, options = {}) {
 
     // ⚠️ Dans l'API Finances, `amount` d'une SALE est le montant NET versé au
     // vendeur (après déduction des frais). Le vrai CA (montant payé par
-    // l'acheteur) est `totalFeeBasisAmount`. À défaut : net + frais.
+    // l'acheteur = produit + FRAIS DE PORT) est `totalFeeBasisAmount` :
+    // c'est précisément la base sur laquelle eBay applique ses commissions
+    // (eBay commissionne aussi les frais de port). À défaut : net + frais.
     const netAmount = Math.abs(
       readMoneyValue(trx.amount) ||
       readMoneyValue(trx.totalAmount)
     );
 
-    // Frais eBay : totalFeeAmount est le champ officiel de l'API Finances.
-    let fee = 0;
-    if (trx.totalFeeAmount) {
-      fee = Math.abs(readMoneyValue(trx.totalFeeAmount));
-    } else if (trx.feeAmount) {
-      fee = Math.abs(readMoneyValue(trx.feeAmount));
-    } else if (Array.isArray(trx.marketplaceFees) && trx.marketplaceFees.length > 0) {
-      fee = trx.marketplaceFees.reduce((sum, f) => {
-        const v = Math.abs(readMoneyValue(f.amount) || readMoneyValue(f.feeAmount));
-        return sum + v;
-      }, 0);
-    }
+    const { ebayFee, adFee } = splitFees(trx);
+    const fee = ebayFee;
+    const shipping = readShipping(trx);
 
-    // Montant BRUT de la vente (CA réel boutique)
+    // Montant BRUT de la vente (CA réel boutique, frais de port inclus)
     const grossAmount = trx.totalFeeBasisAmount
       ? Math.abs(readMoneyValue(trx.totalFeeBasisAmount))
-      : netAmount + fee;
+      : netAmount + fee + adFee;
 
     if (type === 'SALE') {
       bucket.totalSales += grossAmount;
+      bucket.totalShipping += shipping;
       bucket.totalFees += fee;
+      bucket.adFees += adFee;
       bucket.rowCount += 1;
     } else if (type === 'REFUND') {
       // Un remboursement réduit le CA ; les frais remboursés (avoirs) réduisent les frais
       bucket.totalSales -= grossAmount;
+      bucket.totalShipping -= shipping;
       bucket.totalFees -= fee;
+      bucket.adFees -= adFee;
     } else if (type === 'NON_SALE_CHARGE') {
-      // Frais hors vente (ex: frais d'annonces, options de mise en vente, boutique)
-      bucket.totalFees += netAmount;
+      // Frais hors vente : Annonces sponsorisées (AD_FEE), options de mise
+      // en vente, abonnement boutique...
+      if (adFee > 0 || isAdFeeType(trx.feeType)) {
+        bucket.adFees += adFee > 0 ? adFee : netAmount;
+      } else {
+        bucket.totalFees += netAmount;
+      }
     }
     // Autres types (TRANSFER, SHIPPING_LABEL, DISPUTE, ADJUSTMENT...) : ignorés du CA
   });
 
-  // Garde-fou de cohérence : d'après la grille eBay.fr, les commissions représentent
-  // ~10% + 0,42% + 0,35 EUR/commande (+ éventuels frais internationaux ~2-4%).
-  // Si les frais calculés dépassent 50% du CA, c'est un signe de données anormales :
-  // on plafonne avec une estimation basée sur la grille officielle eBay.fr.
+  // Garde-fou de cohérence : d'après la grille eBay.fr, les commissions
+  // représentent ~10% + 0,42% + 0,35 EUR/commande, appliquées sur le montant
+  // TOTAL payé par l'acheteur (produit + FRAIS DE PORT). Si les frais calculés
+  // dépassent 50% du CA, données anormales : on plafonne avec l'estimation
+  // grille officielle (le CA incluant déjà le port, la base est correcte).
   Object.values(byCurrency).forEach(b => {
     if (b.totalSales > 0 && b.totalFees > b.totalSales * 0.5) {
       const estimated = b.totalSales * 0.1042 + b.rowCount * 0.35;
@@ -101,21 +162,31 @@ function calculateFromTransactions(transactions, options = {}) {
     }
     // Ne jamais retourner de valeurs négatives
     b.totalSales = Math.max(0, b.totalSales);
+    b.totalShipping = Math.max(0, b.totalShipping);
     b.totalFees = Math.max(0, b.totalFees);
+    b.adFees = Math.max(0, b.adFees);
   });
 
   // Estimation annuelle par devise (basée sur les 90 derniers jours)
   const days = 90;
   const currencies = Object.values(byCurrency).map(b => {
-    // Estimation Annonces sponsorisées (ex: 2% du CA pour le forfait gratuit)
-    const sponsoredAdsEstimate = Math.round(b.totalSales * sponsoredAdsRate * 100) / 100;
-    const totalFees = b.totalFees + sponsoredAdsEstimate;
+    // Annonces sponsorisées : frais RÉELS détectés (AD_FEE) en priorité,
+    // sinon estimation (ex: 2% du CA pour le forfait gratuit).
+    const hasRealAdFees = b.adFees > 0;
+    const sponsoredAds = hasRealAdFees
+      ? Math.round(b.adFees * 100) / 100
+      : Math.round(b.totalSales * sponsoredAdsRate * 100) / 100;
+
+    const totalFees = b.totalFees + sponsoredAds;
     const annualSaving = (totalFees / days) * 365;
     return {
       currency: b.currency,
       totalSales: Math.round(b.totalSales * 100) / 100,
+      totalShipping: Math.round(b.totalShipping * 100) / 100,
       totalFees: Math.round(totalFees * 100) / 100,
-      sponsoredAdsEstimate,
+      ebayFees: Math.round(b.totalFees * 100) / 100,
+      sponsoredAdsEstimate: sponsoredAds,
+      sponsoredAdsIsReal: hasRealAdFees,
       annualSaving: Math.round(annualSaving * 100) / 100,
       rowCount: b.rowCount,
     };
@@ -126,15 +197,19 @@ function calculateFromTransactions(transactions, options = {}) {
 
   // Devise principale = celle avec le plus de ventes (EUR par défaut)
   const primary = currencies[0] || {
-    currency: 'EUR', totalSales: 0, totalFees: 0, sponsoredAdsEstimate: 0, annualSaving: 0, rowCount: 0,
+    currency: 'EUR', totalSales: 0, totalShipping: 0, totalFees: 0, ebayFees: 0,
+    sponsoredAdsEstimate: 0, sponsoredAdsIsReal: false, annualSaving: 0, rowCount: 0,
   };
 
   return {
     // Chiffres principaux = devise dominante (affichés dans les cartes du PDF)
     currency: primary.currency,
     totalSales: primary.totalSales,
+    totalShipping: primary.totalShipping || 0,
     totalFees: primary.totalFees,
+    ebayFees: primary.ebayFees || 0,
     sponsoredAdsEstimate: primary.sponsoredAdsEstimate || 0,
+    sponsoredAdsIsReal: primary.sponsoredAdsIsReal || false,
     sponsoredAdsRate,
     annualSaving: primary.annualSaving,
     rowCount: transactions.length,
