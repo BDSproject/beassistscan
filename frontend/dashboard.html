@@ -124,6 +124,98 @@
       </a>
     </div>
 
+    <!-- ===== ONGLETS ===== -->
+    <div class="flex flex-wrap gap-2 mb-6 bg-white/60 rounded-xl p-1.5 border border-violet-100">
+      <button data-tab="overview" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition bg-violet-600 text-white shadow">📊 Vue d'ensemble</button>
+      <button data-tab="free" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">📄 Rapport simplifié <span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full ml-1">Gratuit</span></button>
+      <button data-tab="detailed" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">📈 Rapport détaillé <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full ml-1">Premium</span></button>
+      <button data-tab="pro" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">⭐ Abonnement Pro</button>
+      <button data-tab="website" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">🚀 Créer mon site</button>
+    </div>
+
+    <!-- ===== ONGLET : RAPPORT SIMPLIFIÉ (GRATUIT) ===== -->
+    <div id="tab-free" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8 text-center">
+        <div class="text-4xl mb-3">📄</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-2">Rapport simplifié — Gratuit</h2>
+        <p class="text-gray-500 text-sm max-w-lg mx-auto mb-6">Connectez votre compte eBay et recevez par email un rapport avec vos chiffres clés des 90 derniers jours : chiffre d'affaires, commissions eBay prélevées et estimation de vos économies annuelles.</p>
+        <ul class="text-sm text-gray-600 max-w-xs mx-auto text-left space-y-2 mb-8">
+          <li>✅ Chiffre d'affaires 90 jours</li>
+          <li>✅ Total des commissions eBay</li>
+          <li>✅ Estimation d'économies annuelles</li>
+          <li class="text-gray-400">🔒 Détail des frais par type <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">Premium</span></li>
+          <li class="text-gray-400">🔒 Répartition par devise et marketplace <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">Premium</span></li>
+        </ul>
+        <a href="/" class="btn-violet inline-block text-white font-bold px-8 py-3 rounded-xl text-sm">Générer mon rapport gratuit</a>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : RAPPORT DÉTAILLÉ (PAYANT) ===== -->
+    <div id="tab-detailed" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">📈</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Rapport détaillé — L'analyse complète de votre boutique</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">Sachez exactement où part chaque euro de commission et comment réduire vos frais.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">🔍 Détail par type de frais</span><p class="text-gray-500 mt-1">Commission finale, frais réglementaires, annonces sponsorisées, frais internationaux…</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">🌍 Répartition par devise</span><p class="text-gray-500 mt-1">Vos ventes eBay.fr, .de, .com… analysées devise par devise.</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">📊 Taux réel vs grille eBay</span><p class="text-gray-500 mt-1">Comparez votre taux de commission réel à la grille officielle.</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">💡 Recommandations personnalisées</span><p class="text-gray-500 mt-1">Des pistes concrètes pour réduire vos frais dès ce mois-ci.</p></div>
+        </div>
+        <div class="text-center">
+          <button id="buyDetailedBtn" class="btn-violet text-white font-bold px-10 py-3.5 rounded-xl text-sm">Obtenir mon rapport détaillé</button>
+          <p class="text-xs text-gray-400 mt-3">Paiement unique et sécurisé via Stripe.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : ABONNEMENT PRO ===== -->
+    <div id="tab-pro" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">⭐</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Abonnement Pro — Pilotez votre rentabilité chaque mois</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">Le suivi continu de votre boutique + un accompagnement dédié par notre agence.</p>
+        </div>
+        <ul class="text-sm text-gray-600 max-w-md mx-auto space-y-3 mb-8">
+          <li>✅ <b>Rapport détaillé illimité</b> — générez un rapport quand vous voulez</li>
+          <li>✅ <b>Suivi mensuel automatique</b> par email</li>
+          <li>✅ <b>Historique complet</b> de vos rapports dans le dashboard</li>
+          <li>✅ <b>Support prioritaire</b> par email</li>
+          <li>✅ <b>Audit e-commerce offert</b> — 30 min avec un expert Beassist</li>
+        </ul>
+        <div class="text-center">
+          <button id="buyProBtn" class="btn-violet text-white font-bold px-10 py-3.5 rounded-xl text-sm">S'abonner à l'offre Pro</button>
+          <p class="text-xs text-gray-400 mt-3">Abonnement mensuel sans engagement, annulable à tout moment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : CRÉER MON SITE ===== -->
+    <div id="tab-website" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">🚀</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Et si vous arrêtiez de payer des commissions ?</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">Votre rapport vous montre combien eBay vous coûte chaque année. <b>Beassist Agency</b> crée votre boutique e-commerce indépendante : vous gardez 100% de vos marges.</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8 text-center">
+          <div class="bg-green-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-green-600">0%</p><p class="text-xs text-gray-500 mt-1">de commission sur vos ventes</p></div>
+          <div class="bg-violet-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-violet-600">100%</p><p class="text-xs text-gray-500 mt-1">de vos clients vous appartiennent</p></div>
+          <div class="bg-amber-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-amber-600">Clé en main</p><p class="text-xs text-gray-500 mt-1">design, paiement, SEO inclus</p></div>
+        </div>
+        <div class="text-center">
+          <a href="mailto:contact@beassistnow.com?subject=Cr%C3%A9ation%20de%20ma%20boutique%20e-commerce&body=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20la%20cr%C3%A9ation%20de%20ma%20boutique%20en%20ligne." class="btn-violet inline-block text-white font-bold px-10 py-3.5 rounded-xl text-sm">Demander un devis gratuit</a>
+          <p class="text-xs text-gray-400 mt-3">Réponse sous 24h — contact@beassistnow.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : VUE D'ENSEMBLE ===== -->
+    <div id="tab-overview" class="tab-panel">
+
     <!-- Cartes de synthèse (3 indicateurs) -->
     <div class="stat-grid grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
       <div class="stat-card p-5 rounded-xl text-center">
@@ -161,6 +253,7 @@
         </div>
       </div>
     </div>
+    </div><!-- /tab-overview -->
 
     <!-- Lien retour -->
     <div class="mt-6 text-center">
@@ -213,6 +306,34 @@
     });
 
     // ============================================================
+    // 2b. ONGLETS
+    // ============================================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('bg-violet-600', 'text-white', 'shadow');
+          b.classList.add('text-gray-600', 'hover:bg-violet-50');
+        });
+        btn.classList.add('bg-violet-600', 'text-white', 'shadow');
+        btn.classList.remove('text-gray-600', 'hover:bg-violet-50');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+
+    // ============================================================
+    // 2c. PAIEMENTS (Stripe checkout)
+    // ============================================================
+    let currentUserEmail = '';
+    let currentUserStore = '';
+    document.getElementById('buyDetailedBtn').addEventListener('click', () => {
+      window.location.href = '/api/payment/checkout?plan=report&email=' + encodeURIComponent(currentUserEmail) + '&storeName=' + encodeURIComponent(currentUserStore);
+    });
+    document.getElementById('buyProBtn').addEventListener('click', () => {
+      window.location.href = '/api/payment/checkout?plan=pro&email=' + encodeURIComponent(currentUserEmail) + '&storeName=' + encodeURIComponent(currentUserStore);
+    });
+
+    // ============================================================
     // 3. CHARGEMENT DES DONNÉES
     // ============================================================
     (async () => {
@@ -221,6 +342,8 @@
       if (!me || !me.user) return;
 
       const user = me.user;
+      currentUserEmail = user.email || '';
+      currentUserStore = user.storeName || '';
       const greeting = document.querySelector('#userGreeting span');
       if (greeting) {
         greeting.textContent = user.firstName || user.email.split('@')[0] || 'utilisateur';

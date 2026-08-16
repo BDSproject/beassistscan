@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion – BeassistScan</title>
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f0fdf4 100%); min-height: 100vh; }
+    .card-main { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border: 1px solid rgba(139,92,246,0.15); box-shadow: 0 25px 50px -12px rgba(109,40,217,0.15); }
+    .btn-violet { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); box-shadow: 0 4px 15px rgba(124,58,237,0.4); transition: all .3s ease; }
+    .btn-violet:hover { background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%); transform: translateY(-1px); }
+    .logo-dot { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  </style>
+</head>
+<body class="flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md">
+    <!-- Logo -->
+    <a href="/" class="flex items-center justify-center gap-2.5 mb-8">
+      <div class="logo-dot w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      </div>
+      <span class="text-gray-800 font-bold text-2xl tracking-tight">Beassist<span class="text-violet-600">Scan</span></span>
+    </a>
+
+    <div class="card-main rounded-2xl p-8">
+      <!-- Onglets -->
+      <div class="flex bg-gray-100 rounded-lg p-1 mb-6">
+        <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-2 rounded-md text-sm font-semibold transition bg-white shadow text-violet-700">Connexion</button>
+        <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-2 rounded-md text-sm font-semibold transition text-gray-500 hover:text-gray-700">Inscription</button>
+      </div>
+
+      <!-- Formulaire connexion -->
+      <form id="loginForm" class="space-y-4">
+        <input type="email" id="loginEmail" required placeholder="Email"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <input type="password" id="loginPassword" required placeholder="Mot de passe"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+        <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-lg text-sm">Se connecter</button>
+      </form>
+
+      <!-- Formulaire inscription -->
+      <form id="registerForm" class="space-y-4 hidden">
+        <div class="grid grid-cols-2 gap-3">
+          <input type="text" id="regFirstName" placeholder="Prénom"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+          <input type="text" id="regLastName" placeholder="Nom"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        </div>
+        <input type="text" id="regStoreName" placeholder="Nom de votre boutique eBay (optionnel)"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <input type="email" id="regEmail" required placeholder="Email"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <input type="password" id="regPassword" required minlength="8" placeholder="Mot de passe (8 caractères min.)"
+          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400" />
+        <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+        <button type="submit" class="btn-violet w-full text-white font-bold py-3 rounded-lg text-sm">Créer mon compte gratuit</button>
+        <p class="text-[11px] text-gray-400 text-center">En créant un compte vous acceptez nos <a href="/cgv.html" class="underline">CGV</a> et notre <a href="/politique-confidentialite.html" class="underline">politique de confidentialité</a>.</p>
+      </form>
+    </div>
+
+    <p class="text-center text-xs text-gray-400 mt-6"><a href="/" class="hover:text-violet-600">← Retour à l'accueil</a></p>
+  </div>
+
+  <script>
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+      document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+      document.getElementById('tabLogin').className = 'flex-1 py-2 rounded-md text-sm font-semibold transition ' + (isLogin ? 'bg-white shadow text-violet-700' : 'text-gray-500 hover:text-gray-700');
+      document.getElementById('tabRegister').className = 'flex-1 py-2 rounded-md text-sm font-semibold transition ' + (!isLogin ? 'bg-white shadow text-violet-700' : 'text-gray-500 hover:text-gray-700');
+    }
+
+    // Déjà connecté ? → dashboard
+    fetch('/auth/me').then(r => r.json()).then(d => {
+      if (d.user) window.location.href = '/dashboard.html';
+    });
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('loginError').classList.add('hidden');
+      const res = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('loginEmail').value,
+          password: document.getElementById('loginPassword').value,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) window.location.href = '/dashboard.html';
+      else showError('loginError', data.error || 'Identifiants invalides');
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('registerError').classList.add('hidden');
+      const res = await fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById('regEmail').value,
+          password: document.getElementById('regPassword').value,
+          firstName: document.getElementById('regFirstName').value,
+          lastName: document.getElementById('regLastName').value,
+          storeName: document.getElementById('regStoreName').value,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) window.location.href = '/dashboard.html';
+      else showError('registerError', data.error || 'Erreur lors de l\'inscription');
+    });
+  </script>
+</body>
+</html>
