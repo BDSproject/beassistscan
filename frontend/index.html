@@ -270,7 +270,7 @@
         Connectez votre boutique en 1 clic et recevez votre rapport de rentabilité gratuit en moins de 2 minutes.
       </p>
       <div class="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up-delay-3">
-        <a href="#stepConnect" class="btn-ebay glow-btn text-white font-bold py-4 px-8 rounded-xl text-base flex items-center gap-2">
+        <a href="#report-section" class="btn-ebay glow-btn text-white font-bold py-4 px-8 rounded-xl text-base flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
           <span data-i18n="hero.cta">Analyser mes frais gratuitement</span>
         </a>
@@ -532,7 +532,7 @@
     <!-- ==================== CTA FINAL ==================== -->
     <div class="text-center mt-16 mb-10">
       <p data-i18n="cta.final.text" class="text-gray-500 text-sm mb-4">Prêt à découvrir combien vous pourriez économiser ?</p>
-      <a href="#stepConnect" class="btn-violet inline-flex items-center gap-2 text-white font-bold py-4 px-8 rounded-xl">
+      <a href="/api/ebay/auth" onclick="return startEbayConnect(event)" class="btn-violet inline-flex items-center gap-2 text-white font-bold py-4 px-8 rounded-xl cursor-pointer">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         <span data-i18n="cta.final.btn">Connecter mon compte eBay</span>
       </a>
@@ -626,6 +626,20 @@
     function showAccountPanel() {
       const panel = document.getElementById('accountPanel');
       if (panel) panel.classList.toggle('hidden');
+    }
+
+    // ── CTA "Connecter mon compte eBay" (section finale) ──
+    function startEbayConnect(e) {
+      if (e) e.preventDefault();
+      // Si le compte eBay est déjà connecté (formulaire rapport visible),
+      // on scrolle vers le formulaire au lieu de relancer l'OAuth.
+      const stepReport = document.getElementById('stepReport');
+      if (stepReport && !stepReport.classList.contains('hidden')) {
+        document.getElementById('report-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return false;
+      }
+      window.location.href = '/api/ebay/auth';
+      return false;
     }
 
     // ── Afficher l'étape ──
