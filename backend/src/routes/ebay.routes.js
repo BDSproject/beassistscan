@@ -167,7 +167,13 @@ router.post('/generate-report-ebay', async (req, res) => {
     const mailTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Mail timeout')), 20000));
     await Promise.race([sendReport(email, pdfPath), mailTimeout]);
 
-    // Sauvegarde en base (optionnelle)
+    // Sauvegarde en base, liée au compte utilisateur si connecté
+    // (sinon on tente de retrouver le compte via l'email du rapport)
+    let ownerId = req.session.userId || null;
+    if (!ownerId) {
+      const owner = await prisma.user.findUnique({ where: { email } });
+      if (owner) ownerId = owner.id;
+    }
     await prisma.lead.create({
       data: {
         email,
@@ -175,6 +181,8 @@ router.post('/generate-report-ebay', async (req, res) => {
         totalSales: reportData.totalSales,
         totalFees: reportData.totalFees,
         annualSaving: reportData.annualSaving,
+        pdfPath,
+        userId: ownerId || undefined,
       },
     });
 

@@ -32,6 +32,7 @@ model Lead {
   annualSaving    Float
   paidReport      Boolean  @default(false)
   proSubscription Boolean  @default(false)
+  pdfPath         String?
   createdAt       DateTime @default(now())
   userId          String?
   user            User?    @relation(fields: [userId], references: [id])
