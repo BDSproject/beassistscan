@@ -17,7 +17,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
 
-const SITE_HOST = 'www.beassistscan.com';
+const SITE_HOST = 'beassistscan.com';
 const TRACKING_QUERY_PARAMS = new Set([
   'utm_source',
   'utm_medium',
@@ -39,7 +39,7 @@ app.use((req, res, next) => {
     return res.redirect(301, `https://${host}${req.originalUrl}`);
   }
 
-  if (isProd && (host === 'beassistscan.com' || host.startsWith('beassistscan.com:'))) {
+  if (isProd && (host === 'www.beassistscan.com' || host.startsWith('www.beassistscan.com:'))) {
     return res.redirect(301, `https://${SITE_HOST}${req.originalUrl}`);
   }
 

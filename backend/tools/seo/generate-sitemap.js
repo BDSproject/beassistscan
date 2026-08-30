@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SITE_URL = process.env.SITE_URL || 'https://www.beassistscan.com';
+const SITE_URL = process.env.SITE_URL || 'https://beassistscan.com';
 const PUBLIC_DIR = path.join(__dirname, '../../public');
 const OUTPUT_FILE = path.join(PUBLIC_DIR, 'sitemap.xml');
 

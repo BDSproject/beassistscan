@@ -10,5 +10,5 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /uploads/
 
-Host: www.beassistscan.com
-Sitemap: https://www.beassistscan.com/sitemap.xml
+Host: beassistscan.com
+Sitemap: https://beassistscan.com/sitemap.xml
