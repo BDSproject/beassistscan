@@ -32,6 +32,7 @@ jest.mock('@prisma/client', () => {
     },
     lead: {
       create: jest.fn().mockResolvedValue({ id: 'lead_123' }),
+      findFirst: jest.fn().mockResolvedValue(null),
       findMany: jest.fn().mockResolvedValue([]),
       upsert: jest.fn().mockResolvedValue({ id: 'lead_123' }),
     },

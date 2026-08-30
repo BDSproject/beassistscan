@@ -1,10 +1,14 @@
 User-agent: *
 Allow: /
+Allow: /*.css$
+Allow: /*.js$
 
 # Pages privées : ne pas indexer
 Disallow: /dashboard.html
 Disallow: /login.html
 Disallow: /api/
 Disallow: /auth/
+Disallow: /uploads/
 
+Host: www.beassistscan.com
 Sitemap: https://www.beassistscan.com/sitemap.xml

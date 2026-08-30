@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');  
+const compression = require('compression');
 const path = require('path');
 const reportRoutes = require('./routes/report.routes');
 const ebayRoutes = require('./routes/ebay.routes');
@@ -15,6 +16,53 @@ const i18nRoutes = require('./routes/i18n.routes');
 const app = express();
 app.set('trust proxy', 1);
 app.disable('x-powered-by');
+
+const SITE_HOST = 'www.beassistscan.com';
+const TRACKING_QUERY_PARAMS = new Set([
+  'utm_source',
+  'utm_medium',
+  'utm_campaign',
+  'utm_term',
+  'utm_content',
+  'gclid',
+  'fbclid',
+  'msclkid',
+]);
+
+// SEO/Canonical redirects: HTTPS + host + nettoyage des paramètres de tracking
+app.use((req, res, next) => {
+  const isProd = process.env.NODE_ENV === 'production';
+  const host = String(req.headers.host || '').toLowerCase();
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
+
+  if (isProd && forwardedProto && forwardedProto !== 'https') {
+    return res.redirect(301, `https://${host}${req.originalUrl}`);
+  }
+
+  if (isProd && (host === 'beassistscan.com' || host.startsWith('beassistscan.com:'))) {
+    return res.redirect(301, `https://${SITE_HOST}${req.originalUrl}`);
+  }
+
+  if (req.method === 'GET') {
+    const query = new URLSearchParams(req.query);
+    let changed = false;
+
+    for (const param of TRACKING_QUERY_PARAMS) {
+      if (query.has(param)) {
+        query.delete(param);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      const cleanQuery = query.toString();
+      const cleanUrl = cleanQuery ? `${req.path}?${cleanQuery}` : req.path;
+      return res.redirect(301, cleanUrl);
+    }
+  }
+
+  next();
+});
 
 // 🛡️ En-têtes de sécurité (XSS, clickjacking, MIME sniffing...)
 app.use(helmet({
@@ -87,6 +135,7 @@ app.use('/api/payment/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(cookieParser()); // nécessaire pour lire les cookies
+app.use(compression());
 
 // 📚 Blog : /blog et /blog/ redirigent vers la langue (fr par défaut)
 app.get(['/blog', '/blog/'], (req, res) => {
@@ -96,10 +145,34 @@ app.get(['/blog', '/blog/'], (req, res) => {
   res.redirect(302, `/blog/${lang}/`);
 });
 
+// Canonical SEO pour les versions blog sans slash ou avec index.html
+app.get('/blog/:lang', (req, res, next) => {
+  const supported = new Set(['fr', 'en', 'es', 'de', 'it']);
+  const lang = String(req.params.lang || '').toLowerCase();
+  if (!supported.has(lang)) return next();
+  return res.redirect(301, `/blog/${lang}/`);
+});
+
+app.get('/blog/:lang/index.html', (req, res, next) => {
+  const supported = new Set(['fr', 'en', 'es', 'de', 'it']);
+  const lang = String(req.params.lang || '').toLowerCase();
+  if (!supported.has(lang)) return next();
+  return res.redirect(301, `/blog/${lang}/`);
+});
+
 // Sert le frontend depuis backend/public/ (copie du dossier frontend/)
 const frontendPath = path.join(__dirname, '../public');
 console.log('📁 Frontend servi depuis :', frontendPath);
-app.use(express.static(frontendPath));
+app.use(express.static(frontendPath, {
+  maxAge: '30d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      return;
+    }
+    res.setHeader('Cache-Control', 'public, max-age=2592000');
+  },
+}));
 
 // Middleware pour gérer les erreurs
 
@@ -130,16 +203,13 @@ app.use('/api/payment', paymentRoutes);
 app.use('/auth', authRoutes);
 app.use('/api/i18n', i18nRoutes);
 
-// Toutes les routes non-API renvoient index.html (SPA fallback)
+// Toutes les routes non-API inconnues renvoient une vraie 404 HTML
 app.get('*', (req, res) => {
   // Ne jamais renvoyer index.html pour les routes API ou les fichiers manquants
   if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
     return res.status(404).json({ error: 'Route introuvable' });
   }
-  if (path.extname(req.path)) {
-    return res.status(404).send('Not found');
-  }
-  res.sendFile(path.join(frontendPath, 'index.html'));
+  return res.status(404).sendFile(path.join(frontendPath, '404.html'));
 });
 
 module.exports = app;

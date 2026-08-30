@@ -5,14 +5,11 @@ const { calculateFromTransactions } = require('../services/calculator.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Stockage temporaire des tokens en mémoire (pour MVP sans base)
-// Mais on va quand même utiliser la table EbayToken pour persister.
-// On va simplifier avec une variable globale (pour éviter de bloquer).
-
-let currentToken = null; // { accessToken, refreshToken, expiresAt }
-
 // Route d'autorisation : redirige vers eBay
 router.get('/auth', (req, res) => {
+  // Démarre un nouveau flux OAuth eBay pour cette session
+  req.session.ebayToken = null;
+
   const isProd = process.env.EBAY_ENV === 'production';
   const clientId = isProd ? process.env.EBAY_CLIENT_ID_PROD : process.env.EBAY_CLIENT_ID;
   const redirectUri = isProd ? process.env.EBAY_REDIRECT_URI_PROD : process.env.EBAY_REDIRECT_URI;
@@ -67,11 +64,12 @@ router.get('/callback', async (req, res) => {
     const { access_token, refresh_token, expires_in } = tokenData;
 
     const expiresAt = new Date(Date.now() + expires_in * 1000);
-    currentToken = {
+    const sessionToken = {
       accessToken: access_token,
       refreshToken: refresh_token,
-      expiresAt,
+      expiresAt: expiresAt.toISOString(),
     };
+    req.session.ebayToken = sessionToken;
 
     // Sauvegarde en base
     await prisma.ebayToken.create({
@@ -79,12 +77,13 @@ router.get('/callback', async (req, res) => {
         accessToken: access_token,
         refreshToken: refresh_token,
         expiresAt,
+        userId: req.session.userId || undefined,
       },
     });
 
     console.log('✅ Token stocké, redirection vers étape 2');
     res.clearCookie('ebayState');
-    return res.redirect(`${domain}/?connected=true`);
+    return req.session.save(() => res.redirect(`${domain}/?connected=true`));
   } catch (err) {
     const ebayError = err.response?.data || err.message;
     console.error('❌ Erreur échange token eBay :', JSON.stringify(ebayError));
@@ -121,35 +120,60 @@ router.post('/generate-report-ebay', async (req, res) => {
       reportData = calculateFromTransactions(fakeTransactions, calcOptions);
       console.log('🧪 Rapport en mode test (donnees fictives)');
     } else {
-      // Récupération du dernier token eBay stocké
-      const latestToken = await prisma.ebayToken.findFirst({
-        orderBy: { createdAt: 'desc' },
-      });
+      // 1) Priorité au token eBay de la session courante (important pour les essais gratuits)
+      // 2) Sinon, fallback au dernier token du user connecté
+      const sessionToken = req.session.ebayToken || null;
+      const latestToken = sessionToken
+        ? {
+            accessToken: sessionToken.accessToken,
+            refreshToken: sessionToken.refreshToken,
+            expiresAt: sessionToken.expiresAt,
+            userId: req.session.userId || null,
+          }
+        : req.session.userId
+          ? await prisma.ebayToken.findFirst({
+              where: { userId: req.session.userId },
+              orderBy: { createdAt: 'desc' },
+            })
+          : null;
 
       if (!latestToken) {
         return res.status(400).json({
-          error: 'Aucun compte eBay connecte. Connectez eBay avant de generer un rapport.',
+          error: 'Aucun compte eBay connecté pour cette session. Connectez eBay puis réessayez.',
         });
       }
 
       let accessToken = latestToken.accessToken;
+      let refreshToken = latestToken.refreshToken;
 
       // Refresh token si expiré
       if (new Date(latestToken.expiresAt).getTime() <= Date.now()) {
         console.log('🔄 Token eBay expire, refresh en cours...');
-        const refreshed = await EbayService.refreshAccessToken(latestToken.refreshToken);
+        const refreshed = await EbayService.refreshAccessToken(refreshToken);
         const expiresAt = new Date(Date.now() + (refreshed.expires_in || 7200) * 1000);
+        const updatedRefreshToken = refreshed.refresh_token || refreshToken;
 
-        await prisma.ebayToken.create({
-          data: {
-            accessToken: refreshed.access_token,
-            refreshToken: refreshed.refresh_token || latestToken.refreshToken,
-            expiresAt,
-            userId: latestToken.userId || undefined,
-          },
-        });
+        // On persiste uniquement si un utilisateur est connu
+        if (req.session.userId || latestToken.userId) {
+          await prisma.ebayToken.create({
+            data: {
+              accessToken: refreshed.access_token,
+              refreshToken: updatedRefreshToken,
+              expiresAt,
+              userId: req.session.userId || latestToken.userId || undefined,
+            },
+          });
+        }
+
+        // Toujours maintenir la session à jour pour les utilisateurs anonymes
+        req.session.ebayToken = {
+          accessToken: refreshed.access_token,
+          refreshToken: updatedRefreshToken,
+          expiresAt: expiresAt.toISOString(),
+        };
 
         accessToken = refreshed.access_token;
+        refreshToken = updatedRefreshToken;
       }
 
       const transactions = await EbayService.getTransactions(accessToken);
@@ -164,8 +188,15 @@ router.post('/generate-report-ebay', async (req, res) => {
 
     // Envoi du mail (si SMTP configuré)
     const { sendReport } = require('../services/email.service');
-    const mailTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Mail timeout')), 20000));
-    await Promise.race([sendReport(email, pdfPath), mailTimeout]);
+    let mailTimeoutId;
+    const mailTimeout = new Promise((_, reject) => {
+      mailTimeoutId = setTimeout(() => reject(new Error('Mail timeout')), 20000);
+    });
+    try {
+      await Promise.race([sendReport(email, pdfPath), mailTimeout]);
+    } finally {
+      if (mailTimeoutId) clearTimeout(mailTimeoutId);
+    }
 
     // Sauvegarde en base, liée au compte utilisateur si connecté
     // (sinon on tente de retrouver le compte via l'email du rapport)
