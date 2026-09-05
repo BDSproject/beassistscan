@@ -232,6 +232,43 @@
       </div>
     </div>
 
+    <!-- Filtres période -->
+    <div class="card-main rounded-2xl p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 class="text-sm font-bold text-gray-700">🎯 Filtrer les statistiques</h3>
+        <button id="resetFilterBtn" class="text-xs text-violet-700 hover:text-violet-900 font-semibold">Réinitialiser</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <label class="text-xs text-gray-500 flex flex-col gap-1">
+          Type de filtre
+          <select id="periodType" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white">
+            <option value="all">Toutes périodes</option>
+            <option value="day">Jour par jour</option>
+            <option value="month">Mois par mois</option>
+            <option value="year">Année par année</option>
+          </select>
+        </label>
+
+        <label id="dayFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Jour
+          <input id="dayFilter" type="date" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white" />
+        </label>
+
+        <label id="monthFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Mois
+          <input id="monthFilter" type="month" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white" />
+        </label>
+
+        <label id="yearFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Année
+          <select id="yearFilter" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white">
+            <option value="">Sélectionner</option>
+          </select>
+        </label>
+      </div>
+      <p id="activeFilterLabel" class="text-xs text-gray-500 mt-3">Période active : toutes périodes</p>
+    </div>
+
     <!-- Liste des rapports (tableau épuré) -->
     <div class="card-main rounded-2xl p-6">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
@@ -334,10 +371,189 @@
     });
 
     // ============================================================
-    // 3. CHARGEMENT DES DONNÉES
+    // 3. CHARGEMENT DES DONNÉES + FILTRES
     // ============================================================
+    const periodTypeEl = document.getElementById('periodType');
+    const dayFilterEl = document.getElementById('dayFilter');
+    const monthFilterEl = document.getElementById('monthFilter');
+    const yearFilterEl = document.getElementById('yearFilter');
+    const dayFilterWrap = document.getElementById('dayFilterWrap');
+    const monthFilterWrap = document.getElementById('monthFilterWrap');
+    const yearFilterWrap = document.getElementById('yearFilterWrap');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+    const activeFilterLabelEl = document.getElementById('activeFilterLabel');
+    const reportCountEl = document.getElementById('reportCount');
+    const reportsListEl = document.getElementById('reportsList');
+
+    let allReports = [];
+
+    function pad2(v) {
+      return String(v).padStart(2, '0');
+    }
+
+    function getDateParts(dateStr) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return null;
+      const y = d.getFullYear();
+      const m = pad2(d.getMonth() + 1);
+      const day = pad2(d.getDate());
+      return {
+        y,
+        m,
+        day,
+        dayKey: `${y}-${m}-${day}`,
+        monthKey: `${y}-${m}`,
+        yearKey: String(y),
+      };
+    }
+
+    function updateFilterControlsVisibility() {
+      const type = periodTypeEl.value;
+      dayFilterWrap.classList.toggle('hidden', type !== 'day');
+      monthFilterWrap.classList.toggle('hidden', type !== 'month');
+      yearFilterWrap.classList.toggle('hidden', type !== 'year');
+    }
+
+    function updateYearOptions(reports) {
+      const years = Array.from(new Set(
+        reports
+          .map(r => getDateParts(r.createdAt))
+          .filter(Boolean)
+          .map(p => p.yearKey)
+      )).sort((a, b) => Number(b) - Number(a));
+
+      yearFilterEl.innerHTML = '<option value="">Sélectionner</option>';
+      years.forEach(year => {
+        const opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        yearFilterEl.appendChild(opt);
+      });
+    }
+
+    function getFilteredReports() {
+      const type = periodTypeEl.value;
+      if (type === 'all') return allReports;
+
+      const selectedValue = type === 'day'
+        ? dayFilterEl.value
+        : type === 'month'
+          ? monthFilterEl.value
+          : yearFilterEl.value;
+
+      if (!selectedValue) return allReports;
+
+      return allReports.filter(report => {
+        const parts = getDateParts(report.createdAt);
+        if (!parts) return false;
+        if (type === 'day') return parts.dayKey === selectedValue;
+        if (type === 'month') return parts.monthKey === selectedValue;
+        return parts.yearKey === selectedValue;
+      });
+    }
+
+    function renderStats(reports) {
+      let totalSales = 0;
+      let totalFees = 0;
+      let totalSaving = 0;
+
+      reports.forEach(r => {
+        totalSales += r.totalSales || 0;
+        totalFees += r.totalFees || 0;
+        totalSaving += r.annualSaving || 0;
+      });
+
+      document.getElementById('totalSales').textContent = formatEuro(totalSales);
+      document.getElementById('totalFees').textContent = formatEuro(totalFees);
+      document.getElementById('totalSaving').textContent = formatEuro(totalSaving);
+    }
+
+    function renderReports(reports) {
+      if (reports.length === 0) {
+        reportsListEl.innerHTML = `
+          <div class="empty-state">
+            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-gray-400 text-sm">Aucun rapport trouvé pour ce filtre.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      reports
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .forEach((report) => {
+          const store = report.storeName || 'Boutique sans nom';
+          const date = formatDate(report.createdAt);
+          const badgeClass = report.annualSaving > 1000 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+
+          html += `
+            <div class="report-row border-b border-gray-100 last:border-0 px-1 py-3 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex-1 min-w-[140px]">
+                <p class="font-semibold text-gray-800 text-sm">${store}</p>
+                <p class="text-xs text-gray-400">${date}</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 text-sm">
+                <span class="text-gray-600">CA <span class="font-bold">${formatEuro(report.totalSales)}</span></span>
+                <span class="text-red-500">Frais <span class="font-bold">${formatEuro(report.totalFees)}</span></span>
+                <span class="text-green-600 font-semibold flex items-center gap-1">
+                  <span>${formatEuro(report.annualSaving)}</span>
+                  <span class="badge-month ${badgeClass}">économies/an</span>
+                </span>
+              </div>
+              <a href="/api/reports/${report.id}/download" class="text-violet-600 hover:text-violet-800 text-xs font-medium underline-offset-2 hover:underline" title="Télécharger le PDF">
+                📄 PDF
+              </a>
+            </div>
+          `;
+        });
+
+      reportsListEl.innerHTML = html;
+    }
+
+    function formatActiveFilterLabel(type) {
+      if (type === 'all') return 'Période active : toutes périodes';
+      if (type === 'day' && dayFilterEl.value) return `Période active : ${formatDate(dayFilterEl.value)}`;
+      if (type === 'month' && monthFilterEl.value) {
+        const [y, m] = monthFilterEl.value.split('-');
+        const d = new Date(Number(y), Number(m) - 1, 1);
+        return `Période active : ${d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`;
+      }
+      if (type === 'year' && yearFilterEl.value) return `Période active : année ${yearFilterEl.value}`;
+      return 'Période active : toutes périodes';
+    }
+
+    function applyFiltersAndRender() {
+      const type = periodTypeEl.value;
+      const filtered = getFilteredReports();
+      renderStats(filtered);
+      renderReports(filtered);
+      reportCountEl.textContent = `${filtered.length} rapport${filtered.length > 1 ? 's' : ''}`;
+      activeFilterLabelEl.textContent = formatActiveFilterLabel(type);
+    }
+
+    function initFilterListeners() {
+      periodTypeEl.addEventListener('change', () => {
+        updateFilterControlsVisibility();
+        applyFiltersAndRender();
+      });
+      dayFilterEl.addEventListener('change', applyFiltersAndRender);
+      monthFilterEl.addEventListener('change', applyFiltersAndRender);
+      yearFilterEl.addEventListener('change', applyFiltersAndRender);
+      resetFilterBtn.addEventListener('click', () => {
+        periodTypeEl.value = 'all';
+        dayFilterEl.value = '';
+        monthFilterEl.value = '';
+        yearFilterEl.value = '';
+        updateFilterControlsVisibility();
+        applyFiltersAndRender();
+      });
+    }
+
     (async () => {
-      // ---- 3a. Utilisateur ----
       const me = await fetchJSON('/auth/me');
       if (!me || !me.user) return;
 
@@ -349,64 +565,14 @@
         greeting.textContent = user.firstName || user.email.split('@')[0] || 'utilisateur';
       }
 
-      // ---- 3b. Rapports ----
       const data = await fetchJSON('/api/reports');
       if (!data) return;
 
-      const reports = data.leads || [];
-      const container = document.getElementById('reportsList');
-
-      // Mise à jour du compteur
-      document.getElementById('reportCount').textContent = `${reports.length} rapport${reports.length > 1 ? 's' : ''}`;
-
-      // Si aucun rapport → afficher l'état vide
-      if (reports.length === 0) {
-        // Les totaux restent à 0
-        return;
-      }
-
-      // ---- 3c. Calcul des totaux ----
-      let totalSales = 0, totalFees = 0, totalSaving = 0;
-      reports.forEach(r => {
-        totalSales += r.totalSales || 0;
-        totalFees  += r.totalFees  || 0;
-        totalSaving += r.annualSaving || 0;
-      });
-      document.getElementById('totalSales').textContent  = formatEuro(totalSales);
-      document.getElementById('totalFees').textContent   = formatEuro(totalFees);
-      document.getElementById('totalSaving').textContent = formatEuro(totalSaving);
-
-      // ---- 3d. Génération du listing ----
-      let html = '';
-      // On affiche du plus récent au plus ancien
-      reports.slice().reverse().forEach((report) => {
-        const store = report.storeName || 'Boutique sans nom';
-        const date  = formatDate(report.createdAt);
-        const badgeClass = report.annualSaving > 1000 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-
-        html += `
-          <div class="report-row border-b border-gray-100 last:border-0 px-1 py-3 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex-1 min-w-[140px]">
-              <p class="font-semibold text-gray-800 text-sm">${store}</p>
-              <p class="text-xs text-gray-400">${date}</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-3 text-sm">
-              <span class="text-gray-600">CA <span class="font-bold">${formatEuro(report.totalSales)}</span></span>
-              <span class="text-red-500">Frais <span class="font-bold">${formatEuro(report.totalFees)}</span></span>
-              <span class="text-green-600 font-semibold flex items-center gap-1">
-                <span>${formatEuro(report.annualSaving)}</span>
-                <span class="badge-month ${badgeClass}">économies/an</span>
-              </span>
-            </div>
-            <!-- Bouton d'action : télécharger le PDF (si stocké) -->
-            <a href="/api/reports/${report.id}/download" class="text-violet-600 hover:text-violet-800 text-xs font-medium underline-offset-2 hover:underline" title="Télécharger le PDF">
-              📄 PDF
-            </a>
-          </div>
-        `;
-      });
-
-      container.innerHTML = html;
+      allReports = data.leads || [];
+      updateYearOptions(allReports);
+      updateFilterControlsVisibility();
+      initFilterListeners();
+      applyFiltersAndRender();
     })();
   </script>
 </body>

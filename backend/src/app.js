@@ -35,12 +35,16 @@ app.use((req, res, next) => {
   const host = String(req.headers.host || '').toLowerCase();
   const forwardedProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim();
 
+  // Redirection HTTPS (si pas déjà en HTTPS)
   if (isProd && forwardedProto && forwardedProto !== 'https') {
-    return res.redirect(301, `https://${host}${req.originalUrl}`);
+    const hostOnly = host.split(':')[0]; // Enlever le port s'il existe
+    return res.redirect(301, `https://${hostOnly}${req.originalUrl}`);
   }
 
-  if (isProd && (host === 'www.beassistscan.com' || host.startsWith('www.beassistscan.com:'))) {
-    return res.redirect(301, `https://${SITE_HOST}${req.originalUrl}`);
+  // Redirection www vers non-www (SEO canonical)
+  if (isProd && host.startsWith('www.')) {
+    const hostWithoutWww = host.replace(/^www\./, '');
+    return res.redirect(301, `https://${hostWithoutWww}${req.originalUrl}`);
   }
 
   if (req.method === 'GET') {
