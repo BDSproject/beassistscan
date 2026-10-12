@@ -151,6 +151,8 @@ app.get(['/blog', '/blog/'], (req, res) => {
 
 // Canonical SEO pour les versions blog sans slash ou avec index.html
 app.get('/blog/:lang', (req, res, next) => {
+  // /blog/fr/ (avec slash) doit être servi par le static, pas redirigé vers lui-même
+  if (req.path.endsWith('/')) return next();
   const supported = new Set(['fr', 'en', 'es', 'de', 'it']);
   const lang = String(req.params.lang || '').toLowerCase();
   if (!supported.has(lang)) return next();
@@ -164,6 +166,27 @@ app.get('/blog/:lang/index.html', (req, res, next) => {
   return res.redirect(301, `/blog/${lang}/`);
 });
 
+// 🔁 Redirections 301 des anciennes URLs du blog (migration vers /blog/{lang}/).
+// Évite les 404 et conserve le « link equity » des URLs déjà indexées.
+const LEGACY_REDIRECTS = {
+  // Anciens slugs plats (avant la localisation) → version française
+  '/blog/boutique-ebay-vs-ecommerce.html': '/blog/fr/boutique-ebay-vs-ecommerce.html',
+  '/blog/couts-caches-ebay-vendeur.html': '/blog/fr/couts-caches-ebay-vendeur.html',
+  '/blog/comment-calculer-vos-frais-ebay-reels-en-5-minutes.html': '/blog/fr/comment-calculer-vos-frais-ebay-reels-en-5-minutes.html',
+  // URLs sans extension .html (anciennement référencées dans canonical/hreflang)
+  '/blog/fr/comment-calculer-vos-frais-ebay-reels-en-5-minutes': '/blog/fr/comment-calculer-vos-frais-ebay-reels-en-5-minutes.html',
+  '/blog/en/how-to-calculate-your-real-ebay-fees-in-5-minutes': '/blog/en/how-to-calculate-your-real-ebay-fees-in-5-minutes.html',
+  '/blog/es/como-calcular-tus-gastos-reales-de-ebay-en-5-minutos': '/blog/es/como-calcular-tus-gastos-reales-de-ebay-en-5-minutos.html',
+  '/blog/it/come-calcolare-le-tue-commissioni-reali-di-ebay-in-5-minuti': '/blog/it/come-calcolare-le-tue-commissioni-reali-di-ebay-in-5-minuti.html',
+  '/blog/de/wie-sie-ihre-tatsachlichen-ebay-gebuuhren-in-5-minuten-berechnen': '/blog/de/wie-sie-ihre-tatsachlichen-ebay-gebuuhren-in-5-minuten-berechne.html',
+};
+
+app.use((req, res, next) => {
+  const target = LEGACY_REDIRECTS[req.path];
+  if (target) return res.redirect(301, target);
+  next();
+});
+
 // Sert le frontend depuis backend/public/ (copie du dossier frontend/)
 const frontendPath = path.join(__dirname, '../public');
 console.log('📁 Frontend servi depuis :', frontendPath);
@@ -172,6 +195,11 @@ app.use(express.static(frontendPath, {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      return;
+    }
+    // robots.txt et sitemap.xml : cache court pour que Google voit les changements rapidement
+    if (filePath.endsWith('robots.txt') || filePath.endsWith('sitemap.xml')) {
+      res.setHeader('Cache-Control', 'public, max-age=3600, must-revalidate');
       return;
     }
     res.setHeader('Cache-Control', 'public, max-age=2592000');
