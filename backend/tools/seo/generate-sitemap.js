@@ -10,6 +10,8 @@ const EXCLUDED = new Set([
   'dashboard.html',
   'login.html',
   'google7d682d7bb0a1cc04.html',
+  'en/dashboard.html',
+  'en/login.html',
 ]);
 
 const CHANGEFREQ = {

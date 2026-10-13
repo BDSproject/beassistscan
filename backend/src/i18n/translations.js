@@ -191,7 +191,7 @@ const translations = {
     'hero.subtitle': 'Connect your store in 1 click and get your free profitability report in under 2 minutes.',
     'hero.cta': 'Analyze my fees for free',
     'hero.nocb': '✦ No credit card · Instant result',
-    'hero.stat1.value': '+€2,800',
+    'hero.stat1.value': '+$2,800',
     'hero.stat1.label': 'Recovered on average / year',
     'hero.stat2.value': '3,000+',
     'hero.stat2.label': 'Sellers analyzed',

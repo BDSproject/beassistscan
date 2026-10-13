@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BeassistScan - Find out what eBay really costs you</title>
+  <meta name="description" content="Analyze your eBay fees in 2 minutes. Free profitability report for eBay sellers. Find out how much you can save.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://beassistscan.com/en/">
+  <link rel="alternate" hreflang="fr" href="https://beassistscan.com/">
+  <link rel="alternate" hreflang="en" href="https://beassistscan.com/en/">
+  <link rel="alternate" hreflang="x-default" href="https://beassistscan.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BeassistScan">
+  <meta property="og:title" content="BeassistScan - Your eBay fees analyzed for free">
+  <meta property="og:description" content="Connect your eBay store and get your free profitability report in 2 minutes.">
+  <meta property="og:image" content="https://beassistscan.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://beassistscan.com/en/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="fr_FR">
+  <meta property="og:locale:alternate" content="es_ES">
+  <meta property="og:locale:alternate" content="de_DE">
+  <meta property="og:locale:alternate" content="it_IT">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BeassistScan - Your eBay fees analyzed for free">
+  <meta name="twitter:description" content="Free eBay profitability report in 2 minutes for eBay sellers.">
+  <meta name="twitter:image" content="https://beassistscan.com/og-image.png">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "BeassistScan",
+    "url": "https://beassistscan.com/",
+    "logo": "https://beassistscan.com/favicon.png"
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "BeassistScan",
+    "url": "https://beassistscan.com/",
+    "inLanguage": "fr-FR"
+  }
+  </script>
+  <!-- i18n bootstrap : t() disponible immédiatement pour tous les scripts -->
+  <script>
+    window.t = function(k) { return k; };
+    (function() {
+      const originalWarn = console.warn;
+      console.warn = function(...args) {
+        if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+        originalWarn.apply(console, args);
+      };
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --violet-deep: #1e1b4b;
+      --violet-mid: #312e81;
+      --violet-light: #7c3aed;
+      --violet-glow: #a855f7;
+    }
+
+    body { background: #f5f3ff; }
+
+    /* Fond global avec motif subtil */
+    .bg-page {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f0fdf4 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header-gradient { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%); }
+    .logo-dot { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+    /* Hero */
+    .hero-bg {
+      background: linear-gradient(135deg, #1e1b4b 0%, #3730a3 40%, #6d28d9 70%, #7c3aed 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%);
+      top: -200px; right: -200px;
+      border-radius: 50%;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+      bottom: -150px; left: -100px;
+      border-radius: 50%;
+    }
+
+    /* Carte principale */
+    .card-main {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139,92,246,0.15);
+      box-shadow: 0 25px 50px -12px rgba(109,40,217,0.15), 0 0 0 1px rgba(139,92,246,0.05);
+    }
+
+    /* Bouton gradient violet */
+    .btn-violet {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-violet:hover {
+      background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Bouton eBay */
+    .btn-ebay {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+      box-shadow: 0 4px 15px rgba(29,78,216,0.35);
+      transition: all 0.3s ease;
+    }
+    .btn-ebay:hover {
+      box-shadow: 0 6px 20px rgba(29,78,216,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Cards premium */
+    .card-premium {
+      border: 1px solid rgba(139,92,246,0.15);
+      transition: all 0.3s ease;
+    }
+    .card-premium:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px rgba(109,40,217,0.15);
+      border-color: rgba(139,92,246,0.3);
+    }
+
+    /* Steps */
+    .step-circle {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      box-shadow: 0 4px 12px rgba(124,58,237,0.35);
+    }
+
+    /* Inputs */
+    input:focus {
+      border-color: #7c3aed !important;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12) !important;
+      outline: none !important;
+    }
+
+    /* Animations */
+    @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+    @keyframes glow-pulse { 0%, 100% { box-shadow: 0 4px 15px rgba(124,58,237,0.4); } 50% { box-shadow: 0 4px 25px rgba(124,58,237,0.7); } }
+    @keyframes count-up { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+    .badge-live { animation: pulse-slow 2s infinite; }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+    .fade-in-up-delay-1 { animation: fadeInUp 0.6s ease 0.1s both; }
+    .fade-in-up-delay-2 { animation: fadeInUp 0.6s ease 0.2s both; }
+    .fade-in-up-delay-3 { animation: fadeInUp 0.6s ease 0.3s both; }
+    .glow-btn { animation: glow-pulse 2.5s ease-in-out infinite; }
+    .count-up { animation: count-up 0.5s ease forwards; }
+
+    .shimmer-text {
+      background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc, #a855f7, #7c3aed);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+    }
+
+    /* Stat card */
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(139,92,246,0.1);
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(109,40,217,0.1); }
+
+    /* Section gradient */
+    .section-violet {
+      background: linear-gradient(135deg, #4c1d95 0%, #5b21b6 40%, #6d28d9 70%, #7c3aed 100%);
+    }
+
+    /* Trust icons */
+    .trust-icon {
+      background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(168,85,247,0.1));
+      border: 1px solid rgba(139,92,246,0.2);
+    }
+
+    /* Footer */
+    .footer-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    }
+
+    /* Divider */
+    .divider-violet {
+      background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+      height: 1px;
+    }
+
+    /* Lang switcher */
+    .lang-switcher{position:relative}
+    .lang-dropdown{display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:6px;min-width:130px;box-shadow:0 10px 30px rgba(0,0,0,.15);z-index:100}
+    .lang-switcher.open .lang-dropdown{display:block}
+    .lang-option{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:#374151;transition:background .15s}
+    .lang-option:hover{background:#f5f3ff;color:#7c3aed}
+    .lang-option.active{background:#ede9fe;color:#7c3aed;font-weight:600}
+  </style>
+</head>
+<body class="bg-page font-sans antialiased">
+
+  <!-- ==================== HEADER ==================== -->
+
+  <header class="header-gradient shadow-xl sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/" class="flex items-center gap-2.5 group">
+          <div class="logo-dot w-8 h-8 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <span class="text-white font-bold text-lg tracking-tight">Beassist<span class="text-purple-300">Scan</span></span>
+        </a>
+        <div class="hidden sm:flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-3 py-1">
+          <span data-i18n="nav.tagline" class="text-white/80 text-xs font-medium">Real-time eBay analysis</span>
+        </div>
+        <nav class="flex items-center gap-2">
+          <a href="/blog/" class="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">Blog</a>
+          <a href="/en/dashboard.html" id="dashboardLink" class="hidden items-center gap-1.5 text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+            Dashboard
+          </a>
+          <a href="/en/login.html" id="loginLink" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Sign in
+          </a>
+
+          <!-- Language switcher -->
+          <div class="lang-switcher ml-1" id="langSwitcher">
+            <button id="langBtn" class="flex items-center gap-1.5 bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition">
+              <span id="currentFlag">&#x1F1EB;&#x1F1F7;</span>
+              <span id="currentLangCode" class="text-xs">FR</span>
+              <svg class="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="lang-dropdown" id="langDropdown">
+              <a class="lang-option" data-lang="fr" href="/">&#x1F1EB;&#x1F1F7; <span>Fran&ccedil;ais</span></a>
+              <a class="lang-option" data-lang="en" href="/en/">&#x1F1EC;&#x1F1E7; <span>English</span></a>
+              <div class="lang-option" data-lang="es" onclick="setLang('es')">&#x1F1EA;&#x1F1F8; <span>Espa&ntilde;ol</span></div>
+              <div class="lang-option" data-lang="de" onclick="setLang('de')">&#x1F1E9;&#x1F1EA; <span>Deutsch</span></div>
+              <div class="lang-option" data-lang="it" onclick="setLang('it')">&#x1F1EE;&#x1F1F9; <span>Italiano</span></div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== BANNIÈRE COOKIES ==================== -->
+  <div id="cookie-banner" class="fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-violet-200 shadow-2xl p-4 hidden">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gray-700 leading-relaxed max-w-2xl">
+        Nous utilisons des cookies strictement nécessaires à l'authentification eBay et pour mesurer l'audience anonymement.
+        <a href="/politique-confidentialite.html" class="underline text-violet-600 hover:text-violet-800 font-medium">En savoir plus</a>
+      </p>
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <button id="cookie-refuse" class="px-5 py-2.5 border border-violet-300 text-violet-700 rounded-lg text-sm font-semibold hover:bg-violet-50 transition">Refuser</button>
+        <button id="cookie-accept" class="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-semibold shadow-md transition">Accepter</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      const banner = document.getElementById('cookie-banner');
+      if (!localStorage.getItem('cookieConsent')) banner.classList.remove('hidden');
+      document.getElementById('cookie-accept').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'accepted'); banner.classList.add('hidden'); });
+      document.getElementById('cookie-refuse').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'refused'); banner.classList.add('hidden'); });
+    })();
+  </script>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero-bg py-20 px-4">
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6 fade-in-up-delay-1">
+        <span data-i18n="hero.title1">Find out what eBay</span><br>
+        <span data-i18n="hero.title2" class="shimmer-text">really costs you</span>
+      </h1>
+      <p data-i18n="hero.subtitle" class="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 fade-in-up-delay-2">Connect your store in 1 click and get your free profitability report in under 2 minutes.</p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 fade-in-up-delay-3">
+        <a href="#report-section" class="btn-ebay glow-btn text-white font-bold py-4 px-8 rounded-xl text-base flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span data-i18n="hero.cta">Analyze my fees for free</span>
+        </a>
+        <div data-i18n="hero.nocb" class="text-white/50 text-sm">✦ No credit card · Instant result</div>
+      </div>
+      <!-- Stats hero -->
+      <div class="grid grid-cols-3 gap-4 mt-14 max-w-lg mx-auto fade-in-up-delay-3">
+        <div class="text-center">
+          <div data-i18n="hero.stat1.value" class="text-3xl font-extrabold text-white">+$2,800</div>
+          <div data-i18n="hero.stat1.label" class="text-white/50 text-xs mt-1">Recovered on average / year</div>
+        </div>
+        <div class="text-center border-x border-white/10">
+          <div data-i18n="hero.stat2.value" class="text-3xl font-extrabold text-white">3,000+</div>
+          <div data-i18n="hero.stat2.label" class="text-white/50 text-xs mt-1">Sellers analyzed</div>
+        </div>
+        <div class="text-center">
+          <div data-i18n="hero.stat3.value" class="text-3xl font-extrabold text-white">100%</div>
+          <div data-i18n="hero.stat3.label" class="text-white/50 text-xs mt-1">Free & no credit card</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CARTE PRINCIPALE ==================== -->
+  <div class="max-w-2xl mx-auto px-4 -mt-8 relative z-20 pb-16">
+    <div id="report-section" class="card-main rounded-2xl p-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-xl step-circle flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <div>
+          <h2 data-i18n="card.title" class="text-xl font-bold text-gray-800">Profitability Report</h2>
+          <p id="stepDescription" data-i18n="card.subtitle" class="text-gray-500 text-sm">Connect your eBay to receive your free analysis.</p>
+        </div>
+      </div>
+
+      <div class="divider-violet my-6"></div>
+
+      <!-- ÉTAPE 1 : Connexion eBay (premier écran, sans friction) -->
+      <div id="stepEbay" class="space-y-5">
+        <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-100 rounded-xl p-7 text-center">
+          <div class="float-anim inline-block mb-4">
+            <div class="w-16 h-16 mx-auto rounded-2xl step-circle flex items-center justify-center">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            </div>
+          </div>
+          <h3 data-i18n="ebay.connect.title" class="font-bold text-gray-800 text-lg mb-1">Connect your eBay store</h3>
+          <p data-i18n="ebay.connect.subtitle" class="text-sm text-gray-500 mb-6">In 1 click, we analyze your fees from the last 90 days. No password stored.</p>
+          <button onclick="window.location.href='/api/ebay/auth'" class="btn-ebay inline-flex items-center gap-2 text-white font-bold py-3.5 px-8 rounded-xl cursor-pointer text-base">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            <span data-i18n="ebay.connect.btn">Connect my eBay account</span>
+          </button>
+          <div class="flex items-center justify-center gap-5 mt-5 text-xs text-gray-400">
+            <span data-i18n="ebay.trust.secure" class="flex items-center gap-1">✓ Free</span>
+            <span data-i18n="ebay.trust.free" class="flex items-center gap-1">✓ 100% secure</span>
+            <span data-i18n="ebay.trust.revoke" class="flex items-center gap-1">✓ Revocable anytime</span>
+          </div>
+        </div>
+
+        <!-- Lien connexion compte existant -->
+        <p class="text-center text-xs text-gray-400">
+          <span data-i18n="ebay.already">Already have a BeassistScan account?</span>
+          <button onclick="showAccountPanel()" data-i18n="ebay.signin" class="text-violet-600 font-semibold hover:underline">Sign in</button>
+        </p>
+
+        <!-- Panel connexion compte (caché par défaut) -->
+        <div id="accountPanel" class="hidden border border-gray-200 rounded-xl p-5 space-y-4 bg-gray-50/50">
+          <div class="flex rounded-lg bg-gray-100 p-0.5 gap-0.5">
+            <button id="tabLogin" onclick="switchTab('login')" data-i18n="auth.login" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition bg-white shadow text-violet-700">Sign in</button>
+            <button id="tabRegister" onclick="switchTab('register')" data-i18n="auth.register" class="flex-1 py-1.5 rounded-md text-sm font-semibold transition text-gray-500 hover:text-gray-700">Create account</button>
+          </div>
+          <form id="formLogin" class="space-y-3">
+            <input type="email" id="loginEmail" required data-i18n-placeholder="auth.email" placeholder="Email"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="password" id="loginPassword" required data-i18n-placeholder="auth.password.placeholder" placeholder="Password"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <div id="loginError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+            <button type="submit" data-i18n="auth.login.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Sign in</button>
+          </form>
+          <form id="formRegister" class="hidden space-y-3">
+            <input type="text" id="regFirstName" data-i18n-placeholder="auth.firstname.placeholder" placeholder="First name (optional)"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="email" id="regEmail" required data-i18n-placeholder="auth.email" placeholder="Email"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <input type="password" id="regPassword" required data-i18n-placeholder="auth.password.hint" placeholder="Password (8+ characters)"
+              class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-white transition">
+            <div id="registerError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"></div>
+            <button type="submit" data-i18n="auth.register.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Create my account</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 2 : Résultats + capture email -->
+      <div id="stepReport" class="hidden space-y-5">
+
+        <!-- Badge eBay connecté -->
+        <div class="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+          <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span data-i18n="ebay.connected" class="text-sm text-green-800 font-semibold">eBay account connected</span>
+          <button id="logoutBtn" onclick="logout()" data-i18n="nav.logout" class="ml-auto text-xs text-gray-400 hover:text-red-500 transition">Sign out</button>
+        </div>
+
+        <!-- Formulaire rapport -->
+        <form id="reportForm" class="space-y-4">
+          <div>
+            <label for="storeName" class="block text-sm font-semibold text-gray-700 mb-1.5"><span data-i18n="form.storeName">Your store name</span> <span data-i18n="form.storeName.optional" class="font-normal text-gray-400">(optional)</span></label>
+            <input type="text" id="storeName" name="storeName" data-i18n-placeholder="form.storeName.placeholder" placeholder="e.g. TechStoreUSA"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label for="email" data-i18n="form.email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email to receive your PDF report</label>
+            <input type="email" id="email" name="email" required data-i18n-placeholder="form.email.placeholder" placeholder="contact@your-store.com"
+                   class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-violet-500 outline-none bg-gray-50/50 transition">
+          </div>
+          <div>
+            <label data-i18n="form.period" class="block text-sm font-semibold text-gray-700 mb-1.5">Analysis period</label>
+            <div class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm bg-gray-50/50 text-gray-600 flex items-center gap-2">
+              📅 <span data-i18n="form.period.default">Last 90 days (default)</span>
+            </div>
+          </div>
+          <button type="submit" id="submitBtn" class="btn-violet w-full text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2">
+            <span id="btnText" data-i18n="form.submit">🔍 Analyze my fees for free</span>
+            <span id="btnSpinner" class="hidden h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          </button>
+        </form>
+
+        <!-- Zone résultats -->
+        <div id="resultArea" class="hidden"></div>
+
+        <!-- Après résultats : création compte optionnelle -->
+        <div id="saveAccountPrompt" class="hidden mt-4 p-4 bg-violet-50 border border-violet-100 rounded-xl">
+          <p data-i18n="account.save.title" class="text-sm font-semibold text-gray-700 mb-1">💾 Save your reports</p>
+          <p data-i18n="account.save.subtitle" class="text-xs text-gray-500 mb-3">Create a free account to access all your reports filtered by month.</p>
+          <button onclick="showAccountPanel(); document.getElementById('saveAccountPrompt').classList.add('hidden');" data-i18n="account.save.btn" class="btn-violet w-full text-white font-bold py-2.5 rounded-lg text-sm">Create my free account</button>
+        </div>
+
+        <!-- Options payantes -->
+        <div class="mt-4">
+          <div class="divider-violet mb-6"></div>
+          <h3 data-i18n="payment.title" class="text-lg font-bold text-gray-800 mb-4 text-center">🔓 Go further</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="card-premium bg-white rounded-2xl p-5 relative">
+              <div data-i18n="payment.report.badge" class="absolute -top-2.5 right-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-0.5 rounded-full shadow">POPULAR</div>
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">📈</div>
+              <h4 data-i18n="payment.report.title" class="font-bold text-gray-800 mb-1">Detailed Report</h4>
+              <p data-i18n="payment.report.subtitle" class="text-xs text-gray-500 mb-3">Complete analysis with actionable insights.</p>
+              <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat1">Category breakdown</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat2">Monthly trends</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.report.feat3">Personalized advice</span></li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3"><span data-i18n="payment.report.price">5</span> <span data-i18n="payment.currency">$</span></div>
+              <a href="#" onclick="redirectToCheckout('report')" data-i18n="payment.report.btn" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🛒 Buy</a>
+            </div>
+            <div class="card-premium bg-white rounded-2xl p-5">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center text-xl mb-3">🔄</div>
+              <h4 data-i18n="payment.pro.title" class="font-bold text-gray-800 mb-1">Pro Subscription</h4>
+              <p data-i18n="payment.pro.subtitle" class="text-xs text-gray-500 mb-3">Automatic monthly tracking of your fees.</p>
+              <ul class="space-y-1.5 text-xs text-gray-600 mb-4">
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat1">Auto monthly report</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat2">Competitive alerts</span></li>
+                <li class="flex items-center gap-1.5"><span class="text-violet-500 font-bold">✔</span><span data-i18n="payment.pro.feat3">Real-time tracking</span></li>
+              </ul>
+              <div class="text-2xl font-extrabold text-violet-700 mb-3"><span data-i18n="payment.pro.price">19</span> <span data-i18n="payment.currency">$</span><span data-i18n="payment.pro.period" class="text-xs font-normal text-gray-400">/month</span></div>
+              <a href="#" onclick="redirectToCheckout('pro')" data-i18n="payment.pro.btn" class="btn-violet block w-full text-center text-white font-semibold py-2.5 rounded-lg text-sm cursor-pointer">🚀 Subscribe</a>
+            </div>
+          </div>
+          <p data-i18n="payment.secure" class="text-xs text-gray-400 text-center mt-3">Secure payment via Stripe · Cancel anytime</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== COMMENT ÇA MARCHE ==================== -->
+    <div class="mt-16">
+      <h3 data-i18n="how.title" class="text-2xl font-bold text-center text-gray-800 mb-2">⚙️ How it works</h3>
+      <p data-i18n="how.subtitle" class="text-center text-gray-500 text-sm mb-10">Simple, fast, no commitment</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="text-center fade-in-up">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">1</div>
+          <h4 data-i18n="how.step1.title" class="font-bold text-gray-800 mb-1">Secure connection</h4>
+          <p data-i18n="how.step1.text" class="text-sm text-gray-500">Connect your eBay in one click. No password stored.</p>
+        </div>
+        <div class="text-center fade-in-up-delay-1">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">2</div>
+          <h4 data-i18n="how.step2.title" class="font-bold text-gray-800 mb-1">Automatic analysis</h4>
+          <p data-i18n="how.step2.text" class="text-sm text-gray-500">Our algorithm calculates exactly what eBay charged you.</p>
+        </div>
+        <div class="text-center fade-in-up-delay-2">
+          <div class="w-14 h-14 mx-auto step-circle rounded-2xl flex items-center justify-center text-white text-xl font-extrabold mb-4 shadow-lg">3</div>
+          <h4 data-i18n="how.step3.title" class="font-bold text-gray-800 mb-1">PDF Report</h4>
+          <p data-i18n="how.step3.text" class="text-sm text-gray-500">Receive a PDF with your potential savings by email.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== EXEMPLE DE RAPPORT ==================== -->
+    <div class="mt-16 card-main rounded-2xl p-8">
+      <h3 data-i18n="example.title" class="text-xl font-bold text-gray-800 mb-1">📈 Report example</h3>
+      <p data-i18n="example.subtitle" class="text-gray-400 text-sm mb-6">Real results from a seller over 3 months:</p>
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div class="stat-card p-4 rounded-xl">
+          <p data-i18n="example.sales" class="text-xs text-gray-400 mb-1">Total revenue</p>
+          <p class="text-2xl font-extrabold text-gray-800">8 450 €</p>
+        </div>
+        <div class="stat-card p-4 rounded-xl border-red-100">
+          <p data-i18n="example.fees" class="text-xs text-red-400 mb-1">eBay commissions</p>
+          <p class="text-2xl font-extrabold text-red-600">1 014 €</p>
+        </div>
+        <div class="stat-card p-4 rounded-xl" style="border-color:rgba(16,185,129,0.2)">
+          <p data-i18n="example.saving" class="text-xs text-green-500 mb-1">Savings / year</p>
+          <p class="text-2xl font-extrabold text-green-600">4 056 €</p>
+        </div>
+      </div>
+      <p data-i18n="example.note" class="text-center text-gray-300 text-xs mt-4">* Average commission rate of 12%</p>
+    </div>
+
+    <!-- ==================== SECTION AGENCE ==================== -->
+    <div class="mt-16 section-violet text-white rounded-2xl p-8 shadow-2xl overflow-hidden relative">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-32 translate-x-32"></div>
+      <div class="relative z-10">
+        <div data-i18n="agency.badge" class="inline-flex items-center gap-2 bg-white/15 border border-white/20 rounded-full px-3 py-1 text-xs font-medium mb-4">🏪 Our agency</div>
+        <h3 data-i18n="agency.title" class="text-2xl font-bold mb-3">Your own e-commerce site, without eBay commissions</h3>
+        <p data-i18n="agency.subtitle" class="text-white/75 text-sm mb-6 max-w-xl">We import your eBay catalog into an independent store. Keep 100% of your sales, optimize your Google SEO and become independent from marketplaces.</p>
+        <div class="bg-white/10 backdrop-blur rounded-xl p-5 mb-5 border border-white/10">
+          <h4 data-i18n="agency.feature" class="font-bold mb-1">🤝 Full support from our agency</h4>
+          <p data-i18n="agency.feature.text" class="text-white/70 text-sm">Catalog import · Design · Stock sync · SEO · Follow-up</p>
+        </div>
+        <a href="mailto:contact@beassistnow.com" target="_blank" data-i18n="agency.cta" class="inline-flex items-center gap-2 bg-white text-violet-700 font-bold px-6 py-3 rounded-xl shadow-lg hover:bg-gray-50 transition hover:-translate-y-0.5">👉 Request a free quote</a>
+      </div>
+    </div>
+   
+
+    <!-- ==================== CONFIANCE ==================== -->
+    <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">🔒</div>
+        <div><h4 data-i18n="trust.secure.title" class="font-bold text-gray-800 text-sm">100% secure</h4><p data-i18n="trust.secure.text" class="text-xs text-gray-500 mt-0.5">Official eBay connection. No password collected.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">💸</div>
+        <div><h4 data-i18n="trust.free.title" class="font-bold text-gray-800 text-sm">Free and no commitment</h4><p data-i18n="trust.free.text" class="text-xs text-gray-500 mt-0.5">The basic report is free. Pay only for the detail.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">⚡</div>
+        <div><h4 data-i18n="trust.fast.title" class="font-bold text-gray-800 text-sm">Instant results</h4><p data-i18n="trust.fast.text" class="text-xs text-gray-500 mt-0.5">Less than 2 minutes for your full diagnosis.</p></div>
+      </div>
+      <div class="trust-icon rounded-2xl p-5 flex gap-4 items-start">
+        <div class="w-10 h-10 rounded-xl step-circle flex-shrink-0 flex items-center justify-center text-lg">📤</div>
+        <div><h4 data-i18n="trust.pdf.title" class="font-bold text-gray-800 text-sm">PDF by email</h4><p data-i18n="trust.pdf.text" class="text-xs text-gray-500 mt-0.5">Keep and share your report easily.</p></div>
+      </div>
+    </div>
+
+    <!-- ==================== CTA FINAL ==================== -->
+    <div class="text-center mt-16 mb-10">
+      <p data-i18n="cta.final.text" class="text-gray-500 text-sm mb-4">Ready to find out how much you could save?</p>
+      <a href="/api/ebay/auth" onclick="return startEbayConnect(event)" class="btn-violet inline-flex items-center gap-2 text-white font-bold py-4 px-8 rounded-xl cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <span data-i18n="cta.final.btn">Connect my eBay account</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer-gradient pt-10 pb-8 mt-8">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <div class="logo-dot w-7 h-7 rounded-lg flex items-center justify-center">
+          <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <span class="text-white font-bold text-sm">Beassist<span class="text-purple-300">Scan</span></span>
+      </div>
+      <p data-i18n="footer.rights" class="text-white/30 text-xs mb-4">© 2026 Beassist Agency · Your e-commerce partner</p>
+      <div class="flex justify-center gap-6 text-xs text-white/40">
+        <a href="/mentions-legales.html" data-i18n="footer.legal" class="hover:text-white/70 transition">Legal notice</a>
+        <a href="/politique-confidentialite.html" data-i18n="footer.privacy" class="hover:text-white/70 transition">Privacy</a>
+        <a href="/cgv.html" data-i18n="footer.cgv" class="hover:text-white/70 transition">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== SCRIPTS ==================== -->
+   <!-- =========================================================== -->
+  <!-- 1.  BANNIÈRE COOKIES (script immédiat)                       -->
+  <!-- =========================================================== -->
+  <script>
+    (function() {
+      const banner = document.getElementById('cookie-banner');
+      if (!localStorage.getItem('cookieConsent')) banner.classList.remove('hidden');
+      document.getElementById('cookie-accept').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'accepted'); banner.classList.add('hidden'); });
+      document.getElementById('cookie-refuse').addEventListener('click', () => { localStorage.setItem('cookieConsent', 'refused'); banner.classList.add('hidden'); });
+    })();
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 2.  FONCTIONS PRINCIPALES (UI, navigation, etc.)            -->
+  <!-- =========================================================== -->
+  <script>
+    // ── Onglets login/register ──
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('formLogin').classList.toggle('hidden', !isLogin);
+      document.getElementById('formRegister').classList.toggle('hidden', isLogin);
+      document.getElementById('tabLogin').className = isLogin
+        ? 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700'
+        : 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700';
+      document.getElementById('tabRegister').className = !isLogin
+        ? 'flex-1 py-2 rounded-lg text-sm font-semibold transition bg-white shadow text-violet-700'
+        : 'flex-1 py-2 rounded-lg text-sm font-semibold transition text-gray-500 hover:text-gray-700';
+    }
+
+    // ── Déconnexion ──
+    async function logout() {
+      await fetch('/auth/logout', { method: 'POST' });
+      window.location.reload();
+    }
+
+    // ── Checkout Stripe ──
+    function redirectToCheckout(plan) {
+      const email = document.getElementById('email')?.value?.trim() || '';
+      const storeName = document.getElementById('storeName')?.value?.trim() || '';
+      const currency = window._i18nCurrency ? window._i18nCurrency() : 'eur';
+      const params = new URLSearchParams({ plan, currency });
+      if (email) params.set('email', email);
+      if (storeName) params.set('storeName', storeName);
+      window.location.href = `/api/payment/checkout?${params.toString()}`;
+    }
+
+    // ── Afficher/masquer panel compte ──
+    function showAccountPanel() {
+      const panel = document.getElementById('accountPanel');
+      if (panel) panel.classList.toggle('hidden');
+    }
+
+    // ── CTA "Connecter mon compte eBay" (section finale) ──
+    function startEbayConnect(e) {
+      if (e) e.preventDefault();
+      // Si le compte eBay est déjà connecté (formulaire rapport visible),
+      // on scrolle vers le formulaire au lieu de relancer l'OAuth.
+      const stepReport = document.getElementById('stepReport');
+      if (stepReport && !stepReport.classList.contains('hidden')) {
+        document.getElementById('report-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return false;
+      }
+      window.location.href = '/api/ebay/auth';
+      return false;
+    }
+
+    // ── Afficher l'étape ──
+    function showStep(step) {
+      ['stepEbay', 'stepReport'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(step);
+      if (target) target.classList.remove('hidden');
+
+      const desc = document.getElementById('stepDescription');
+      if (!desc) return;
+      if (step === 'stepEbay') desc.textContent = t('card.subtitle') || 'Connect your eBay store in 1 click.';
+      if (step === 'stepReport') {
+        desc.textContent = t('card.subtitle.report') || 'Analyze your fees and discover your savings.';
+      }
+    }
+
+    // ── Toast (notification popup) ──
+    function showToast(message, type = 'success') {
+      const colors = {
+        success: 'bg-green-600',
+        error: 'bg-red-600',
+        warning: 'bg-amber-500'
+      };
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 z-50 ${colors[type]} text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm transition-all duration-300 transform translate-x-full`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      // Animation d’entrée
+      requestAnimationFrame(() => {
+        toast.style.transform = 'translateX(0)';
+      });
+
+      // Disparition automatique après 5 secondes
+      setTimeout(() => {
+        toast.style.transform = 'translateX(calc(100% + 20px))';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 3.  LOGIQUE D’AUTHENTIFICATION, PARAMÈTRES URL, ÉTAPES     -->
+  <!-- =========================================================== -->
+  <script>
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      // Banners paiement
+      if (urlParams.get('paid') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const b = document.createElement('div');
+        b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
+        b.textContent = t('payment.success');
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 8000);
+      }
+      if (urlParams.get('cancelled') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const b = document.createElement('div');
+        b.className = 'fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white px-6 py-3 rounded-2xl shadow-xl font-semibold text-sm';
+        b.textContent = t('payment.cancelled');
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 6000);
+      }
+
+      // Erreur eBay
+      if (urlParams.get('connected') === 'false') {
+        const reason = urlParams.get('reason');
+        const detail = urlParams.get('detail');
+        let msg = t('ebay.error.generic');
+        if (reason === 'token_error') msg += ' ' + t('ebay.error.token');
+        if (reason === 'csrf') msg += ' ' + t('ebay.error.csrf');
+        if (reason === 'no_code') msg += ' ' + t('ebay.error.nocode');
+        if (detail) { try { msg += ' · ' + JSON.parse(decodeURIComponent(detail))?.error_description; } catch(e) {} }
+        const el = document.createElement('div');
+        el.className = 'mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700';
+        el.textContent = msg;
+        document.getElementById('stepEbay')?.appendChild(el);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // Connexion eBay réussie → afficher le formulaire de rapport et scroll
+      if (urlParams.get('connected') === 'true') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        showStep('stepReport');
+
+        // Bandeau de succès (toast)
+        showToast(t('msg.ebay.connected') || '✅ eBay account connected successfully!', 'success');
+
+        // Scroll vers le formulaire
+        setTimeout(() => {
+          const reportSection = document.getElementById('report-section');
+          if (reportSection) {
+            reportSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
+
+        // Pré‑remplir l'email si l'utilisateur a déjà un compte
+        fetch('/auth/me')
+          .then(r => r.json())
+          .then(data => {
+            if (data.user) {
+              document.getElementById('loginLink')?.classList.add('hidden');
+              document.getElementById('dashboardLink')?.classList.remove('hidden');
+              const emailInput = document.getElementById('email');
+              if (emailInput && !emailInput.value) {
+                emailInput.value = data.user.email || '';
+              }
+            }
+          })
+          .catch(() => {});
+      } else {
+        // Pas de paramètre connected → on vérifie simplement la session
+        fetch('/auth/me')
+          .then(r => r.json())
+          .then(data => {
+            if (data.user) {
+              document.getElementById('loginLink')?.classList.add('hidden');
+              document.getElementById('dashboardLink')?.classList.remove('hidden');
+              const emailInput = document.getElementById('email');
+              if (emailInput && !emailInput.value) {
+                emailInput.value = data.user.email || '';
+              }
+            }
+          })
+          .catch(() => {});
+        showStep('stepEbay');
+      }
+
+      // ── Login ──
+      document.getElementById('formLogin').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const err = document.getElementById('loginError');
+        err.classList.add('hidden');
+        const res = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('loginEmail').value.trim(),
+            password: document.getElementById('loginPassword').value
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('loginLink')?.classList.add('hidden');
+          document.getElementById('dashboardLink')?.classList.remove('hidden');
+          document.getElementById('accountPanel')?.classList.add('hidden');
+          window.location.href = '/api/ebay/auth';
+        } else {
+          err.textContent = data.error || t('auth.login.error');
+          err.classList.remove('hidden');
+        }
+      });
+
+      // ── Register ──
+      document.getElementById('formRegister').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const err = document.getElementById('registerError');
+        err.classList.add('hidden');
+        const res = await fetch('/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('regEmail').value.trim(),
+            password: document.getElementById('regPassword').value,
+            firstName: document.getElementById('regFirstName').value.trim(),
+          }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('loginLink')?.classList.add('hidden');
+          document.getElementById('dashboardLink')?.classList.remove('hidden');
+          document.getElementById('accountPanel')?.classList.add('hidden');
+          window.location.href = '/api/ebay/auth';
+        } else {
+          err.textContent = data.error || t('auth.register.error');
+          err.classList.remove('hidden');
+        }
+      });
+    })();
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 4.  GESTION DU FORMULAIRE DE RAPPORT (avec showToast)       -->
+  <!-- =========================================================== -->
+  <script>
+    (function() {
+      const reportForm = document.getElementById('reportForm');
+      if (!reportForm) return;
+
+      reportForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+        const resultArea = document.getElementById('resultArea');
+
+        // Désactiver le bouton et afficher le spinner
+        btn.disabled = true;
+        btnText.textContent = 'Analyse en cours...';
+        spinner.classList.remove('hidden');
+        resultArea.classList.add('hidden');
+
+        const storeName = document.getElementById('storeName').value.trim();
+        const email = document.getElementById('email').value.trim();
+
+        try {
+          const response = await fetch('/api/ebay/generate-report-ebay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, storeName }),
+          });
+          const data = await response.json();
+
+          // Réactiver le bouton
+          btn.disabled = false;
+          btnText.textContent = '🔍 Analyze my fees for free';
+          spinner.classList.add('hidden');
+
+          if (response.ok && data.success) {
+            // ---- 1. Notification toast ----
+            showToast('✅ Report sent successfully! Check your inbox (and spam folder).', 'success');
+
+            // ---- 2. Afficher les résultats ----
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `
+              <div class="bg-gradient-to-br from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-6">
+                <div class="flex items-center justify-between gap-2 text-violet-700 font-bold text-base mb-4">
+                  <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    Report sent successfully!
+                  </span>
+                  <button onclick="this.closest('#resultArea').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+                </div>
+                <p class="text-xs text-gray-500 mt-4 text-center">📧 PDF report sent to ${email}</p>
+              </div>
+            `;
+
+            // ---- 3. Scroll vers le résultat ----
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // ---- 4. Afficher la proposition de création de compte ----
+            document.getElementById('saveAccountPrompt')?.classList.remove('hidden');
+          } else {
+            throw new Error(data.error || 'Une erreur est survenue.');
+          }
+        } catch (error) {
+          // En cas d'erreur, réactiver le bouton et afficher l'erreur
+          btn.disabled = false;
+          btnText.textContent = '🔍 Analyze my fees for free';
+          spinner.classList.add('hidden');
+          resultArea.classList.remove('hidden');
+          resultArea.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 text-sm">
+              ❌ Error: ${error.message}
+            </div>
+          `;
+          showToast('❌ Error: ' + error.message, 'error');
+        }
+      });
+    })();
+  </script>
+
+  <!-- =========================================================== -->
+  <!-- 5.  MOTEUR D'INTERNATIONALISATION (i18n)                     -->
+  <!-- =========================================================== -->
+  <script>
+    (function () {
+      var LANGS = { fr: 'FR', en: 'EN', es: 'ES', de: 'DE', it: 'IT' };
+      var FLAGS = { fr: '🇫🇷', en: '🇬🇧', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹' };
+      var _t = {}, _lang = localStorage.getItem('lang') || 'en';
+
+      window._i18nLang = function () { return _lang; };
+      window._i18nCurrency = function () { return _lang === 'en' ? 'usd' : 'eur'; };
+
+      function t(k) { return _t[k] || k; }
+      window.t = t;
+
+      function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          var v = t(el.getAttribute('data-i18n'));
+          if (v !== el.getAttribute('data-i18n')) el.textContent = v;
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+          var v = t(el.getAttribute('data-i18n-placeholder'));
+          if (v !== el.getAttribute('data-i18n-placeholder')) el.placeholder = v;
+        });
+        document.documentElement.lang = _lang;
+      }
+
+      async function loadAndApply(l) {
+        try {
+          var r = await fetch('/api/i18n/' + l);
+          _t = r.ok ? await r.json() : {};
+        } catch (e) { _t = {}; }
+        applyTranslations();
+      }
+
+      window.setLang = async function (l) {
+        if (!LANGS[l]) return;
+        _lang = l;
+        localStorage.setItem('lang', l);
+        var flagEl = document.getElementById('currentFlag');
+        var codeEl = document.getElementById('currentLangCode');
+        if (flagEl) flagEl.textContent = FLAGS[l] || l.toUpperCase();
+        if (codeEl) codeEl.textContent = l.toUpperCase();
+        document.querySelectorAll('.lang-option').forEach(function (o) {
+          o.classList.toggle('active', o.dataset.lang === l);
+        });
+        var sw = document.getElementById('langSwitcher');
+        if (sw) sw.classList.remove('open');
+        await loadAndApply(l);
+      };
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var btn = document.getElementById('langBtn');
+        if (btn) btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          document.getElementById('langSwitcher').classList.toggle('open');
+        });
+        document.addEventListener('click', function () {
+          var sw = document.getElementById('langSwitcher');
+          if (sw) sw.classList.remove('open');
+        });
+
+        var flagEl = document.getElementById('currentFlag');
+        var codeEl = document.getElementById('currentLangCode');
+        if (flagEl) flagEl.textContent = FLAGS[_lang] || '🇫🇷';
+        if (codeEl) codeEl.textContent = _lang.toUpperCase();
+        document.querySelectorAll('.lang-option').forEach(function (o) {
+          o.classList.toggle('active', o.dataset.lang === _lang);
+        });
+        loadAndApply(_lang);
+      });
+    })();
+  </script>
+</body>
+</html>

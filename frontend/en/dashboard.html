@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – BeassistScan</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* ===== Design BeassistScan ===== */
+    :root {
+      --violet-deep: #1e1b4b;
+      --violet-mid: #312e81;
+      --violet-light: #7c3aed;
+      --violet-glow: #a855f7;
+    }
+    body { background: #f5f3ff; }
+    .bg-page {
+      background: linear-gradient(160deg, #f5f3ff 0%, #ede9fe 50%, #f0fdf4 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+    }
+    .logo-dot {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+    }
+    .card-main {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(139,92,246,0.15);
+      box-shadow: 0 25px 50px -12px rgba(109,40,217,0.15), 0 0 0 1px rgba(139,92,246,0.05);
+    }
+    .btn-violet {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+      transition: all 0.3s ease;
+    }
+    .btn-violet:hover {
+      background: linear-gradient(135deg, #6d28d9 0%, #5b21b6 100%);
+      box-shadow: 0 6px 20px rgba(124,58,237,0.5);
+      transform: translateY(-1px);
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(139,92,246,0.1);
+      transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(109,40,217,0.1);
+    }
+    .footer-gradient {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    }
+    .divider-violet {
+      background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+      height: 1px;
+    }
+    .report-row {
+      transition: background 0.15s;
+    }
+    .report-row:hover {
+      background: #f5f3ff;
+    }
+    .badge-month {
+      background: #ede9fe;
+      color: #5b21b6;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .empty-state svg {
+      margin: 0 auto 1rem;
+      opacity: 0.3;
+    }
+    @media (max-width: 640px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .stat-grid .stat-card:last-child { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body class="bg-page font-sans antialiased">
+
+  <!-- ===== HEADER ===== -->
+  <header class="header-gradient shadow-xl sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center justify-between h-16">
+        <a href="/en/" class="flex items-center gap-2.5 group">
+          <div class="logo-dot w-8 h-8 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <span class="text-white font-bold text-lg tracking-tight">Beassist<span class="text-purple-300">Scan</span></span>
+        </a>
+        <nav class="flex items-center gap-3">
+          <a href="/en/" class="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">Home</a>
+          <button id="logoutBtn" class="text-white/70 hover:text-white text-sm font-medium px-3 py-1.5 rounded-lg hover:bg-white/10 transition">Sign out</button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== CONTENU PRINCIPAL ===== -->
+  <main class="max-w-5xl mx-auto px-4 py-8">
+
+    <!-- En‑tête du dashboard -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-800">📊 Dashboard</h1>
+        <p class="text-gray-500 text-sm" id="userGreeting">Hello, <span class="font-medium">utilisateur</span></p>
+      </div>
+      <a href="/en/" class="btn-violet text-white font-semibold px-5 py-2.5 rounded-xl text-sm inline-flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        New report
+      </a>
+    </div>
+
+    <!-- ===== ONGLETS ===== -->
+    <div class="flex flex-wrap gap-2 mb-6 bg-white/60 rounded-xl p-1.5 border border-violet-100">
+      <button data-tab="overview" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition bg-violet-600 text-white shadow">📊 Overview</button>
+      <button data-tab="free" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">📄 Simple report <span class="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full ml-1">Free</span></button>
+      <button data-tab="detailed" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">📈 Detailed report <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full ml-1">Premium</span></button>
+      <button data-tab="pro" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">⭐ Pro subscription</button>
+      <button data-tab="website" class="tab-btn flex-1 min-w-[130px] py-2.5 px-3 rounded-lg text-sm font-semibold transition text-gray-600 hover:bg-violet-50">🚀 Create my site</button>
+    </div>
+
+    <!-- ===== ONGLET : RAPPORT SIMPLIFIÉ (GRATUIT) ===== -->
+    <div id="tab-free" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8 text-center">
+        <div class="text-4xl mb-3">📄</div>
+        <h2 class="text-xl font-bold text-gray-800 mb-2">Simple report — Free</h2>
+        <p class="text-gray-500 text-sm max-w-lg mx-auto mb-6">Connect your eBay account and get a report by email with your key figures for the last 90 days: revenue, eBay fees charged, and estimated annual savings.</p>
+        <ul class="text-sm text-gray-600 max-w-xs mx-auto text-left space-y-2 mb-8">
+          <li>✅ 90-day revenue</li>
+          <li>✅ Total eBay fees</li>
+          <li>✅ Estimated annual savings</li>
+          <li class="text-gray-400">🔒 Fee breakdown by type <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">Premium</span></li>
+          <li class="text-gray-400">🔒 Currency & marketplace breakdown <span class="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">Premium</span></li>
+        </ul>
+        <a href="/en/" class="btn-violet inline-block text-white font-bold px-8 py-3 rounded-xl text-sm">Generate my free report</a>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : RAPPORT DÉTAILLÉ (PAYANT) ===== -->
+    <div id="tab-detailed" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">📈</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Detailed report — The complete analysis of your store</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">See exactly where every dollar of commission goes and how to reduce your fees.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">🔍 Fee breakdown by type</span><p class="text-gray-500 mt-1">Final value fee, regulatory fees, promoted listings, international fees…</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">🌍 Currency breakdown</span><p class="text-gray-500 mt-1">Your eBay.com, .de, .fr… sales analyzed currency by currency.</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">📊 Real rate vs eBay grid</span><p class="text-gray-500 mt-1">Compare your real commission rate to the official grid.</p></div>
+          <div class="bg-violet-50 rounded-xl p-4 text-sm"><span class="font-bold text-violet-700">💡 Personalized recommendations</span><p class="text-gray-500 mt-1">Concrete ways to reduce your fees starting this month.</p></div>
+        </div>
+        <div class="text-center">
+          <button id="buyDetailedBtn" class="btn-violet text-white font-bold px-10 py-3.5 rounded-xl text-sm">Get my detailed report</button>
+          <p class="text-xs text-gray-400 mt-3">One-time secure payment via Stripe.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : ABONNEMENT PRO ===== -->
+    <div id="tab-pro" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">⭐</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">Pro subscription — Drive your profitability every month</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">Continuous monitoring of your store + dedicated support from our agency.</p>
+        </div>
+        <ul class="text-sm text-gray-600 max-w-md mx-auto space-y-3 mb-8">
+          <li>✅ <b>Unlimited detailed reports</b> — generate a report whenever you want</li>
+          <li>✅ <b>Automatic monthly tracking</b> by email</li>
+          <li>✅ <b>Full history</b> of your reports in the dashboard</li>
+          <li>✅ <b>Priority support</b> by email</li>
+          <li>✅ <b>Free e-commerce audit</b> — 30 min with a Beassist expert</li>
+        </ul>
+        <div class="text-center">
+          <button id="buyProBtn" class="btn-violet text-white font-bold px-10 py-3.5 rounded-xl text-sm">Subscribe to Pro</button>
+          <p class="text-xs text-gray-400 mt-3">Monthly subscription, no commitment, cancel anytime.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : CRÉER MON SITE ===== -->
+    <div id="tab-website" class="tab-panel hidden">
+      <div class="card-main rounded-2xl p-8">
+        <div class="text-center mb-8">
+          <div class="text-4xl mb-3">🚀</div>
+          <h2 class="text-xl font-bold text-gray-800 mb-2">What if you stopped paying commissions?</h2>
+          <p class="text-gray-500 text-sm max-w-lg mx-auto">Your report shows you how much eBay costs you each year. <b>Beassist Agency</b> builds your independent e-commerce store: you keep 100% of your margins.</p>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8 text-center">
+          <div class="bg-green-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-green-600">0%</p><p class="text-xs text-gray-500 mt-1">commission on your sales</p></div>
+          <div class="bg-violet-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-violet-600">100%</p><p class="text-xs text-gray-500 mt-1">of your customers belong to you</p></div>
+          <div class="bg-amber-50 rounded-xl p-4"><p class="text-2xl font-extrabold text-amber-600">Turnkey</p><p class="text-xs text-gray-500 mt-1">design, payment, SEO included</p></div>
+        </div>
+        <div class="text-center">
+          <a href="mailto:contact@beassistnow.com?subject=Cr%C3%A9ation%20de%20ma%20boutique%20e-commerce&body=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20la%20cr%C3%A9ation%20de%20ma%20boutique%20en%20ligne." class="btn-violet inline-block text-white font-bold px-10 py-3.5 rounded-xl text-sm">Request a free quote</a>
+          <p class="text-xs text-gray-400 mt-3">Response within 24h — contact@beassistnow.com</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ONGLET : VUE D'ENSEMBLE ===== -->
+    <div id="tab-overview" class="tab-panel">
+
+    <!-- Cartes de synthèse (3 indicateurs) -->
+    <div class="stat-grid grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div class="stat-card p-5 rounded-xl text-center">
+        <p class="text-xs text-gray-400 mb-1">Total sales</p>
+        <p class="text-2xl font-extrabold text-gray-800" id="totalSales">$0</p>
+      </div>
+      <div class="stat-card p-5 rounded-xl text-center border-red-100">
+        <p class="text-xs text-red-400 mb-1">Total fees</p>
+        <p class="text-2xl font-extrabold text-red-600" id="totalFees">$0</p>
+      </div>
+      <div class="stat-card p-5 rounded-xl text-center border-green-100">
+        <p class="text-xs text-green-500 mb-1">Estimated savings / yr</p>
+        <p class="text-2xl font-extrabold text-green-600" id="totalSaving">$0</p>
+      </div>
+    </div>
+
+    <!-- Filtres période -->
+    <div class="card-main rounded-2xl p-4 mb-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <h3 class="text-sm font-bold text-gray-700">🎯 Filter statistics</h3>
+        <button id="resetFilterBtn" class="text-xs text-violet-700 hover:text-violet-900 font-semibold">Reset</button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <label class="text-xs text-gray-500 flex flex-col gap-1">
+          Filter type
+          <select id="periodType" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white">
+            <option value="all">All periods</option>
+            <option value="day">Day by day</option>
+            <option value="month">Month by month</option>
+            <option value="year">Year by year</option>
+          </select>
+        </label>
+
+        <label id="dayFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Day
+          <input id="dayFilter" type="date" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white" />
+        </label>
+
+        <label id="monthFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Month
+          <input id="monthFilter" type="month" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white" />
+        </label>
+
+        <label id="yearFilterWrap" class="hidden text-xs text-gray-500 flex flex-col gap-1">
+          Year
+          <select id="yearFilter" class="rounded-lg border border-violet-200 px-3 py-2 text-sm text-gray-700 bg-white">
+            <option value="">Select</option>
+          </select>
+        </label>
+      </div>
+      <p id="activeFilterLabel" class="text-xs text-gray-500 mt-3">Active period: all periods</p>
+    </div>
+
+    <!-- Liste des rapports (tableau épuré) -->
+    <div class="card-main rounded-2xl p-6">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <h2 class="text-xl font-bold text-gray-800">📄 Report history</h2>
+        <span class="text-xs text-gray-400" id="reportCount">0 reports</span>
+      </div>
+      <div class="divider-violet mb-4"></div>
+
+      <div id="reportsList">
+        <!-- Le contenu sera injecté ici -->
+        <div class="empty-state">
+          <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p class="text-gray-400 text-sm">No reports generated yet.</p>
+          <a href="/en/" class="btn-violet inline-block text-white font-semibold px-5 py-2.5 rounded-xl text-sm mt-4">
+            Generate my first report
+          </a>
+        </div>
+      </div>
+    </div>
+    </div><!-- /tab-overview -->
+
+    <!-- Lien retour -->
+    <div class="mt-6 text-center">
+      <a href="/en/" class="text-violet-600 hover:text-violet-800 text-sm font-medium">← Back to home</a>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer-gradient pt-8 pb-6 mt-8">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <p class="text-white/30 text-xs">© 2026 Beassist Agency · Your e-commerce partner</p>
+      <div class="flex justify-center gap-6 text-xs text-white/40 mt-2">
+        <a href="/mentions-legales.html" class="hover:text-white/70 transition">Legal notice</a>
+        <a href="/politique-confidentialite.html" class="hover:text-white/70 transition">Privacy</a>
+        <a href="/cgv.html" class="hover:text-white/70 transition">Terms</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== SCRIPT ===== -->
+  <script>
+    // ============================================================
+    // 1. HELPERS
+    // ============================================================
+    async function fetchJSON(url) {
+      const res = await fetch(url);
+      if (res.status === 401) {
+        window.location.href = '/en/login.html';
+        return null;
+      }
+      return res.json();
+    }
+
+    function formatEuro(v) {
+      return '$' + (v || 0).toFixed(2);
+    }
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // ============================================================
+    // 2. DÉCONNEXION
+    // ============================================================
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/auth/logout', { method: 'POST' });
+      window.location.href = '/en/';
+    });
+
+    // ============================================================
+    // 2b. ONGLETS
+    // ============================================================
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('bg-violet-600', 'text-white', 'shadow');
+          b.classList.add('text-gray-600', 'hover:bg-violet-50');
+        });
+        btn.classList.add('bg-violet-600', 'text-white', 'shadow');
+        btn.classList.remove('text-gray-600', 'hover:bg-violet-50');
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+        document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+      });
+    });
+
+    // ============================================================
+    // 2c. PAIEMENTS (Stripe checkout)
+    // ============================================================
+    let currentUserEmail = '';
+    let currentUserStore = '';
+    document.getElementById('buyDetailedBtn').addEventListener('click', () => {
+      window.location.href = '/api/payment/checkout?plan=report&email=' + encodeURIComponent(currentUserEmail) + '&storeName=' + encodeURIComponent(currentUserStore);
+    });
+    document.getElementById('buyProBtn').addEventListener('click', () => {
+      window.location.href = '/api/payment/checkout?plan=pro&email=' + encodeURIComponent(currentUserEmail) + '&storeName=' + encodeURIComponent(currentUserStore);
+    });
+
+    // ============================================================
+    // 3. CHARGEMENT DES DONNÉES + FILTRES
+    // ============================================================
+    const periodTypeEl = document.getElementById('periodType');
+    const dayFilterEl = document.getElementById('dayFilter');
+    const monthFilterEl = document.getElementById('monthFilter');
+    const yearFilterEl = document.getElementById('yearFilter');
+    const dayFilterWrap = document.getElementById('dayFilterWrap');
+    const monthFilterWrap = document.getElementById('monthFilterWrap');
+    const yearFilterWrap = document.getElementById('yearFilterWrap');
+    const resetFilterBtn = document.getElementById('resetFilterBtn');
+    const activeFilterLabelEl = document.getElementById('activeFilterLabel');
+    const reportCountEl = document.getElementById('reportCount');
+    const reportsListEl = document.getElementById('reportsList');
+
+    let allReports = [];
+
+    function pad2(v) {
+      return String(v).padStart(2, '0');
+    }
+
+    function getDateParts(dateStr) {
+      const d = new Date(dateStr);
+      if (Number.isNaN(d.getTime())) return null;
+      const y = d.getFullYear();
+      const m = pad2(d.getMonth() + 1);
+      const day = pad2(d.getDate());
+      return {
+        y,
+        m,
+        day,
+        dayKey: `${y}-${m}-${day}`,
+        monthKey: `${y}-${m}`,
+        yearKey: String(y),
+      };
+    }
+
+    function updateFilterControlsVisibility() {
+      const type = periodTypeEl.value;
+      dayFilterWrap.classList.toggle('hidden', type !== 'day');
+      monthFilterWrap.classList.toggle('hidden', type !== 'month');
+      yearFilterWrap.classList.toggle('hidden', type !== 'year');
+    }
+
+    function updateYearOptions(reports) {
+      const years = Array.from(new Set(
+        reports
+          .map(r => getDateParts(r.createdAt))
+          .filter(Boolean)
+          .map(p => p.yearKey)
+      )).sort((a, b) => Number(b) - Number(a));
+
+      yearFilterEl.innerHTML = '<option value="">Select</option>';
+      years.forEach(year => {
+        const opt = document.createElement('option');
+        opt.value = year;
+        opt.textContent = year;
+        yearFilterEl.appendChild(opt);
+      });
+    }
+
+    function getFilteredReports() {
+      const type = periodTypeEl.value;
+      if (type === 'all') return allReports;
+
+      const selectedValue = type === 'day'
+        ? dayFilterEl.value
+        : type === 'month'
+          ? monthFilterEl.value
+          : yearFilterEl.value;
+
+      if (!selectedValue) return allReports;
+
+      return allReports.filter(report => {
+        const parts = getDateParts(report.createdAt);
+        if (!parts) return false;
+        if (type === 'day') return parts.dayKey === selectedValue;
+        if (type === 'month') return parts.monthKey === selectedValue;
+        return parts.yearKey === selectedValue;
+      });
+    }
+
+    function renderStats(reports) {
+      let totalSales = 0;
+      let totalFees = 0;
+      let totalSaving = 0;
+
+      reports.forEach(r => {
+        totalSales += r.totalSales || 0;
+        totalFees += r.totalFees || 0;
+        totalSaving += r.annualSaving || 0;
+      });
+
+      document.getElementById('totalSales').textContent = formatEuro(totalSales);
+      document.getElementById('totalFees').textContent = formatEuro(totalFees);
+      document.getElementById('totalSaving').textContent = formatEuro(totalSaving);
+    }
+
+    function renderReports(reports) {
+      if (reports.length === 0) {
+        reportsListEl.innerHTML = `
+          <div class="empty-state">
+            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p class="text-gray-400 text-sm">No reports found for this filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      reports
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .forEach((report) => {
+          const store = report.storeName || 'Unnamed store';
+          const date = formatDate(report.createdAt);
+          const badgeClass = report.annualSaving > 1000 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+
+          html += `
+            <div class="report-row border-b border-gray-100 last:border-0 px-1 py-3 flex flex-wrap items-center justify-between gap-2">
+              <div class="flex-1 min-w-[140px]">
+                <p class="font-semibold text-gray-800 text-sm">${store}</p>
+                <p class="text-xs text-gray-400">${date}</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 text-sm">
+                <span class="text-gray-600">Sales <span class="font-bold">${formatEuro(report.totalSales)}</span></span>
+                <span class="text-red-500">Fees <span class="font-bold">${formatEuro(report.totalFees)}</span></span>
+                <span class="text-green-600 font-semibold flex items-center gap-1">
+                  <span>${formatEuro(report.annualSaving)}</span>
+                  <span class="badge-month ${badgeClass}">savings/yr</span>
+                </span>
+              </div>
+              <a href="/api/reports/${report.id}/download" class="text-violet-600 hover:text-violet-800 text-xs font-medium underline-offset-2 hover:underline" title="Download PDF">
+                📄 PDF
+              </a>
+            </div>
+          `;
+        });
+
+      reportsListEl.innerHTML = html;
+    }
+
+    function formatActiveFilterLabel(type) {
+      if (type === 'all') return 'Active period: all periods';
+      if (type === 'day' && dayFilterEl.value) return `Active period: ${formatDate(dayFilterEl.value)}`;
+      if (type === 'month' && monthFilterEl.value) {
+        const [y, m] = monthFilterEl.value.split('-');
+        const d = new Date(Number(y), Number(m) - 1, 1);
+        return `Active period: ${d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`;
+      }
+      if (type === 'year' && yearFilterEl.value) return `Active period: year ${yearFilterEl.value}`;
+      return 'Active period: all periods';
+    }
+
+    function applyFiltersAndRender() {
+      const type = periodTypeEl.value;
+      const filtered = getFilteredReports();
+      renderStats(filtered);
+      renderReports(filtered);
+      reportCountEl.textContent = `${filtered.length} report${filtered.length > 1 ? 's' : ''}`;
+      activeFilterLabelEl.textContent = formatActiveFilterLabel(type);
+    }
+
+    function initFilterListeners() {
+      periodTypeEl.addEventListener('change', () => {
+        updateFilterControlsVisibility();
+        applyFiltersAndRender();
+      });
+      dayFilterEl.addEventListener('change', applyFiltersAndRender);
+      monthFilterEl.addEventListener('change', applyFiltersAndRender);
+      yearFilterEl.addEventListener('change', applyFiltersAndRender);
+      resetFilterBtn.addEventListener('click', () => {
+        periodTypeEl.value = 'all';
+        dayFilterEl.value = '';
+        monthFilterEl.value = '';
+        yearFilterEl.value = '';
+        updateFilterControlsVisibility();
+        applyFiltersAndRender();
+      });
+    }
+
+    (async () => {
+      const me = await fetchJSON('/auth/me');
+      if (!me || !me.user) return;
+
+      const user = me.user;
+      currentUserEmail = user.email || '';
+      currentUserStore = user.storeName || '';
+      const greeting = document.querySelector('#userGreeting span');
+      if (greeting) {
+        greeting.textContent = user.firstName || user.email.split('@')[0] || 'user';
+      }
+
+      const data = await fetchJSON('/api/reports');
+      if (!data) return;
+
+      allReports = data.leads || [];
+      updateYearOptions(allReports);
+      updateFilterControlsVisibility();
+      initFilterListeners();
+      applyFiltersAndRender();
+    })();
+  </script>
+</body>
+</html>
