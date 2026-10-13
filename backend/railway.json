@@ -10,7 +10,7 @@
     "sleepApplication": false,
     "ipv6EgressEnabled": false,
     "multiRegionConfig": {
-      "europe-west4-drams3a": {
+      "us-east4-eqdc4a": {
         "numReplicas": 1
       }
     },
