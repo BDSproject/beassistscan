@@ -326,8 +326,12 @@
       return res.json();
     }
 
-    function formatEuro(v) {
-      return (v || 0).toFixed(2) + ' €';
+    const CURRENCY_SYMBOLS = { EUR: '€', USD: '$', GBP: '£', CHF: 'CHF', CAD: 'CA$', AUD: 'A$' };
+    function formatMoney(v, cur) {
+      const c = (cur || 'EUR').toUpperCase();
+      const symbol = CURRENCY_SYMBOLS[c] || c;
+      const val = (v || 0).toFixed(2);
+      return (c === 'USD' || c === 'GBP' || c === 'CAD' || c === 'AUD') ? symbol + val : val + ' ' + symbol;
     }
 
     function formatDate(dateStr) {
@@ -454,6 +458,7 @@
     }
 
     function renderStats(reports) {
+      const summaryCurrency = (reports[0] && reports[0].currency) || 'EUR';
       let totalSales = 0;
       let totalFees = 0;
       let totalSaving = 0;
@@ -464,9 +469,9 @@
         totalSaving += r.annualSaving || 0;
       });
 
-      document.getElementById('totalSales').textContent = formatEuro(totalSales);
-      document.getElementById('totalFees').textContent = formatEuro(totalFees);
-      document.getElementById('totalSaving').textContent = formatEuro(totalSaving);
+      document.getElementById('totalSales').textContent = formatMoney(totalSales, summaryCurrency);
+      document.getElementById('totalFees').textContent = formatMoney(totalFees, summaryCurrency);
+      document.getElementById('totalSaving').textContent = formatMoney(totalSaving, summaryCurrency);
     }
 
     function renderReports(reports) {
@@ -498,10 +503,10 @@
                 <p class="text-xs text-gray-400">${date}</p>
               </div>
               <div class="flex flex-wrap items-center gap-3 text-sm">
-                <span class="text-gray-600">CA <span class="font-bold">${formatEuro(report.totalSales)}</span></span>
-                <span class="text-red-500">Frais <span class="font-bold">${formatEuro(report.totalFees)}</span></span>
+                <span class="text-gray-600">CA <span class="font-bold">${formatMoney(report.totalSales, report.currency)}</span></span>
+                <span class="text-red-500">Frais <span class="font-bold">${formatMoney(report.totalFees, report.currency)}</span></span>
                 <span class="text-green-600 font-semibold flex items-center gap-1">
-                  <span>${formatEuro(report.annualSaving)}</span>
+                  <span>${formatMoney(report.annualSaving, report.currency)}</span>
                   <span class="badge-month ${badgeClass}">économies/an</span>
                 </span>
               </div>

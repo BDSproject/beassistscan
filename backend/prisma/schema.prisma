@@ -30,6 +30,7 @@ model Lead {
   totalSales      Float
   totalFees       Float
   annualSaving    Float
+  currency        String   @default("EUR")
   paidReport      Boolean  @default(false)
   proSubscription Boolean  @default(false)
   pdfPath         String?

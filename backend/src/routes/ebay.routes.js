@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const EbayService = require('../services/ebay.service');
 const { calculateFromTransactions } = require('../services/calculator.service');
+const { convertReportToPrimaryCurrency } = require('../services/currency.service');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -181,6 +182,13 @@ router.post('/generate-report-ebay', async (req, res) => {
       console.log(`📊 Transactions eBay recuperees: ${reportData.rowCount}`);
     }
 
+    // Conversion des devises secondaires vers la devise principale (totaux consolidés)
+    try {
+      reportData = await convertReportToPrimaryCurrency(reportData);
+    } catch (convErr) {
+      console.warn('⚠️ Conversion de devises ignorée:', convErr.message);
+    }
+
     // Génération du PDF (allégé pour le forfait gratuit, complet pour le Rapport Détaillé/Pro)
     const { generateReport } = require('../services/pdf.service');
     const pdfPath = await generateReport(reportData, email, storeName || 'Boutique', lang, plan);
@@ -212,6 +220,7 @@ router.post('/generate-report-ebay', async (req, res) => {
         totalSales: reportData.totalSales,
         totalFees: reportData.totalFees,
         annualSaving: reportData.annualSaving,
+        currency: reportData.currency || 'EUR',
         pdfPath,
         userId: ownerId || undefined,
       },
